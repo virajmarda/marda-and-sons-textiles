@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import './globals.css';
-
+import '@/app/globals.css';
 export const metadata: Metadata = {
   title: 'Marda & Sons – Premium Solapuri Textiles Since 1970',
   description: 'विश्वास की परंपरा, वर्षों का साथ – Premium Solapuri handloom textiles for home, weddings, hotels & gifting. Serving families since 1970 from the heart of Solapur.',
