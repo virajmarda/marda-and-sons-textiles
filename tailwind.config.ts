@@ -14,7 +14,8 @@ const config: Config = {
           light: '#8B2322',
           dark: '#4A1210',
         },
-Add tailwind.config.ts          DEFAULT: '#F4A300',
+        gold: {
+          DEFAULT: '#F4A300',
           light: '#F7BC40',
           dark: '#C68200',
         },
@@ -32,7 +33,7 @@ Add tailwind.config.ts          DEFAULT: '#F4A300',
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'texture': "url('/texture.png')",
+        texture: "url('/texture.png')",
       },
     },
   },
