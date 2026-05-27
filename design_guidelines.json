@@ -1,0 +1,138 @@
+{
+  "theme": "light",
+  "archetype": "5 (Luxury) - Modified for Indian Heritage",
+  "design_philosophy": "Museum-grade editorial e-commerce. Hermès meets Sabyasachi. Cinematic, minimal UI chrome, slow pacing, rich textile textures, and deep heritage storytelling. Prioritize generous whitespace, asymmetrical editorial grids, and sophisticated typography over generic 'card' layouts.",
+  "colors": {
+    "background_primary": "#FDFBF7",
+    "background_secondary": "#F3EFE6",
+    "background_tertiary": "#EBE4D5",
+    "text_primary": "#2A1D1A",
+    "text_secondary": "#5C4A45",
+    "brand_primary": "#6A1A2A",
+    "brand_primary_hover": "#50121F",
+    "brand_gold": "#C5A059",
+    "brand_gold_muted": "#E5D4B3",
+    "border": "#D8CDBF",
+    "surface_dark": "#2A1D1A",
+    "surface_dark_text": "#FDFBF7",
+    "error": "#9E2A2B",
+    "success": "#3B5249"
+  },
+  "typography": {
+    "fonts": {
+      "heading": {
+        "family": "'Bodoni Moda', serif",
+        "url": "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&display=swap",
+        "css_variable": "--font-heading"
+      },
+      "subheading": {
+        "family": "'Marcellus', serif",
+        "url": "https://fonts.googleapis.com/css2?family=Marcellus&display=swap",
+        "css_variable": "--font-subheading"
+      },
+      "body": {
+        "family": "'Jost', sans-serif",
+        "url": "https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap",
+        "css_variable": "--font-body"
+      },
+      "accent_indian": {
+        "family": "'Yatra One', cursive",
+        "url": "https://fonts.googleapis.com/css2?family=Yatra+One&display=swap",
+        "css_variable": "--font-accent-hindi"
+      }
+    },
+    "scale": {
+      "h1": "text-5xl sm:text-6xl lg:text-7xl tracking-tighter leading-[0.9]",
+      "h2": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.1]",
+      "h3": "text-2xl sm:text-3xl lg:text-4xl tracking-tight",
+      "h4": "text-xl sm:text-2xl",
+      "body": "text-base lg:text-lg leading-relaxed",
+      "caption": "text-sm uppercase tracking-[0.2em]"
+    },
+    "rules": [
+      "Headings (H1/H2) must use Bodoni Moda. Subtitles and large category labels use Marcellus.",
+      "Use 'Yatra One' exclusively for Hindi/Marathi accent words (e.g., 'परंपरा', 'Solapur chi Shaan') as decorative elements, opacified to 10-20% in the background, or small gold accents.",
+      "Never center-align body text. Keep paragraphs left-aligned.",
+      "Ensure H1/H2 are extremely tight (tracking-tighter) for the luxury fashion magazine feel."
+    ]
+  },
+  "spacing_and_layout": {
+    "container": "max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24",
+    "section_spacing": "py-24 md:py-32 lg:py-40",
+    "component_spacing": "gap-12 md:gap-16 lg:gap-24",
+    "grid_strategies": {
+      "product_listing": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16. No borders on product items. Let the image define the boundary.",
+      "editorial_showcase": "Asymmetrical bento. 12-column grid. Hero image spans col 1-7. Text block spans col 9-12. Huge negative space.",
+      "category_grid": "Alternating heights. Col 1 items are tall, Col 2 items are square, creating a masonry-like editorial tension."
+    }
+  },
+  "visual_enhancers": {
+    "borders": "1px solid var(--border). Use heavily on the Wholesale form to create a 'technical luxury' or 'document' feel.",
+    "shadows": "Ambient diffuse shadows only on sticky header. Products should NOT have drop shadows. Use flat layouts.",
+    "radius": "rounded-none or max rounded-sm (2px). Luxury is sharp, not bubbly.",
+    "textures": "Apply a very subtle SVG noise overlay (opacity 0.03) globally to make the background feel like handmade paper, not digital pixels.",
+    "glassmorphism": "Only for sticky nav: backdrop-blur-xl bg-[#FDFBF7]/80 border-b border-[#D8CDBF]/50."
+  },
+  "component_strategies": {
+    "hero_section": "90vh to 100vh full-width image. Apply bg-black/30 overlay for text contrast. H1 is massive, white, positioned bottom-left. A small vertical 'Scroll to Explore' text with a gold line on the bottom-right.",
+    "navigation": "Sticky top, crystal glass. Left: 'Est. 1970'. Center: Logo 'MARDA & SONS' in Bodoni Moda. Right: Icons (Cart, Wishlist, WhatsApp).",
+    "product_card": "No card wrapper. Direct image rendering. Aspect ratio 3:4 (portrait) or 4:5. Image on hover scales up 105% slowly. Text below image: Title (left), Price (right).",
+    "buttons": "Primary: bg-[#6A1A2A] text-[#FDFBF7] hover:bg-[#50121F] uppercase tracking-widest px-8 py-4. Secondary: border border-[#2A1D1A] text-[#2A1D1A] hover:bg-[#2A1D1A] hover:text-[#FDFBF7].",
+    "wholesale_inquiry": "Split layout. Left: Deep maroon background with Gold text 'Become a Partner'. Right: Shadcn form tailored with sharp edges, bottom-border only inputs (flair inputs) rather than full boxes.",
+    "footer": "bg-[#2A1D1A] text-[#FDFBF7]. Massive padding (py-32). Huge logo at the bottom. Link columns for Retail, Wholesale, Heritage. Incorporate a delicate gold mandala or weave pattern as a watermark.",
+    "forms": "Use Shadcn UI forms but strip out standard rounded borders. Make inputs look like luxury print forms (border-b-2 border-brand_gold focus:border-brand_primary).",
+    "whatsapp_fab": "Fixed bottom-right. Instead of standard bright green, use a dark maroon circle with gold WhatsApp icon, to maintain brand integrity."
+  },
+  "motion_and_interactions": {
+    "scroll_reveal": "Elements fade in and translate Y (y: 40 to 0) with duration 1s, ease: [0.16, 1, 0.3, 1] (custom spring/bezier for slow, heavy feel).",
+    "hover_states": "Images slowly zoom (scale 1.05 over 1.5s). Buttons sweep background colors. Text links get a 1px gold underline that scales from left to right (origin-left).",
+    "page_transitions": "Smooth and slow. If using Framer Motion, implement an exit/enter overlay (e.g., Maroon curtain wipe or simple long crossfade).",
+    "lenis_scroll": "MANDATORY. Smooth scrolling must be enabled for the cinematic pacing."
+  },
+  "media_assets": {
+    "hero": [
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/bfd7c66015eb89044445dbab3149d88f192cba8791da7bac01a5df9b37c95428.png",
+        "category": "hero_background",
+        "description": "Opulent Indian heritage textile boutique, royal maroon and antique gold."
+      }
+    ],
+    "textures": [
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/85fde45f54ca0616d6a74571cd3f6b4b0497577453850b7019bdb09ade3190b3.png",
+        "category": "section_background_macro",
+        "description": "Macro photography of gold and maroon textile threads. Use for the 'Heritage Story' section background."
+      }
+    ],
+    "products_editorial": [
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/6ee061934d03a5fc78962a067d6eb5b00c915d6aee9992d61cd1ff9b93f6da20.png",
+        "category": "category_showcase",
+        "description": "Flat lay of traditional shawls and Maharashtrian Pheta."
+      },
+      {
+        "url": "https://images.pexels.com/photos/10317113/pexels-photo-10317113.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "category": "product_detail",
+        "description": "Intricate Kanchipuram weave details, usable for Bedsheets/Saree category headers."
+      }
+    ],
+    "mood_images": [
+      {
+        "url": "https://images.unsplash.com/photo-1616756351484-798f37bdffa0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHw0fHx0cmFkaXRpb25hbCUyMGluZGlhbiUyMHRleHRpbGUlMjB3ZWF2ZSUyMGZhYnJpY3xlbnwwfHx8fDE3Nzk4ODk5OTh8MA&ixlib=rb-4.1.0&q=85",
+        "category": "story_timeline",
+        "description": "Silver necklace on red textile, representing craftsmanship."
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "You are building a premium Next.js 14 E-commerce template for Marda & Sons.",
+    "Ensure all fonts (Bodoni Moda, Marcellus, Jost, Yatra One) are loaded correctly via next/font or standard link tags.",
+    "Implement the 'Museum-grade editorial' aesthetic. No generic cards with drop shadows.",
+    "Integrate Shadcn components (Forms, Select) but strip out rounded corners to keep it sharp (rounded-none).",
+    "Use framer-motion heavily for scroll-based fades and slow image reveals.",
+    "Include a 'Wholesale vs Retail' conceptual split on the Contact page.",
+    "Ensure the WhatsApp FAB uses the brand colors (maroon/gold) instead of native green to maintain the luxury feel.",
+    "Use the provided image URLs exclusively for media.",
+    "Add 'data-testid' to all interactive elements."
+  ]
+}
