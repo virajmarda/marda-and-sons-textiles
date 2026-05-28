@@ -128,8 +128,8 @@ export default function ContactPage() {
             <div className="mt-16 border-t border-line pt-8">
               <p className="eyebrow mb-3">Other ways</p>
               <ul className="font-sub text-ink space-y-2">
-                <li className="flex items-center gap-3"><Mail size={14} className="text-gold" /> hello@mardaandsons.in</li>
-                <li className="flex items-center gap-3"><Phone size={14} className="text-gold" /> {WHATSAPP_DISPLAY}</li>
+                <li className="flex items-center gap-3"><Mail size={14} className="text-gold" /><span>hello@mardaandsons.in</span></li>
+                <li className="flex items-center gap-3"><Phone size={14} className="text-gold" /><span>{WHATSAPP_DISPLAY}</span></li>
               </ul>
             </div>
           </div>
