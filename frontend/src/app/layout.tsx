@@ -44,13 +44,13 @@ const tiro = Tiro_Devanagari_Marathi({
 });
 
 export const metadata: Metadata = {
-  title: 'मर्दा अँड सन्स · Marda & Sons — Premium Solapuri Textiles · Est. 1970',
+  title: 'मर्दा ॲन्ड सन्स · Marda & Sons — Premium Solapuri Textiles · Est. 1970',
   description:
     'विश्वास की परंपरा, वर्षों का साथ. Heritage Solapuri textiles since 1970 — towels, bedsheets, shawls, phetas, woolen blankets and more. Retail & wholesale from the heart of Solapur.',
   keywords:
-    'Marda and Sons, मर्दा अँड सन्स, Solapur, Solapuri textiles, handloom bedsheets, wholesale textiles, premium towels India, ghongdi, pheta, woolen blankets',
+    'Marda and Sons, मर्दा ॲन्ड सन्स, Solapur, Solapuri textiles, handloom bedsheets, wholesale textiles, premium towels India, ghongdi, pheta, woolen blankets',
   openGraph: {
-    title: 'मर्दा अँड सन्स — Solapuri Textiles Since 1970',
+    title: 'मर्दा ॲन्ड सन्स — Solapuri Textiles Since 1970',
     description:
       'A heritage textile house from Solapur. Handloom bedsheets, shawls, woolen blankets, phetas & ceremonial textiles.',
     type: 'website',

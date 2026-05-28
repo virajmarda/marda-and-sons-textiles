@@ -31,7 +31,7 @@ export function ProductDetail({ product }: { product: Product }) {
   }
 
   function handleWhatsApp() {
-    const msg = `Hello मर्दा अँड सन्स,\nI am interested in:\n• ${product.name}\n• Mode: ${mode}\n• Quantity: ${actualQty}\n• Colour: ${color || '—'}\nPlease share more details.`;
+    const msg = `Hello मर्दा ॲन्ड सन्स,\nI am interested in:\n• ${product.name}\n• Mode: ${mode}\n• Quantity: ${actualQty}\n• Colour: ${color || '—'}\nPlease share more details.`;
     window.open(whatsappLink(msg), '_blank');
   }
 

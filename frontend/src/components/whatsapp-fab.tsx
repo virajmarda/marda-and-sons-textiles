@@ -5,7 +5,7 @@ import { whatsappLink } from '@/lib/api';
 
 export function WhatsAppFab() {
   const [open, setOpen] = useState(false);
-  const message = "नमस्कार मर्दा अँड सन्स — I'd like to know more about your collection.";
+  const message = "नमस्कार मर्दा ॲन्ड सन्स — I'd like to know more about your collection.";
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3" data-testid="whatsapp-fab-container">
@@ -15,7 +15,7 @@ export function WhatsAppFab() {
           className="bg-ink text-bg-primary px-5 py-4 max-w-[260px] border border-gold/40 shadow-2xl animate-fade-up"
         >
           <p className="font-accent text-gold text-sm mb-1">नमस्कार 🙏</p>
-          <p className="font-sub text-sm leading-snug">Chat with मर्दा अँड सन्स on WhatsApp — we usually reply within minutes.</p>
+          <p className="font-sub text-sm leading-snug">Chat with मर्दा ॲन्ड सन्स on WhatsApp — we usually reply within minutes.</p>
         </div>
       )}
       <a

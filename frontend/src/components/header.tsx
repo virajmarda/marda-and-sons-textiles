@@ -41,12 +41,12 @@ export function Header() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
           ? 'bg-[#FDFBF7]/92 backdrop-blur-xl border-b border-line/60 shadow-[0_4px_24px_-12px_rgba(42,29,26,0.18)]'
-          : 'border-b border-transparent'
+          : 'bg-ink/55 backdrop-blur-md border-b border-bg-primary/10'
       }`}
     >
-      {/* Permanent dark scrim behind header when on hero, so light text stays readable on any image */}
+      {/* On hero: add an extra top gradient so curved bright spots in images can't drown the nav */}
       {onHero && (
-        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/55 via-ink/30 to-transparent pointer-events-none" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/40 to-ink/10 pointer-events-none" />
       )}
 
       <div className="max-w-[1600px] mx-auto px-5 md:px-10 lg:px-16">

@@ -20,7 +20,7 @@ export function BrandName({
       className={`font-brand tracking-[-0.01em] ${SIZES[variant]} ${className}`}
       lang="mr"
     >
-      मर्दा अँड सन्स
+      मर्दा ॲन्ड सन्स
     </span>
   );
 }

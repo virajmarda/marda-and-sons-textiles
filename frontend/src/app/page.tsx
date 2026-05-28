@@ -50,7 +50,7 @@ export default async function HomePage() {
               <Reveal delay={0.5}>
                 <p className="font-sub text-bg-primary/90 text-lg md:text-xl max-w-2xl mt-6 leading-relaxed">
                   For fifty-five years, the looms of Solapur have woven for one family that listens. Today,
-                  <span className="font-brand text-gold-muted not-italic"> मर्दा अँड सन्स </span>
+                  <span className="font-brand text-gold-muted not-italic"> मर्दा ॲन्ड सन्स </span>
                   brings that quiet mastery into your home — and into the world.
                 </p>
               </Reveal>
@@ -105,7 +105,7 @@ export default async function HomePage() {
               <span className="font-accent text-gold">परंपरा</span><span className="text-gold">◆</span>
               <span>Wedding Trousseau</span><span className="text-gold">◆</span>
               <span>Heritage Towels</span><span className="text-gold">◆</span>
-              <span className="font-accent text-gold">मर्दा अँड सन्स</span><span className="text-gold">◆</span>
+              <span className="font-accent text-gold">मर्दा ॲन्ड सन्स</span><span className="text-gold">◆</span>
             </div>
           ))}
         </div>
@@ -329,7 +329,7 @@ export default async function HomePage() {
               </ul>
               <div className="flex gap-4 flex-wrap mt-12">
                 <a href={MAPS_DIRECTIONS} target="_blank" rel="noopener noreferrer" data-testid="home-directions" className="btn-primary">Get Directions</a>
-                <a href={whatsappLink('Hello मर्दा अँड सन्स, I would like to visit your store.')} target="_blank" rel="noopener noreferrer" data-testid="home-whatsapp" className="btn-ghost">Chat on WhatsApp</a>
+                <a href={whatsappLink('Hello मर्दा ॲन्ड सन्स, I would like to visit your store.')} target="_blank" rel="noopener noreferrer" data-testid="home-whatsapp" className="btn-ghost">Chat on WhatsApp</a>
               </div>
             </div>
             <div className="relative aspect-[4/5] overflow-hidden">

@@ -9,7 +9,7 @@ export default function HeritagePage() {
   const necklace = 'https://images.unsplash.com/photo-1616756351484-798f37bdffa0?auto=format&fit=crop&w=1600&q=80';
 
   const timeline = [
-    { y: '1970', t: 'The first loom', d: 'मर्दा अँड सन्स opens a single wholesale loom in Mangalwar Peth, Solapur — supplying handloom textiles to nearby cities.', img: macro },
+    { y: '1970', t: 'The first loom', d: 'मर्दा ॲन्ड सन्स opens a single wholesale loom in Mangalwar Peth, Solapur — supplying handloom textiles to nearby cities.', img: macro },
     { y: '1985', t: 'A name across Maharashtra', d: 'By the mid-eighties, the Marda weave reaches Mumbai, Pune, and Kolhapur. Retail traders begin to take notice.', img: necklace },
     { y: '2002', t: 'Beyond linens', d: 'We expand to towels, shawls, phetas, woolen blankets, and ceremonial textiles — the looms of Solapur, in eight chapters.', img: editorial },
     { y: '2018', t: 'Three generations', d: 'The third generation joins the house. The wholesale roots stay strong; a quiet retail arm begins to bloom.', img: macro },
@@ -31,7 +31,7 @@ export default function HeritagePage() {
           </h1>
           <p className="font-accent text-brand mt-10 text-2xl md:text-3xl">विश्वास की परंपरा, वर्षों का साथ</p>
           <p className="font-sub text-ink-soft text-lg mt-6 max-w-2xl">
-            The story of <span className="font-brand text-ink not-italic">मर्दा अँड सन्स</span> is, in many ways, the story of how Solapur dressed
+            The story of <span className="font-brand text-ink not-italic">मर्दा ॲन्ड सन्स</span> is, in many ways, the story of how Solapur dressed
             the Indian household.
           </p>
         </div>

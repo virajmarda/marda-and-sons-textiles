@@ -13,7 +13,7 @@ export default function CartPage() {
   const summary = items.map(
     (i, idx) => `${idx + 1}. ${i.name} (${i.mode}) × ${i.qty} — ${inr(i.price * i.qty)}`,
   ).join('\n');
-  const waMsg = `Hello मर्दा अँड सन्स, I'd like to confirm this order:\n\n${summary}\n\nSubtotal: ${inr(subtotal)}\n\nPlease confirm availability & next steps.`;
+  const waMsg = `Hello मर्दा ॲन्ड सन्स, I'd like to confirm this order:\n\n${summary}\n\nSubtotal: ${inr(subtotal)}\n\nPlease confirm availability & next steps.`;
 
   return (
     <div data-testid="cart-page" className="bg-paper min-h-[80vh] relative overflow-hidden">
@@ -103,7 +103,7 @@ export default function CartPage() {
               Or send via Contact Form
             </Link>
             <p className="text-[11px] uppercase tracking-[0.22em] text-ink-soft mt-6 leading-relaxed">
-              मर्दा अँड सन्स confirms every order personally — no automated checkout, no surprises.
+              मर्दा ॲन्ड सन्स confirms every order personally — no automated checkout, no surprises.
             </p>
           </aside>
         </section>

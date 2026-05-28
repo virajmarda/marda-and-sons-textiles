@@ -3,6 +3,5 @@
   "/wholesale/page": "app/wholesale/page.js",
   "/shop/page": "app/shop/page.js",
   "/cart/page": "app/cart/page.js",
-  "/heritage/page": "app/heritage/page.js",
-  "/categories/page": "app/categories/page.js"
+  "/heritage/page": "app/heritage/page.js"
 }

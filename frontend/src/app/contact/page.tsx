@@ -49,7 +49,7 @@ export default function ContactPage() {
           </div>
           <div className="lg:col-span-4">
             <p className="font-sub text-ink-soft text-lg leading-relaxed">
-              The <span className="font-brand text-ink not-italic">मर्दा अँड सन्स</span> atelier is a slow,
+              The <span className="font-brand text-ink not-italic">मर्दा ॲन्ड सन्स</span> atelier is a slow,
               generous shop. Come for chai, stay for the weaves, leave with a story.
             </p>
             <div className="mt-8 h-px bg-gradient-to-r from-gold via-gold/40 to-transparent" />
@@ -75,7 +75,7 @@ export default function ContactPage() {
               <Phone size={22} strokeWidth={1.2} className="text-brand" />
               <p className="eyebrow mt-6">Call · WhatsApp</p>
               <p className="font-sub text-ink text-lg mt-3">{WHATSAPP_DISPLAY}</p>
-              <a href={whatsappLink('Hello मर्दा अँड सन्स, I would like to know more.')} target="_blank" rel="noopener noreferrer" data-testid="contact-whatsapp" className="eyebrow text-brand link-underline inline-block mt-5">
+              <a href={whatsappLink('Hello मर्दा ॲन्ड सन्स, I would like to know more.')} target="_blank" rel="noopener noreferrer" data-testid="contact-whatsapp" className="eyebrow text-brand link-underline inline-block mt-5">
                 Open WhatsApp →
               </a>
             </div>

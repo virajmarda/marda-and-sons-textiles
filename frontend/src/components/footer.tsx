@@ -100,7 +100,7 @@ export function Footer() {
               <li><Link href="/heritage#looms" className="link-underline">The Solapur Looms</Link></li>
               <li><Link href="/contact" className="link-underline">Visit the Store</Link></li>
               <li>
-                <a href={whatsappLink('Hello मर्दा अँड सन्स — I would like to enquire.')} target="_blank" rel="noopener noreferrer" className="link-underline">
+                <a href={whatsappLink('Hello मर्दा ॲन्ड सन्स — I would like to enquire.')} target="_blank" rel="noopener noreferrer" className="link-underline">
                   WhatsApp Us
                 </a>
               </li>
@@ -110,7 +110,7 @@ export function Footer() {
             <p className="eyebrow text-gold-muted mb-6">Visit</p>
             <ul className="space-y-4 font-sub text-bg-primary/85 text-sm">
               <li className="flex gap-3"><MapPin size={14} className="text-gold mt-1 shrink-0" /><span>{STORE_ADDRESS}</span></li>
-              <li className="flex gap-3"><Phone size={14} className="text-gold mt-1 shrink-0" /><a href={whatsappLink('Hello मर्दा अँड सन्स')}>{WHATSAPP_DISPLAY}</a></li>
+              <li className="flex gap-3"><Phone size={14} className="text-gold mt-1 shrink-0" /><a href={whatsappLink('Hello मर्दा ॲन्ड सन्स')}>{WHATSAPP_DISPLAY}</a></li>
               <li className="flex gap-3"><Mail size={14} className="text-gold mt-1 shrink-0" /><a href="mailto:hello@mardaandsons.in">hello@mardaandsons.in</a></li>
               <li className="text-xs text-bg-primary/60 mt-2">{STORE_HOURS}</li>
             </ul>
@@ -120,7 +120,7 @@ export function Footer() {
         {/* Big brand wordmark */}
         <div className="mt-24 pt-12 border-t border-bg-primary/15 text-center">
           <p className="font-brand text-[16vw] md:text-[12vw] leading-[0.9] text-bg-primary/95 tracking-[-0.01em]" lang="mr">
-            मर्दा अँड सन्स
+            मर्दा ॲन्ड सन्स
           </p>
           <p className="font-accent text-gold-muted mt-6 text-sm tracking-wider">
             विश्वास की परंपरा, वर्षों का साथ
@@ -128,7 +128,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-16 text-[11px] uppercase tracking-[0.22em] text-bg-primary/50">
-          <p>© {new Date().getFullYear()} मर्दा अँड सन्स · Solapur · Est. {ESTABLISHED}</p>
+          <p>© {new Date().getFullYear()} मर्दा ॲन्ड सन्स · Solapur · Est. {ESTABLISHED}</p>
           <div className="flex gap-6">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold">
               <Instagram size={13} /> Instagram
