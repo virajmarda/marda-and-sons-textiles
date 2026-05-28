@@ -9,31 +9,55 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        maroon: {
-          DEFAULT: '#6F1D1B',
-          light: '#8B2322',
-          dark: '#4A1210',
+        bg: {
+          primary: '#FDFBF7',
+          secondary: '#F3EFE6',
+          tertiary: '#EBE4D5',
+        },
+        ink: {
+          DEFAULT: '#2A1D1A',
+          soft: '#5C4A45',
+        },
+        brand: {
+          DEFAULT: '#6A1A2A',
+          hover: '#50121F',
+          deep: '#3F0B17',
         },
         gold: {
-          DEFAULT: '#F4A300',
-          light: '#F7BC40',
-          dark: '#C68200',
+          DEFAULT: '#C5A059',
+          muted: '#E5D4B3',
+          dark: '#9A7C3F',
         },
-        indigo: {
-          DEFAULT: '#1A2740',
-          light: '#243654',
-          dark: '#111B2B',
-        },
-        cream: '#F5F1E8',
-        sand: '#D8C7A6',
-        muted: '#B0B0B0',
+        line: '#D8CDBF',
       },
       fontFamily: {
-        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-bodoni)', 'Bodoni Moda', 'serif'],
+        sub: ['var(--font-marcellus)', 'Marcellus', 'serif'],
+        body: ['var(--font-jost)', 'Jost', 'sans-serif'],
+        accent: ['var(--font-yatra)', 'Yatra One', 'cursive'],
       },
-      backgroundImage: {
-        texture: "url('/texture.png')",
+      letterSpacing: {
+        tightest: '-0.04em',
+        wide2: '0.2em',
+      },
+      animation: {
+        marquee: 'marquee 35s linear infinite',
+        'fade-up': 'fade-up 1s cubic-bezier(0.16, 1, 0.3, 1) both',
+        shimmer: 'shimmer 2.4s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'fade-up': {
+          '0%': { opacity: '0', transform: 'translateY(32px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
       },
     },
   },

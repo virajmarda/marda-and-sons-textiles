@@ -3,11 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --maroon: #6F1D1B;
-  --gold: #F4A300;
-  --indigo: #1A2740;
-  --cream: #F5F1E8;
-  --sand: #D8C7A6;
+  --bg-primary: #FDFBF7;
+  --bg-secondary: #F3EFE6;
+  --bg-tertiary: #EBE4D5;
+  --ink: #2A1D1A;
+  --ink-soft: #5C4A45;
+  --brand: #6A1A2A;
+  --brand-hover: #50121F;
+  --gold: #C5A059;
+  --gold-muted: #E5D4B3;
+  --line: #D8CDBF;
 }
 
 * {
@@ -18,31 +23,234 @@
 
 html {
   scroll-behavior: smooth;
+  background: var(--bg-primary);
 }
 
 body {
-  background-color: var(--cream);
-  color: var(--indigo);
-  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--ink);
+  font-family: var(--font-jost), 'Jost', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'ss01', 'ss02';
 }
 
-.font-serif {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+/* Paper grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.border-pattern {
-  border-image: repeating-linear-gradient(
-    90deg,
-    var(--gold) 0px,
-    var(--gold) 4px,
-    transparent 4px,
-    transparent 8px
-  ) 1;
+::selection {
+  background: var(--brand);
+  color: var(--bg-primary);
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Typography */
+.font-heading { font-family: var(--font-bodoni), 'Bodoni Moda', serif; }
+.font-sub     { font-family: var(--font-marcellus), 'Marcellus', serif; }
+.font-body    { font-family: var(--font-jost), 'Jost', sans-serif; }
+.font-accent  { font-family: var(--font-yatra), 'Yatra One', cursive; }
+
+/* Editorial display headlines */
+.display-1 {
+  font-family: var(--font-bodoni), serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+}
+.display-2 {
+  font-family: var(--font-bodoni), serif;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.0;
+}
+
+.eyebrow {
+  font-family: var(--font-jost), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+/* Decorative rule */
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent);
+}
+
+/* Animated link underline */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-underline:hover::after { transform: scaleX(1); }
+
+/* Marquee container */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Diamond bullet */
+.diamond::before {
+  content: '◆';
+  color: var(--gold);
+  margin-right: 0.6rem;
+  font-size: 0.7em;
+  vertical-align: middle;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Slow zoom on hover */
+.img-zoom { transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.img-zoom-host:hover .img-zoom { transform: scale(1.06); }
+
+/* Sharp luxury button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--brand);
+  color: var(--bg-primary);
+  padding: 1rem 1.8rem;
+  font-family: var(--font-jost), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  font-weight: 500;
+  transition: background-color 0.5s ease, transform 0.4s ease, letter-spacing 0.4s ease;
+  border: 1px solid var(--brand);
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background: var(--brand-hover);
+  letter-spacing: 0.28em;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 1rem 1.8rem;
+  font-family: var(--font-jost), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+.btn-ghost:hover {
+  background: var(--ink);
+  color: var(--bg-primary);
+}
+
+/* Form inputs — luxury print form style */
+.input-line {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: 0.9rem 0.25rem;
+  font-family: var(--font-jost), sans-serif;
+  color: var(--ink);
+  transition: border-color 0.4s ease;
+  outline: none;
+}
+.input-line:focus {
+  border-bottom-color: var(--brand);
+}
+.input-line::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.55;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+}
+
+.input-dark {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(229, 212, 179, 0.4);
+  color: var(--bg-primary);
+  padding: 0.9rem 0.25rem;
+  width: 100%;
+  outline: none;
+  font-family: var(--font-jost), sans-serif;
+}
+.input-dark:focus { border-bottom-color: var(--gold); }
+.input-dark::placeholder {
+  color: rgba(229, 212, 179, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+}
+
+/* Scroll cue */
+.scroll-cue {
+  position: absolute;
+  bottom: 28px;
+  right: 28px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.3em;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+/* Background paper */
+.bg-paper { background-color: var(--bg-primary); }
+.bg-paper-2 { background-color: var(--bg-secondary); }
+.bg-paper-3 { background-color: var(--bg-tertiary); }
+.bg-deep { background-color: var(--ink); color: var(--bg-primary); }
+.bg-brand { background-color: var(--brand); color: var(--bg-primary); }
+
+/* Watermark accent */
+.watermark-hindi {
+  font-family: var(--font-yatra), serif;
+  color: var(--brand);
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Number block */
+.num-block {
+  font-family: var(--font-bodoni), serif;
+  font-style: italic;
+  color: var(--gold);
+  font-size: 14px;
+  letter-spacing: 0.1em;
 }

@@ -1,0 +1,66 @@
+{
+  "summary": "Initial end-to-end testing of the Marda & Sons heritage textile site. Backend pytest suite (14 tests across health, categories, products, contact, wholesale, newsletter) passes 100%. Frontend Next.js 14 app: all 9 routes return HTTP 200, hero/Hindi accent/CTAs render, 8 category tiles link correctly, 24 product cards on /shop, category filter via URL works (24 -> 4 blankets), product detail page works with retail/wholesale toggle and Add-to-Bag updates cart-count badge, wishlist toggle increments wishlist-count badge, cart & wishlist pages list items, contact form shows success state, wholesale form shows wholesale-success state, newsletter shows success toast in Hindi/English, WhatsApp FAB and 4+ wa.me/919422460420 links present, Google Maps iframe loads on /contact. Found 3 broken Unsplash image URLs in seed data and React hydration mismatch warnings on Home (likely caused by cart/wishlist count being read from localStorage during initial client render).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Shop / Product images",
+        "issue": "3 Unsplash image URLs in the seed catalog return 404, producing broken images on category 'blankets' (chaddar hero tile), 'topis' (Kolhapuri Pheta seed item), and 'phetas' multi-image gallery. Returning 404: photo-1616627781622-d2dec3e36a40, photo-1591872203534-278fc084969a, photo-1622495966599-b67d3f9532da. Affected file: /app/backend/server.py lines 211, 217, 262, 265, 266.",
+        "selector": "[data-testid^='product-card'] img",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "Header cart/wishlist badges (hydration)",
+        "issue": "React hydration mismatch warnings: 'Text content does not match server-rendered HTML' fired multiple times when navigating Home -> Product -> Cart. Root cause likely the Header reading cart-count/wishlist-count from CartProvider which hydrates from localStorage on the client, so SSR renders nothing while client renders the badge. Recommended fix: render badges only after a mount-flag (useEffect set isClient=true) or wrap with suppressHydrationWarning.",
+        "selector": "[data-testid='cart-count'], [data-testid='wishlist-count']",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "Shop search input",
+        "issue": "Search input lacks a stable data-testid (used 'shop-search' was not found). Sort uses [data-testid='shop-sort']. Adding data-testid='shop-search' would simplify automated tests.",
+        "selector": "input[placeholder*='search']",
+        "priority": "LOW"
+      },
+      {
+        "component": "Product detail quantity controls",
+        "issue": "data-testid 'qty-inc'/'qty-dec' not present on quantity buttons. Add-to-Bag works, but qty +/- testids missing for automation.",
+        "selector": "button (qty +/-)",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_marda_api.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Replace the 3 broken Unsplash image IDs in /app/backend/server.py seed (lines 211, 217, 262, 265, 266) with valid URLs OR locally hosted /app/frontend/public images so all product/category tiles render.",
+    "Resolve React hydration warnings: render Header cart/wishlist badges only after mount (e.g., useEffect-driven 'mounted' flag in cart-context or Header), so SSR HTML matches client first paint.",
+    "Add data-testid='shop-search' to the Shop page search input and data-testid='qty-inc'/'qty-dec' to the product-detail quantity buttons for downstream automation."
+  ],
+  "critical_code_review_comments": [
+    "Hardcoded fallback in /app/frontend/src/lib/api.ts must use process.env.NEXT_PUBLIC_BACKEND_URL exclusively (no default) per env rules; verify there is no hardcoded localhost.",
+    "Seed runs on FastAPI lifespan startup; consider an idempotent upsert by slug instead of full re-seed to keep lead IDs and avoid duplicate product images.",
+    "Cart/Wishlist context reads localStorage during render which is the most likely source of hydration mismatch; gate localStorage reads behind useEffect."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_marda_api.py",
+    "/app/backend/tests/conftest.py"
+  ],
+  "success_rate": {
+    "backend": "100% (14/14)",
+    "frontend": "~92% (broken seed images and hydration warnings are the only defects; all user-facing flows complete successfully)"
+  },
+  "test_credentials": "Not applicable - no auth in this app.",
+  "seed_data_creation": "Tests create transient leads (contact, wholesale, newsletter) prefixed with TEST_ / random UUID emails. No cleanup endpoint exposed, but they do not impact functional behaviour. Newsletter duplicate test reuses the same generated email twice and validates duplicate:true response.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest suite lives at /app/backend/tests/test_marda_api.py - rerun with: pytest /app/backend/tests/ -v --junitxml=/app/test_reports/pytest/pytest_results.xml. Use BACKEND_BASE_URL env var to override (defaults to the preview URL). Frontend critical data-testids: ws-name/ws-email/ws-phone/ws-submit/ws-interest-<Category>/wholesale-success on /wholesale; contact-name/contact-email/contact-message/contact-submit on /contact; newsletter-email-input/newsletter-submit/newsletter-form in footer; product-card-<slug> on /shop; mode-retail/mode-wholesale/add-to-bag/wishlist-toggle on product detail; cart-count/wishlist-count badges in header. Use external base URL https://c0ae75ab-be30-46a0-81cf-70bdbc8579d0.preview.emergentagent.com. After main agent fixes broken images and hydration warnings, retest the same flows.",
+  "rca_of_the_issue": "Broken product images: backend seed in /app/backend/server.py references three Unsplash photo IDs that 404 (1616627781622-d2dec3e36a40, 1591872203534-278fc084969a, 1622495966599-b67d3f9532da). Reproduction: GET /api/products and load /shop?category=blankets - the first card shows alt text instead of an image. Mitigation: swap to a verified Unsplash photo ID or move assets into /app/frontend/public and reference relative paths. Hydration warning: cart-context uses localStorage which is only available on the client; the header pre-renders 0/empty while the client paints the saved badge value -> Next 14 logs the mismatch. Mitigation: introduce a useEffect-driven 'mounted' boolean in CartProvider and return empty badges until mounted, or migrate to next/dynamic with ssr:false for the Header badge nodes."
+}
