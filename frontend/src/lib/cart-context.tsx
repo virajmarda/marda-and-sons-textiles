@@ -16,6 +16,7 @@ type CartCtx = {
   wishlist: string[];
   count: number;
   subtotal: number;
+  mounted: boolean;
   add: (item: CartItem) => void;
   remove: (slug: string) => void;
   setQty: (slug: string, qty: number) => void;
@@ -89,7 +90,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ items, wishlist, count, subtotal, add, remove, setQty, clear, toggleWishlist, isWished }}
+      value={{ items, wishlist, count, subtotal, mounted: hydrated, add, remove, setQty, clear, toggleWishlist, isWished }}
     >
       {children}
     </Ctx.Provider>

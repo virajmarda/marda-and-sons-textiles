@@ -18,7 +18,7 @@ const NAV = [
 
 export function Header() {
   const path = usePathname();
-  const { count, wishlist } = useCart();
+  const { count, wishlist, mounted } = useCart();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -89,7 +89,7 @@ export function Header() {
               aria-label="Wishlist"
             >
               <Heart size={18} strokeWidth={1.4} />
-              {wishlist.length > 0 && (
+              {mounted && wishlist.length > 0 && (
                 <span
                   data-testid="wishlist-count"
                   className="absolute -top-2 -right-2 bg-brand text-bg-primary text-[9px] w-4 h-4 flex items-center justify-center font-medium"
@@ -105,7 +105,7 @@ export function Header() {
               aria-label="Cart"
             >
               <ShoppingBag size={18} strokeWidth={1.4} />
-              {count > 0 && (
+              {mounted && count > 0 && (
                 <span
                   data-testid="cart-count"
                   className="absolute -top-2 -right-2 bg-brand text-bg-primary text-[9px] w-4 h-4 flex items-center justify-center font-medium"

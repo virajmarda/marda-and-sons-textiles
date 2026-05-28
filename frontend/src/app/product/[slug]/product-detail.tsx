@@ -131,6 +131,7 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="flex items-center border border-line">
             <button
               data-testid="qty-decrease"
+              data-testid-alias="qty-dec"
               onClick={() => setQty((q) => Math.max(mode === 'wholesale' ? minQty : 1, q - 1))}
               className="w-10 h-10 flex items-center justify-center hover:bg-bg-secondary"
             >
@@ -145,6 +146,7 @@ export function ProductDetail({ product }: { product: Product }) {
             />
             <button
               data-testid="qty-increase"
+              data-testid-alias="qty-inc"
               onClick={() => setQty((q) => q + 1)}
               className="w-10 h-10 flex items-center justify-center hover:bg-bg-secondary"
             >

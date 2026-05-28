@@ -196,35 +196,35 @@ async def post_newsletter(payload: NewsletterIn):
 CATEGORIES = [
     {"slug": "towels", "name": "Towels", "marathi": "टॉवेल",
      "tagline": "The Original Solapuri Soft-Touch",
-     "image": "https://images.unsplash.com/photo-1583845112203-29329902332e?auto=format&fit=crop&w=1400&q=80"},
+     "image": "https://images.unsplash.com/photo-1521587765099-8835e7201186?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "bedsheets", "name": "Bedsheets", "marathi": "चादर",
      "tagline": "Handloom comfort, woven for generations",
-     "image": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1400&q=80"},
+     "image": "https://images.unsplash.com/photo-1631049552240-59c37f38802b?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "shawls", "name": "Shawls", "marathi": "शाल",
      "tagline": "Warmth wrapped in heritage",
-     "image": "https://images.unsplash.com/photo-1583846783214-7229a91b20ed?auto=format&fit=crop&w=1400&q=80"},
+     "image": "https://images.unsplash.com/photo-1616756351484-798f37bdffa0?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "phetas", "name": "Phetas", "marathi": "फेटा",
      "tagline": "The crown of Maharashtrian pride",
      "image": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "topis", "name": "Topis", "marathi": "टोपी",
      "tagline": "Tradition that sits gracefully",
-     "image": "https://images.unsplash.com/photo-1591872203534-278fc084969a?auto=format&fit=crop&w=1400&q=80"},
+     "image": "https://images.unsplash.com/photo-1611516491426-03025e6043c8?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "lungi", "name": "Lungi", "marathi": "लुंगी",
      "tagline": "Everyday comfort, timeless weave",
      "image": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "blankets", "name": "Blankets", "marathi": "घोंगडी",
      "tagline": "Solapuri chaddars — winters' best companion",
-     "image": "https://images.unsplash.com/photo-1616627781622-d2dec3e36a40?auto=format&fit=crop&w=1400&q=80"},
+     "image": "https://images.unsplash.com/photo-1592229505726-ca121723b8ef?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "chatais", "name": "Chatais", "marathi": "चटई",
      "tagline": "Handwoven mats for floors that welcome",
-     "image": "https://images.unsplash.com/photo-1565623833408-d77e39b88af6?auto=format&fit=crop&w=1400&q=80"},
+     "image": "https://images.unsplash.com/photo-1582582494705-f8ce0b0c24f0?auto=format&fit=crop&w=1400&q=80"},
 ]
 
 
 # ---------- Seed ----------
 async def seed_products(database):
     """Idempotent seeding of catalog with a version flag."""
-    SEED_VERSION = 2
+    SEED_VERSION = 5
     meta = await database.meta.find_one({"_id": "seed"})
     if meta and meta.get("version") == SEED_VERSION:
         return
@@ -242,41 +242,43 @@ def build_catalog() -> List[Product]:
     """Curated catalog: 4-6 products per category."""
     img = {
         "towels": [
-            "https://images.unsplash.com/photo-1583845112203-29329902332e?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1521587765099-8835e7201186?auto=format&fit=crop&w=1200&q=80",
             "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1620633383888-3a04ddf26a39?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1583845112203-29329902332e?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
         ],
         "bedsheets": [
-            "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1200&q=80",
             "https://images.unsplash.com/photo-1631049552240-59c37f38802b?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1200&q=80",
             "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
         ],
         "shawls": [
+            "https://images.unsplash.com/photo-1616756351484-798f37bdffa0?auto=format&fit=crop&w=1200&q=80",
             "https://images.unsplash.com/photo-1583846783214-7229a91b20ed?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1611516491426-03025e6043c8?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1614632537190-23e4146777db?auto=format&fit=crop&w=1200&q=80",
         ],
         "phetas": [
             "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1583846112692-21d2f48bc25e?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1622495966599-b67d3f9532da?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1611516491426-03025e6043c8?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=80",
         ],
         "topis": [
-            "https://images.unsplash.com/photo-1591872203534-278fc084969a?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1622495966599-b67d3f9532da?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1611516491426-03025e6043c8?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80",
         ],
         "lungi": [
             "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1583846112692-21d2f48bc25e?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1604147495798-57beb5d6af73?auto=format&fit=crop&w=1200&q=80",
         ],
         "blankets": [
-            "https://images.unsplash.com/photo-1616627781622-d2dec3e36a40?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1631049552240-59c37f38802b?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1592229505726-ca121723b8ef?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1567016432779-094069958ea5?auto=format&fit=crop&w=1200&q=80",
         ],
         "chatais": [
-            "https://images.unsplash.com/photo-1565623833408-d77e39b88af6?auto=format&fit=crop&w=1200&q=80",
             "https://images.unsplash.com/photo-1582582494705-f8ce0b0c24f0?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1614632537190-23e4146777db?auto=format&fit=crop&w=1200&q=80",
         ],
     }
 

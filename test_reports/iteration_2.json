@@ -1,0 +1,43 @@
+{
+  "summary": "Iteration 2 regression: backend pytest 14/14 PASS. Frontend e2e: confirmed all 4 fixes from iteration 1 are in place — (1) all 18 unique seed image URLs now return 200 OK (no broken images on /shop, /shop?category=blankets, /shop?category=phetas or /shop?category=topis); (2) shop-search testid is present on /shop and search filters cards (blanket -> 2 cards, towel -> 7 cards); (3) qty-increase / qty-decrease testids confirmed on product detail; (4) Header cart-count/wishlist-count badges are gated on mounted flag in CartProvider (verified in code: cart-context.tsx exposes mounted:hydrated, header.tsx renders badges as {mounted && count > 0}). End-to-end flows work: Home -> category tile -> Shop -> product card -> Product Detail (retail/wholesale mode toggle, qty +/-, Add to Bag) -> Cart (cart-count badge updates to 2, qty inc works, Confirm via WhatsApp builds correct wa.me/919422460420 deep-link with subtotal) -> Wishlist (item present), Contact form returns contact-success state, Wholesale form returns wholesale-success state, Newsletter toast shows 'Welcome to the Marda Atelier · आपका स्वागत है'. One NEW hydration mismatch observed on /contact page tied to the `hello@mardaandsons.in` <li> inside the 'Other ways' <ul>.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ContactPage / 'Other ways' list",
+        "issue": "React hydration mismatch warning: 'Text content did not match. Server: %s Client: %s' fired on /contact at the <li> containing 'hello@mardaandsons.in' (warning stack: at li at ul at div at div at div at section at div at ContactPage). Visible content is identical, so the mismatch is likely caused by a browser extension/AI assistant rewriting the mailto link, or by a stray whitespace/text-node difference in /app/frontend/src/app/contact/page.tsx lines 130-132 where each <li> has icon + literal ' hello@mardaandsons.in' / ' {WHATSAPP_DISPLAY}'. Cart/wishlist badge hydration warnings on Home/Shop/Product/Cart navigation are GONE (mounted-gate fix confirmed).",
+        "selector": ".mt-16 ul li (contact page)",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_marda_api.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "OPTIONAL/LOW: Investigate the /contact hydration warning on the 'hello@mardaandsons.in' <li>. Quick mitigation: wrap the text in <span suppressHydrationWarning> OR refactor to <li>{`hello@mardaandsons.in`}</li> with text fully inside a single text node — most likely cause is the space + text node sitting next to the <Mail /> icon, or a third-party mailto-rewriter extension during preview render."
+  ],
+  "critical_code_review_comments": [
+    "SEED_VERSION bump pattern works but seed reseeds the entire products collection on every version change, which deletes any persisted product rows; consider per-slug upsert.",
+    "Newsletter success uses a transient react-hot-toast only — no inline newsletter-success element. Acceptable, but adding data-testid='newsletter-toast' or a small inline success state would harden automated testing.",
+    "ContactPage list items inline literal text next to icons increases hydration mismatch risk on preview; consider wrapping textual content in a <span>."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (14/14)",
+    "frontend": "~98% (only a low-priority residual hydration warning on /contact; all flows pass)"
+  },
+  "test_credentials": "Not applicable - no auth in this app.",
+  "seed_data_creation": "Backend tests create transient leads (contact, wholesale, newsletter) with TEST_ / uuid emails. No cleanup endpoint exposed.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iter1 issues all resolved: (a) all 18 image URLs return 200; (b) shop-search testid present; (c) qty-increase/qty-decrease testids present; (d) Home/Shop/Product/Cart hydration mismatch fixed via mounted flag in CartProvider gating header badges. Only one residual hydration warning on /contact page tied to the 'hello@mardaandsons.in' <li>. Cart/Wishlist/Newsletter flows all green. Backend pytest cmd: pytest /app/backend/tests/ -v --junitxml=/app/test_reports/pytest/pytest_results.xml.",
+  "rca_of_the_issue": "Iter1 fixes verified: seed_version=5 reseeded the products collection with verified Unsplash photo IDs (no 404s); cart-context now sets hydrated=true via useEffect after mount and exposes it as 'mounted'; header reads it and only renders badges when mounted && count>0. The residual /contact hydration warning is an unrelated and pre-existing minor issue likely caused by a text-node-vs-element difference between SSR and CSR within the <li> rows under 'Other ways' (Mail icon followed by literal text). It does not break any functionality."
+}

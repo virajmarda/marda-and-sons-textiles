@@ -104,7 +104,7 @@ export function ShopClient() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="SEARCH BY NAME OR FABRIC"
-              data-testid="shop-search-input"
+              data-testid="shop-search"
               className="bg-transparent outline-none py-2 px-2 text-sm w-72 placeholder:text-ink-soft/60 placeholder:uppercase placeholder:tracking-[0.2em] placeholder:text-[10px]"
             />
           </div>
