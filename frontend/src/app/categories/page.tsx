@@ -14,16 +14,21 @@ export default async function CategoriesPage() {
   return (
     <div data-testid="categories-page" className="bg-paper">
       {/* Hero */}
-      <section className="pt-40 pb-20 max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
-        <p className="eyebrow">The Collections · संग्रह</p>
-        <h1 className="display-1 text-6xl md:text-8xl lg:text-9xl text-ink mt-6">
-          Eight chapters.<br />
-          <span className="italic text-brand">One Solapur.</span>
-        </h1>
-        <p className="font-sub text-ink-soft text-lg mt-8 max-w-2xl">
-          A complete map of our atelier — from the chaddars that made Solapur famous, to the phetas that crown
-          our weddings, to the chatais that quiet our floors.
-        </p>
+      <section className="relative pt-40 pb-20 overflow-hidden">
+        <div aria-hidden className="absolute -top-20 -left-20 w-[600px] h-[600px] rounded-full bg-gold/[0.07] blur-3xl pointer-events-none" />
+        <div aria-hidden className="absolute -bottom-32 -right-20 w-[500px] h-[500px] rounded-full bg-brand/[0.05] blur-3xl pointer-events-none" />
+        <div className="relative max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
+          <p className="eyebrow">The Collections · संग्रह</p>
+          <h1 className="display-1 text-6xl md:text-8xl lg:text-[10rem] text-ink mt-6 leading-[0.95]">
+            Eight chapters.<br />
+            <span className="italic text-brand">One Solapur.</span>
+          </h1>
+          <p className="font-accent text-brand mt-8 text-2xl md:text-3xl">आठ अध्याय, एक परंपरा</p>
+          <p className="font-sub text-ink-soft text-lg mt-6 max-w-2xl">
+            A complete map of our atelier — from the woolen blankets and bedsheets that made Solapur famous,
+            to the phetas that crown our weddings, to the chatais that quiet our floors.
+          </p>
+        </div>
       </section>
 
       <section className="pb-32">
@@ -72,7 +77,7 @@ export default async function CategoriesPage() {
             Can't find what you're imagining?
           </h2>
           <p className="font-sub text-bg-primary/80 mt-6 max-w-2xl mx-auto">
-            We custom-loom bedsheet sets, hotel linens, wedding bundles, and corporate gifting at scale. Tell us
+            We custom-loom bedsheet sets, woolen blanket bundles, wedding curations, and corporate gifting at scale. Tell us
             your dream, and we'll weave it.
           </p>
           <Link href="/wholesale" data-testid="categories-cta" className="inline-flex items-center gap-3 mt-10 text-gold border-b border-gold pb-1 eyebrow">

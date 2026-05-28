@@ -35,6 +35,7 @@ const config: Config = {
         sub: ['var(--font-marcellus)', 'Marcellus', 'serif'],
         body: ['var(--font-jost)', 'Jost', 'sans-serif'],
         accent: ['var(--font-yatra)', 'Yatra One', 'cursive'],
+        brand: ['var(--font-tiro)', 'Tiro Devanagari Marathi', 'serif'],
       },
       letterSpacing: {
         tightest: '-0.04em',

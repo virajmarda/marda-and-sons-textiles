@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Bodoni_Moda, Marcellus, Jost, Yatra_One } from 'next/font/google';
+import { Bodoni_Moda, Marcellus, Jost, Yatra_One, Tiro_Devanagari_Marathi } from 'next/font/google';
 import '@/app/globals.css';
 import { CartProvider } from '@/lib/cart-context';
 import { Header } from '@/components/header';
@@ -36,16 +36,23 @@ const yatra = Yatra_One({
   display: 'swap',
 });
 
+const tiro = Tiro_Devanagari_Marathi({
+  subsets: ['latin', 'devanagari'],
+  weight: ['400'],
+  variable: '--font-tiro',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'Marda & Sons — Premium Solapuri Textiles · Est. 1970',
+  title: 'मर्दा अँड सन्स · Marda & Sons — Premium Solapuri Textiles · Est. 1970',
   description:
-    'विश्वास की परंपरा, वर्षों का साथ. Heritage Solapuri textiles since 1970 — towels, bedsheets, chaddars, shawls, phetas, and more. Retail & wholesale from the heart of Solapur.',
+    'विश्वास की परंपरा, वर्षों का साथ. Heritage Solapuri textiles since 1970 — towels, bedsheets, shawls, phetas, woolen blankets and more. Retail & wholesale from the heart of Solapur.',
   keywords:
-    'Marda and Sons, Solapur, Solapuri chaddar, Solapuri textiles, handloom bedsheets, wholesale textiles, premium towels India, ghongdi, pheta',
+    'Marda and Sons, मर्दा अँड सन्स, Solapur, Solapuri textiles, handloom bedsheets, wholesale textiles, premium towels India, ghongdi, pheta, woolen blankets',
   openGraph: {
-    title: 'Marda & Sons — Solapuri Textiles Since 1970',
+    title: 'मर्दा अँड सन्स — Solapuri Textiles Since 1970',
     description:
-      'A heritage textile house from Solapur. Handloom chaddars, bedsheets, shawls & ceremonial textiles.',
+      'A heritage textile house from Solapur. Handloom bedsheets, shawls, woolen blankets, phetas & ceremonial textiles.',
     type: 'website',
   },
 };
@@ -54,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${bodoni.variable} ${marcellus.variable} ${jost.variable} ${yatra.variable}`}
+      className={`${bodoni.variable} ${marcellus.variable} ${jost.variable} ${yatra.variable} ${tiro.variable}`}
     >
       <body>
         <ToastProvider />

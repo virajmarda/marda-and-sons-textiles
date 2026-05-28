@@ -21,7 +21,11 @@ export default async function HomePage() {
       {/* HERO */}
       <section data-testid="hero-section" className="relative min-h-[100vh] flex items-end overflow-hidden">
         <img src={hero} alt="Heritage textile boutique" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/40 to-ink/30" />
+        {/* layered scrim for premium contrast & readable hero copy */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/60 to-ink/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/65 via-ink/15 to-transparent" />
+        {/* extra top scrim for header readability */}
+        <div aria-hidden className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-ink/70 to-transparent pointer-events-none" />
 
         {/* top thread */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gold/40" />
@@ -44,9 +48,10 @@ export default async function HomePage() {
                 </p>
               </Reveal>
               <Reveal delay={0.5}>
-                <p className="font-sub text-bg-primary/85 text-lg md:text-xl max-w-2xl mt-6 leading-relaxed">
+                <p className="font-sub text-bg-primary/90 text-lg md:text-xl max-w-2xl mt-6 leading-relaxed">
                   For fifty-five years, the looms of Solapur have woven for one family that listens. Today,
-                  Marda & Sons brings that quiet mastery to your home — and to the world.
+                  <span className="font-brand text-gold-muted not-italic"> मर्दा अँड सन्स </span>
+                  brings that quiet mastery into your home — and into the world.
                 </p>
               </Reveal>
               <Reveal delay={0.65}>
@@ -55,7 +60,7 @@ export default async function HomePage() {
                     Explore the Collection <ArrowRight size={14} />
                   </Link>
                   <Link href="/wholesale" data-testid="hero-wholesale-cta" className="border border-bg-primary text-bg-primary px-7 py-4 uppercase tracking-[0.22em] text-[11px] hover:bg-bg-primary hover:text-ink transition-colors">
-                    For Wholesale & Hotels
+                    For Wholesale Partners
                   </Link>
                 </div>
               </Reveal>
@@ -93,13 +98,14 @@ export default async function HomePage() {
         <div className="marquee-track gap-12 px-4 whitespace-nowrap">
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="flex items-center gap-12 shrink-0 font-heading italic text-2xl md:text-3xl">
-              <span>Solapuri Chaddar</span><span className="text-gold">◆</span>
-              <span className="font-accent text-gold">सोलापूरची शान</span><span className="text-gold">◆</span>
               <span>Handloom Bedsheets</span><span className="text-gold">◆</span>
+              <span className="font-accent text-gold">सोलापूरची शान</span><span className="text-gold">◆</span>
+              <span>Woolen Blankets</span><span className="text-gold">◆</span>
               <span>Royal Phetas</span><span className="text-gold">◆</span>
               <span className="font-accent text-gold">परंपरा</span><span className="text-gold">◆</span>
               <span>Wedding Trousseau</span><span className="text-gold">◆</span>
-              <span>Hotel Linens</span><span className="text-gold">◆</span>
+              <span>Heritage Towels</span><span className="text-gold">◆</span>
+              <span className="font-accent text-gold">मर्दा अँड सन्स</span><span className="text-gold">◆</span>
             </div>
           ))}
         </div>
@@ -121,12 +127,12 @@ export default async function HomePage() {
             <div className="lg:col-span-6 lg:col-start-7">
               <Reveal delay={0.2}>
                 <p className="font-sub text-xl md:text-2xl text-ink leading-relaxed">
-                  In a city that the world once dressed beds with, our family began with a single loom and a
+                  In a city the world once turned to for its textile, our family began with a single loom and a
                   single promise — that every weave would outlive its weaver.
                 </p>
                 <p className="text-ink-soft mt-8 leading-relaxed">
-                  Five and a half decades later, that promise has clothed temples, hotels, weddings, and homes
-                  across India. We are now opening our atelier to a generation that asks for honesty,
+                  Five and a half decades later, that promise has clothed temples, homes, weddings, and gifting
+                  houses across India. We are now opening our atelier to a generation that asks for honesty,
                   provenance, and the slow craft of Indian textile.
                 </p>
                 <div className="mt-10 flex flex-wrap gap-x-12 gap-y-6">
@@ -215,11 +221,11 @@ export default async function HomePage() {
           <div>
             <SectionLabel number="04" label="The Heritage" />
             <h2 className="display-2 text-5xl md:text-6xl lg:text-7xl mt-6">
-              Solapur built India's <span className="italic text-gold">beds.</span><br />
-              We built its <span className="italic text-gold">trust.</span>
+              Solapur weaves for <span className="italic text-gold">India.</span><br />
+              We weave for <span className="italic text-gold">trust.</span>
             </h2>
             <p className="font-sub text-bg-primary/80 text-lg mt-10 leading-relaxed max-w-xl">
-              From a wholesale loom in Mangalwar Peth in 1970, to homes and hotels across the country —
+              From a wholesale loom in Mangalwar Peth in 1970, to homes and gifting houses across the country —
               this is the longer story of a family, a city, and a craft that refused to disappear.
             </p>
             <Link href="/heritage" data-testid="heritage-cta" className="inline-flex items-center gap-3 mt-12 text-gold eyebrow link-underline">
@@ -245,7 +251,7 @@ export default async function HomePage() {
               { icon: Hand,    label: 'Handloom-First', text: 'Sourced from Solapuri master weavers — never machine-finished pretenders.' },
               { icon: Leaf,    label: 'Pure Cotton',    text: 'Combed cotton, breathable, and softens with every wash like family.' },
               { icon: Award,   label: 'Heritage Pricing', text: 'Wholesale roots mean retail prices that feel almost too fair.' },
-              { icon: Truck,   label: 'Pan-India Delivery', text: 'From a single bath towel to a thousand-piece hotel order.' },
+              { icon: Truck,   label: 'Pan-India Delivery', text: 'From a single bath towel to a thousand-piece retailer order.' },
             ].map((p, i) => (
               <Reveal key={p.label} delay={i * 0.08}>
                 <div className="border-t border-line pt-8">
@@ -281,8 +287,8 @@ export default async function HomePage() {
             <SectionLabel number="06" label="Wholesale" />
             <h3 className="display-2 text-5xl md:text-6xl mt-8 italic">For partners of scale.</h3>
             <p className="font-sub text-bg-primary/85 mt-6 max-w-md leading-relaxed">
-              Hotels, homestays, gifting houses, and exporters — our wholesale arm has fulfilled orders from
-              a hundred pieces to a hundred thousand, with the same loom-level honesty.
+              Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has fulfilled
+              orders from a hundred pieces to a hundred thousand, with the same loom-level honesty.
             </p>
             <Link href="/wholesale" data-testid="wholesale-cta-home" className="inline-flex items-center gap-3 mt-12 eyebrow link-underline">
               Become a partner <ArrowRight size={14} />
@@ -323,7 +329,7 @@ export default async function HomePage() {
               </ul>
               <div className="flex gap-4 flex-wrap mt-12">
                 <a href={MAPS_DIRECTIONS} target="_blank" rel="noopener noreferrer" data-testid="home-directions" className="btn-primary">Get Directions</a>
-                <a href={whatsappLink('Hello Marda & Sons, I would like to visit your store.')} target="_blank" rel="noopener noreferrer" data-testid="home-whatsapp" className="btn-ghost">Chat on WhatsApp</a>
+                <a href={whatsappLink('Hello मर्दा अँड सन्स, I would like to visit your store.')} target="_blank" rel="noopener noreferrer" data-testid="home-whatsapp" className="btn-ghost">Chat on WhatsApp</a>
               </div>
             </div>
             <div className="relative aspect-[4/5] overflow-hidden">

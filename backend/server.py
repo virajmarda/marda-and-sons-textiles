@@ -213,7 +213,7 @@ CATEGORIES = [
      "tagline": "Everyday comfort, timeless weave",
      "image": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "blankets", "name": "Blankets", "marathi": "घोंगडी",
-     "tagline": "Solapuri chaddars — winters' best companion",
+     "tagline": "Pure woolen warmth, woven for winters",
      "image": "https://images.unsplash.com/photo-1592229505726-ca121723b8ef?auto=format&fit=crop&w=1400&q=80"},
     {"slug": "chatais", "name": "Chatais", "marathi": "चटई",
      "tagline": "Handwoven mats for floors that welcome",
@@ -224,7 +224,7 @@ CATEGORIES = [
 # ---------- Seed ----------
 async def seed_products(database):
     """Idempotent seeding of catalog with a version flag."""
-    SEED_VERSION = 5
+    SEED_VERSION = 6
     meta = await database.meta.find_one({"_id": "seed"})
     if meta and meta.get("version") == SEED_VERSION:
         return
@@ -335,15 +335,15 @@ def build_catalog() -> List[Product]:
         Product(slug="solapuri-single-bedsheet",
                 name="Solapuri Single Bedsheet",
                 category="bedsheets",
-                description="Single-bed cotton sheet with pillow cover — perfect for hostels, guest rooms, and homestays.",
+                description="Single cotton sheet with pillow cover — perfect for guest rooms, students, and family homes.",
                 price_retail=799, price_wholesale=470, moq_wholesale=24,
-                images=img["bedsheets"][:1], dimensions="150 × 230 cm + 1 pillow cover", badges=["Hotelier"]),
-        Product(slug="hotel-collection-bedsheet",
-                name="Hotel Collection Bedsheet (Bulk)",
-                category="bedsheets", subtitle="For Resorts & Homestays",
-                description="High-thread-count cotton sheet built for hospitality. Tested for 200+ industrial washes.",
+                images=img["bedsheets"][:1], dimensions="150 × 230 cm + 1 pillow cover", badges=["Family"]),
+        Product(slug="bulk-cotton-bedsheet-resellers",
+                name="Bulk Cotton Bedsheet — Retailer Pack",
+                category="bedsheets", subtitle="For Stockists & Resellers",
+                description="High-thread-count Solapuri cotton sheet built for retail volume. Consistent weave and stable supply.",
                 price_retail=1199, price_wholesale=720, moq_wholesale=50,
-                images=img["bedsheets"][2:3], badges=["B2B", "Hospitality"]),
+                images=img["bedsheets"][2:3], badges=["B2B", "Wholesale"]),
     ]
 
     # Shawls
@@ -422,34 +422,39 @@ def build_catalog() -> List[Product]:
                 images=img["lungi"][1:], badges=["Gift"]),
     ]
 
-    # Blankets
+    # Blankets — pure woolen, thick (no chaddar / cotton blankets)
     items += [
-        Product(slug="solapuri-chaddar-original",
-                name="Solapuri Chaddar — The Original",
-                category="blankets", subtitle="The Famous Solapuri Blanket",
-                description="The chaddar that put Solapur on the textile map of India. Cotton-blend, breathable, ideal for Indian winters.",
-                price_retail=899, price_wholesale=520, moq_wholesale=24,
+        Product(slug="pure-wool-blanket-classic",
+                name="Pure Wool Blanket — Classic Weight",
+                category="blankets", subtitle="The Marda Heritage Wool",
+                description="A thick, soft pure-wool blanket woven for Indian winters. Heirloom warmth, breathable, naturally insulating.",
+                price_retail=1899, price_wholesale=1150, moq_wholesale=12,
                 images=img["blankets"][:2], dimensions="220 × 240 cm",
                 colors=["Maroon", "Indigo", "Forest", "Charcoal"],
-                badges=["Solapur Famous", "Bestseller"], featured=True),
-        Product(slug="royal-double-chaddar",
-                name="Royal Double-Ply Chaddar",
+                materials=["100% Pure Wool"],
+                badges=["Bestseller", "Pure Wool"], featured=True),
+        Product(slug="royal-double-wool-blanket",
+                name="Royal Double-Ply Wool Blanket",
                 category="blankets", subtitle="Heavyweight Winter Edition",
-                description="A heavier, plush double-ply chaddar for harsh Indian winters — feels like an heirloom from the very first night.",
-                price_retail=1599, price_wholesale=950, moq_wholesale=12,
-                images=img["blankets"][1:], colors=["Maroon", "Indigo"], badges=["Premium"]),
-        Product(slug="ghongdi-traditional-blanket",
-                name="Ghongdi — Traditional Marathi Blanket",
-                category="blankets", subtitle="Handwoven Wool",
+                description="A heavier, plush double-ply pure-wool blanket for harsh Indian winters — feels like an heirloom from the first night.",
+                price_retail=2899, price_wholesale=1750, moq_wholesale=8,
+                images=img["blankets"][1:], colors=["Maroon", "Indigo"],
+                materials=["100% Pure Wool · Double-Ply"],
+                badges=["Premium", "Heavyweight"]),
+        Product(slug="ghongdi-traditional-wool-blanket",
+                name="Ghongdi — Traditional Marathi Wool Blanket",
+                category="blankets", subtitle="Handwoven Pure Wool",
                 description="The legendary ghongdi — handwoven of pure wool, used in Maharashtrian homes for centuries.",
-                price_retail=2299, price_wholesale=1400, moq_wholesale=8,
-                images=img["blankets"][2:], badges=["Heritage", "Handwoven"]),
-        Product(slug="travel-blanket-light",
-                name="Travel Blanket — Light & Soft",
-                category="blankets",
-                description="A lightweight travel blanket for long train journeys and chilly flights.",
-                price_retail=549, price_wholesale=320, moq_wholesale=24,
-                images=img["blankets"][:1], badges=["Travel"]),
+                price_retail=3299, price_wholesale=2000, moq_wholesale=6,
+                images=img["blankets"][2:], materials=["100% Hand-spun Wool"],
+                badges=["Heritage", "Handwoven"], featured=True),
+        Product(slug="wedding-wool-blanket-set",
+                name="Wedding Wool Blanket — Gift Set",
+                category="blankets", subtitle="The Bridal Bundle",
+                description="A pair of premium wool blankets in maroon and ivory — a quiet, generous wedding gift.",
+                price_retail=4499, price_wholesale=2700, moq_wholesale=6,
+                images=img["blankets"][:1], materials=["100% Pure Wool"],
+                badges=["Wedding", "Gift Ready"]),
     ]
 
     # Chatais

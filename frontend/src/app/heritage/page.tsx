@@ -9,9 +9,9 @@ export default function HeritagePage() {
   const necklace = 'https://images.unsplash.com/photo-1616756351484-798f37bdffa0?auto=format&fit=crop&w=1600&q=80';
 
   const timeline = [
-    { y: '1970', t: 'The first loom', d: 'Marda & Sons opens a single wholesale loom in Mangalwar Peth, Solapur — supplying chaddars to nearby cities.', img: macro },
-    { y: '1985', t: 'A name across Maharashtra', d: 'By the mid-eighties, the Marda chaddar reaches Mumbai, Pune, and Kolhapur. Hotels begin to take notice.', img: necklace },
-    { y: '2002', t: 'Beyond bed linens', d: 'We expand to towels, shawls, phetas, and ceremonial textiles — the looms of Solapur, in eight chapters.', img: editorial },
+    { y: '1970', t: 'The first loom', d: 'मर्दा अँड सन्स opens a single wholesale loom in Mangalwar Peth, Solapur — supplying handloom textiles to nearby cities.', img: macro },
+    { y: '1985', t: 'A name across Maharashtra', d: 'By the mid-eighties, the Marda weave reaches Mumbai, Pune, and Kolhapur. Retail traders begin to take notice.', img: necklace },
+    { y: '2002', t: 'Beyond linens', d: 'We expand to towels, shawls, phetas, woolen blankets, and ceremonial textiles — the looms of Solapur, in eight chapters.', img: editorial },
     { y: '2018', t: 'Three generations', d: 'The third generation joins the house. The wholesale roots stay strong; a quiet retail arm begins to bloom.', img: macro },
     { y: '2026', t: 'The atelier opens', d: 'Today, we open our doors to the world — retail and wholesale, in one heritage atelier.', img: editorial },
   ];
@@ -31,7 +31,8 @@ export default function HeritagePage() {
           </h1>
           <p className="font-accent text-brand mt-10 text-2xl md:text-3xl">विश्वास की परंपरा, वर्षों का साथ</p>
           <p className="font-sub text-ink-soft text-lg mt-6 max-w-2xl">
-            The story of Marda & Sons is, in many ways, the story of how Solapur dressed India's homes.
+            The story of <span className="font-brand text-ink not-italic">मर्दा अँड सन्स</span> is, in many ways, the story of how Solapur dressed
+            the Indian household.
           </p>
         </div>
       </section>
@@ -48,8 +49,8 @@ export default function HeritagePage() {
         <p className="font-sub text-ink-soft text-lg mt-10 leading-relaxed">
           Solapur, a sun-bleached town in southern Maharashtra, became famous in the 19th and 20th centuries
           for one quiet thing: its textile. Cotton from the deccan plateau, water from the Bhima, and the
-          patience of hundreds of weaver families — together they produced the Solapuri chaddar that you
-          might still find on your grandparents' beds.
+          patience of hundreds of weaver families — together they produced the Solapuri handloom that you
+          might still find folded in your grandparents' cupboard.
         </p>
         <p className="font-sub text-ink-soft text-lg mt-6 leading-relaxed">
           In 1970, the Marda family added their single loom to that long tradition. Three generations
@@ -116,7 +117,7 @@ export default function HeritagePage() {
       <section className="bg-ink text-bg-primary py-24 text-center">
         <p className="font-accent text-gold text-3xl">सोलापूरची शान</p>
         <h2 className="display-2 text-4xl md:text-6xl mt-6 max-w-3xl mx-auto px-6">
-          Come weave with us — as a home, a hotel, or a wedding party.
+          Come weave with us — as a home, a retailer, or a wedding party.
         </h2>
         <div className="mt-12 flex justify-center gap-4 flex-wrap px-6">
           <Link href="/shop" data-testid="heritage-shop" className="btn-primary">Shop the collection <ArrowRight size={14} /></Link>

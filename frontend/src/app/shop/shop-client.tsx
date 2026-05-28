@@ -65,26 +65,31 @@ export function ShopClient() {
   return (
     <div data-testid="shop-page" className="bg-paper">
       {/* Banner */}
-      <section className="pt-40 pb-20 px-6 md:px-12 lg:px-24 max-w-[1600px] mx-auto">
-        <p className="eyebrow">The Atelier · Shop</p>
-        <h1 className="display-1 text-6xl md:text-8xl lg:text-9xl text-ink mt-6">
-          {activeCategoryObj ? (
-            <>
-              {activeCategoryObj.name}
-              <span className="font-accent text-brand text-3xl md:text-5xl block mt-4">
-                {activeCategoryObj.marathi}
-              </span>
-            </>
-          ) : (
-            <>
-              Every weave,<br />
-              <span className="italic text-brand">in one place.</span>
-            </>
+      <section className="relative pt-40 pb-20 overflow-hidden">
+        <div aria-hidden className="absolute -top-32 -right-20 w-[600px] h-[600px] rounded-full bg-brand/[0.05] blur-3xl pointer-events-none" />
+        <div aria-hidden className="absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-gold/[0.07] blur-3xl pointer-events-none" />
+        <div className="relative max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
+          <p className="eyebrow">The Atelier · Shop</p>
+          <h1 className="display-1 text-6xl md:text-8xl lg:text-[9rem] text-ink mt-6 leading-[0.95]">
+            {activeCategoryObj ? (
+              <>
+                {activeCategoryObj.name}
+                <span className="font-accent text-brand text-3xl md:text-5xl block mt-4">
+                  {activeCategoryObj.marathi}
+                </span>
+              </>
+            ) : (
+              <>
+                Every weave,<br />
+                <span className="italic text-brand">in one place.</span>
+              </>
+            )}
+          </h1>
+          {!activeCategoryObj && <p className="font-accent text-brand mt-8 text-2xl md:text-3xl">प्रत्येक धागा, एक कथा</p>}
+          {activeCategoryObj && (
+            <p className="font-sub text-ink-soft text-lg mt-6 max-w-2xl">{activeCategoryObj.tagline}</p>
           )}
-        </h1>
-        {activeCategoryObj && (
-          <p className="font-sub text-ink-soft text-lg mt-6 max-w-2xl">{activeCategoryObj.tagline}</p>
-        )}
+        </div>
       </section>
 
       {/* Toolbar */}

@@ -56,6 +56,7 @@ body::before {
 .font-sub     { font-family: var(--font-marcellus), 'Marcellus', serif; }
 .font-body    { font-family: var(--font-jost), 'Jost', sans-serif; }
 .font-accent  { font-family: var(--font-yatra), 'Yatra One', cursive; }
+.font-brand   { font-family: var(--font-tiro), 'Tiro Devanagari Marathi', serif; font-style: normal; }
 
 /* Editorial display headlines */
 .display-1 {

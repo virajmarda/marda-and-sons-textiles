@@ -13,15 +13,22 @@ export default function CartPage() {
   const summary = items.map(
     (i, idx) => `${idx + 1}. ${i.name} (${i.mode}) × ${i.qty} — ${inr(i.price * i.qty)}`,
   ).join('\n');
-  const waMsg = `Hello Marda & Sons, I'd like to confirm this order:\n\n${summary}\n\nSubtotal: ${inr(subtotal)}\n\nPlease confirm availability & next steps.`;
+  const waMsg = `Hello मर्दा अँड सन्स, I'd like to confirm this order:\n\n${summary}\n\nSubtotal: ${inr(subtotal)}\n\nPlease confirm availability & next steps.`;
 
   return (
-    <div data-testid="cart-page" className="bg-paper min-h-[80vh]">
-      <section className="pt-40 pb-12 max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
+    <div data-testid="cart-page" className="bg-paper min-h-[80vh] relative overflow-hidden">
+      {/* ornamental backdrop */}
+      <div aria-hidden className="absolute top-32 -right-40 w-[600px] h-[600px] rounded-full bg-brand/[0.05] blur-3xl pointer-events-none" />
+      <div aria-hidden className="absolute -bottom-20 -left-40 w-[500px] h-[500px] rounded-full bg-gold/[0.07] blur-3xl pointer-events-none" />
+
+      <section className="relative pt-40 pb-12 max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
         <p className="eyebrow">Your Bag · पिशवी</p>
-        <h1 className="display-1 text-5xl md:text-7xl text-ink mt-6">
+        <h1 className="display-1 text-5xl md:text-7xl lg:text-8xl text-ink mt-6 leading-[0.95]">
           {empty ? <>Your bag is <span className="italic text-brand">unwoven.</span></> : <>The bag, <span className="italic text-brand">curated.</span></>}
         </h1>
+        <p className="font-accent text-brand mt-6 text-xl md:text-2xl">
+          {empty ? 'अजून रिकामी' : `${items.length} ${items.length === 1 ? 'वस्तू' : 'वस्तू'} निवडल्या आहेत`}
+        </p>
       </section>
 
       {empty ? (
@@ -96,7 +103,7 @@ export default function CartPage() {
               Or send via Contact Form
             </Link>
             <p className="text-[11px] uppercase tracking-[0.22em] text-ink-soft mt-6 leading-relaxed">
-              Marda & Sons confirms every order personally — no automated checkout, no surprises.
+              मर्दा अँड सन्स confirms every order personally — no automated checkout, no surprises.
             </p>
           </aside>
         </section>

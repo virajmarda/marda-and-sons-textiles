@@ -466,6 +466,40 @@
 }.__variable_fff44d {--font-yatra: '__Yatra_One_fff44d', '__Yatra_One_Fallback_fff44d'
 }
 
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[2].use[1]!./node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js??ruleSet[1].rules[13].oneOf[2].use[2]!./node_modules/next/font/google/target.css?{"path":"src/app/layout.tsx","import":"Tiro_Devanagari_Marathi","arguments":[{"subsets":["latin","devanagari"],"weight":["400"],"variable":"--font-tiro","display":"swap"}],"variableName":"tiro"} ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* devanagari */
+@font-face {
+  font-family: '__Tiro_Devanagari_Marathi_73411c';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/_next/static/media/b3f61267cd153b84-s.p.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+}
+/* latin-ext */
+@font-face {
+  font-family: '__Tiro_Devanagari_Marathi_73411c';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/_next/static/media/0d17ceb9a52664f1-s.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: '__Tiro_Devanagari_Marathi_73411c';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/_next/static/media/c39729dc5875ca9c-s.p.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}@font-face {font-family: '__Tiro_Devanagari_Marathi_Fallback_73411c';src: local("Times New Roman");ascent-override: 67.12%;descent-override: 21.78%;line-gap-override: 29.34%;size-adjust: 112.49%
+}.__className_73411c {font-family: '__Tiro_Devanagari_Marathi_73411c', '__Tiro_Devanagari_Marathi_Fallback_73411c';font-weight: 400;font-style: normal
+}.__variable_73411c {--font-tiro: '__Tiro_Devanagari_Marathi_73411c', '__Tiro_Devanagari_Marathi_Fallback_73411c'
+}
+
 /*!*****************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./src/app/globals.css ***!
   \*****************************************************************************************************************************************************************************************************************************************************************/
@@ -1052,6 +1086,39 @@ video {
 .top-\[72px\] {
   top: 72px;
 }
+.-bottom-32 {
+  bottom: -8rem;
+}
+.-left-20 {
+  left: -5rem;
+}
+.-right-20 {
+  right: -5rem;
+}
+.-top-20 {
+  top: -5rem;
+}
+.-bottom-20 {
+  bottom: -5rem;
+}
+.-left-40 {
+  left: -10rem;
+}
+.-right-40 {
+  right: -10rem;
+}
+.top-32 {
+  top: 8rem;
+}
+.-left-32 {
+  left: -8rem;
+}
+.-right-32 {
+  right: -8rem;
+}
+.-top-32 {
+  top: -8rem;
+}
 .z-30 {
   z-index: 30;
 }
@@ -1060,6 +1127,9 @@ video {
 }
 .z-\[2\] {
   z-index: 2;
+}
+.-z-10 {
+  z-index: -10;
 }
 .mx-auto {
   margin-left: auto;
@@ -1147,6 +1217,9 @@ video {
 .inline-block {
   display: inline-block;
 }
+.inline {
+  display: inline;
+}
 .flex {
   display: flex;
 }
@@ -1201,6 +1274,18 @@ video {
 .h-px {
   height: 1px;
 }
+.h-\[500px\] {
+  height: 500px;
+}
+.h-\[600px\] {
+  height: 600px;
+}
+.h-\[700px\] {
+  height: 700px;
+}
+.h-40 {
+  height: 10rem;
+}
 .min-h-\[100vh\] {
   min-height: 100vh;
 }
@@ -1243,6 +1328,15 @@ video {
 }
 .w-full {
   width: 100%;
+}
+.w-\[500px\] {
+  width: 500px;
+}
+.w-\[600px\] {
+  width: 600px;
+}
+.w-\[700px\] {
+  width: 700px;
 }
 .min-w-0 {
   min-width: 0px;
@@ -1463,6 +1557,9 @@ video {
 .whitespace-nowrap {
   white-space: nowrap;
 }
+.rounded-full {
+  border-radius: 9999px;
+}
 .border {
   border-width: 1px;
 }
@@ -1566,6 +1663,18 @@ video {
 .bg-transparent {
   background-color: transparent;
 }
+.bg-brand\/\[0\.06\] {
+  background-color: rgb(106 26 42 / 0.06);
+}
+.bg-gold\/\[0\.08\] {
+  background-color: rgb(197 160 89 / 0.08);
+}
+.bg-brand\/\[0\.05\] {
+  background-color: rgb(106 26 42 / 0.05);
+}
+.bg-gold\/\[0\.07\] {
+  background-color: rgb(197 160 89 / 0.07);
+}
 .bg-gradient-to-b {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
 }
@@ -1590,6 +1699,36 @@ video {
   --tw-gradient-to: rgb(42 29 26 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
+.from-ink\/55 {
+  --tw-gradient-from: rgb(42 29 26 / 0.55) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(42 29 26 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.from-transparent {
+  --tw-gradient-from: transparent var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(0 0 0 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.from-ink\/50 {
+  --tw-gradient-from: rgb(42 29 26 / 0.5) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(42 29 26 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.from-gold {
+  --tw-gradient-from: #C5A059 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(197 160 89 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.from-ink\/65 {
+  --tw-gradient-from: rgb(42 29 26 / 0.65) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(42 29 26 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.from-ink\/95 {
+  --tw-gradient-from: rgb(42 29 26 / 0.95) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(42 29 26 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
 .via-ink\/40 {
   --tw-gradient-to: rgb(42 29 26 / 0)  var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), rgb(42 29 26 / 0.4) var(--tw-gradient-via-position), var(--tw-gradient-to);
@@ -1602,11 +1741,38 @@ video {
   --tw-gradient-to: rgb(0 0 0 / 0)  var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), transparent var(--tw-gradient-via-position), var(--tw-gradient-to);
 }
+.via-ink\/30 {
+  --tw-gradient-to: rgb(42 29 26 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(42 29 26 / 0.3) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+.via-gold\/60 {
+  --tw-gradient-to: rgb(197 160 89 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(197 160 89 / 0.6) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+.via-ink\/55 {
+  --tw-gradient-to: rgb(42 29 26 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(42 29 26 / 0.55) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+.via-gold\/40 {
+  --tw-gradient-to: rgb(197 160 89 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(197 160 89 / 0.4) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+.via-ink\/15 {
+  --tw-gradient-to: rgb(42 29 26 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(42 29 26 / 0.15) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+.via-ink\/60 {
+  --tw-gradient-to: rgb(42 29 26 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(42 29 26 / 0.6) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
 .to-ink\/30 {
   --tw-gradient-to: rgb(42 29 26 / 0.3) var(--tw-gradient-to-position);
 }
 .to-transparent {
   --tw-gradient-to: transparent var(--tw-gradient-to-position);
+}
+.to-ink\/40 {
+  --tw-gradient-to: rgb(42 29 26 / 0.4) var(--tw-gradient-to-position);
 }
 .fill-brand {
   fill: #6A1A2A;
@@ -1754,6 +1920,9 @@ video {
 .font-sub {
   font-family: var(--font-marcellus), Marcellus, serif;
 }
+.font-brand {
+  font-family: var(--font-tiro), Tiro Devanagari Marathi, serif;
+}
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -1828,6 +1997,9 @@ video {
   font-size: 0.75rem;
   line-height: 1rem;
 }
+.text-\[15px\] {
+  font-size: 15px;
+}
 .font-medium {
   font-weight: 500;
 }
@@ -1864,6 +2036,9 @@ video {
 .leading-snug {
   line-height: 1.375;
 }
+.leading-\[0\.9\] {
+  line-height: 0.9;
+}
 .tracking-\[-0\.02em\] {
   letter-spacing: -0.02em;
 }
@@ -1884,6 +2059,9 @@ video {
 }
 .tracking-wider {
   letter-spacing: 0.05em;
+}
+.tracking-\[-0\.01em\] {
+  letter-spacing: -0.01em;
 }
 .text-bg-primary {
   --tw-text-opacity: 1;
@@ -1940,6 +2118,9 @@ video {
 .text-ink-soft\/60 {
   color: rgb(92 74 69 / 0.6);
 }
+.text-bg-primary\/95 {
+  color: rgb(253 251 247 / 0.95);
+}
 .accent-brand {
   accent-color: #6A1A2A;
 }
@@ -1962,6 +2143,11 @@ video {
   --tw-shadow-colored: 0 12px 40px -8px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
+.shadow-\[0_4px_24px_-12px_rgba\(42\2c 29\2c 26\2c 0\.18\)\] {
+  --tw-shadow: 0 4px 24px -12px rgba(42,29,26,0.18);
+  --tw-shadow-colored: 0 4px 24px -12px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
 .outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -1970,6 +2156,10 @@ video {
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+.blur-3xl {
+  --tw-blur: blur(64px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
@@ -2080,6 +2270,7 @@ body::before {
 .font-sub     { font-family: var(--font-marcellus), 'Marcellus', serif; }
 .font-body    { font-family: var(--font-jost), 'Jost', sans-serif; }
 .font-accent  { font-family: var(--font-yatra), 'Yatra One', cursive; }
+.font-brand   { font-family: var(--font-tiro), 'Tiro Devanagari Marathi', serif; font-style: normal; }
 
 /* Editorial display headlines */
 .display-1 {
@@ -2612,6 +2803,14 @@ body::before {
     line-height: 1.75rem;
   }
 
+  .md\:text-\[12vw\] {
+    font-size: 12vw;
+  }
+
+  .md\:text-\[17px\] {
+    font-size: 17px;
+  }
+
   .md\:\[direction\:rtl\] {
     direction: rtl;
   }
@@ -2734,6 +2933,15 @@ body::before {
 
   .lg\:text-\[8vw\] {
     font-size: 8vw;
+  }
+
+  .lg\:text-8xl {
+    font-size: 6rem;
+    line-height: 1;
+  }
+
+  .lg\:text-\[9rem\] {
+    font-size: 9rem;
   }
 }
 
