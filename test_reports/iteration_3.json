@@ -1,0 +1,42 @@
+{
+  "summary": "Iteration 3 — testing of new 'Continue on WhatsApp' cart enhancement (options a+b+c+e). Backend: 17/17 pytest pass (3 new TestCartEnquiry cases added: success, missing-fields-422, multi-item persist). Frontend e2e on /cart: all 11 requested behaviors verified — empty state, seeded items render, MS-XXXX-DDMM order ref generated and stable across reload, subtotal correctness, product/image links to /product/<slug>, WhatsApp button disabled when name<2 or phone invalid and enabled with valid inputs, clicking the button POSTs to /api/cart-enquiry (200) with correct payload and opens wa.me in a new tab, cart-enquiry-sent confirmation shows the order ref, mobile sticky bar (cart-mobile-bar) visible at 390px and hidden at >=768px, qty inc/dec and clear-bag work, sessionStorage ref clears when bag emptied, regression on /, /shop, /wishlist, /product/[slug] all return 200.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Cart → Continue on WhatsApp",
+        "issue": "window.open(wa.me, '_blank') is called AFTER `await submitCartEnquiry(...)` inside handleSend. Because the await breaks the synchronous user-gesture chain, some browsers (Safari, mobile WebKit, Firefox with strict popup blocker) may block the new tab. Playwright allowed it in test, but real users may see the lead saved yet no WhatsApp tab opening. Recommended fix: pre-open `const w = window.open('', '_blank')` synchronously on click, then set `w.location.href = whatsappLink(waMsg)` in the .then()/finally block of submitCartEnquiry.",
+        "affected_selectors": ["[data-testid=\"cart-checkout-whatsapp\"]", "[data-testid=\"cart-mobile-whatsapp\"]"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_marda_api.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "OPTIONAL (UX hardening): Refactor handleSend in /app/frontend/src/app/cart/page.tsx so window.open is invoked synchronously inside the click handler (pre-open w/ 'about:blank' and set href later) to survive popup-blockers when called after an awaited fetch. Currently Playwright passes but real Safari/Firefox may block the WhatsApp tab.",
+    "OPTIONAL (LOW): the existing /contact hydration warning carried over from iteration_2 was not retested and is unrelated to this feature."
+  ],
+  "critical_code_review_comments": [
+    "handleSend awaits submitCartEnquiry BEFORE window.open — breaks user-gesture popup policy in some browsers. Pre-open the tab synchronously.",
+    "Phone regex /^[+\\d][\\d\\s\\-]{8,15}$/ is reasonable but does not enforce a leading '+' or country code; a phone like '0123456789' passes. Acceptable for a lead-capture form (E1's intent), just noting.",
+    "Order ref is stored under sessionStorage key 'marda_order_ref_v1' and reset only on `empty && orderRef`. After a successful enquiry, the ref is NOT rotated until the bag is cleared — so two successive enquiries from the same bag share the same MS- ref. Likely intentional (idempotent reference), but worth confirming with product owner.",
+    "Lead.items field is List[dict] (not typed); the persistence uses raw dict from CartEnquiryItemIn — fine for now, but switching to embedded Pydantic model would harden the persisted shape.",
+    "Backend cart-enquiry endpoint does not validate that subtotal == sum(qty*price); a malicious client could submit any subtotal. Low priority since this is a lead, not a checkout."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_marda_api.py (added 3 TestCartEnquiry cases)",
+    "/app/backend/tests/conftest.py (updated default BACKEND_BASE_URL to current preview)"
+  ],
+  "success_rate": {"backend": "100% (17/17)", "frontend": "100% on all 11 requested behaviors"},
+  "test_credentials": "N/A (no auth in this app).",
+  "seed_data_creation": "Backend tests create transient leads (contact, wholesale, newsletter, cart_enquiry) with TEST_ prefix / uuid emails. Frontend test seeds localStorage key 'marda_cart_v1' with one Royal Maroon Pheta item; cleared at end via cart-clear.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "New /api/cart-enquiry endpoint validated (status 200, persists name/phone/order_ref/subtotal/items as Lead type='cart_enquiry'). Cart page rewrite passes all e2e checks: order-ref MS-XXXX-DDMM, sessionStorage stability, name/phone validation, disabled/enabled WhatsApp button, POST + popup, mobile sticky bar at <768px, qty inc/dec/remove/clear, product links. Backend test cmd: `pytest /app/backend/tests/ -v --junitxml=/app/test_reports/pytest/pytest_results.xml`. Only outstanding UX nit is the popup-after-await pattern in handleSend.",
+  "rca_of_the_issue": "No bug to RCA — feature works end-to-end. The single integration-issue noted (popup-after-await) is a defensive UX hardening recommendation, not a current bug; Playwright permitted it and the lead is still saved even if the popup is blocked, so the customer is not lost."
+}

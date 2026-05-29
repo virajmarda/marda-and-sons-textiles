@@ -4,7 +4,7 @@ import requests
 
 BASE_URL = os.environ.get(
     "BACKEND_BASE_URL",
-    "https://c0ae75ab-be30-46a0-81cf-70bdbc8579d0.preview.emergentagent.com",
+    "https://04c010f7-c039-48ff-a1be-bef5bb1c769c.preview.emergentagent.com",
 ).rstrip("/")
 
 

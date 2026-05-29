@@ -66,7 +66,7 @@ class Product(BaseDocument):
 
 
 class Lead(BaseDocument):
-    type: str               # contact | wholesale | newsletter
+    type: str               # contact | wholesale | newsletter | cart_enquiry
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
@@ -75,6 +75,10 @@ class Lead(BaseDocument):
     message: Optional[str] = None
     interested_in: Optional[List[str]] = None
     quantity_estimate: Optional[str] = None
+    # Cart enquiry fields
+    order_ref: Optional[str] = None
+    subtotal: Optional[int] = None
+    items: Optional[List[dict]] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -99,6 +103,23 @@ class WholesaleIn(BaseModel):
 
 class NewsletterIn(BaseModel):
     email: EmailStr
+
+
+class CartEnquiryItemIn(BaseModel):
+    slug: str
+    name: str
+    mode: str          # retail | wholesale
+    qty: int
+    price: int         # per piece, INR
+
+
+class CartEnquiryIn(BaseModel):
+    name: str
+    phone: str
+    order_ref: str
+    subtotal: int
+    items: List[CartEnquiryItemIn]
+    note: Optional[str] = None
 
 
 # ---------- App ----------
@@ -190,6 +211,31 @@ async def post_newsletter(payload: NewsletterIn):
     lead = Lead(type="newsletter", email=payload.email)
     res = await db.leads.insert_one(lead.to_mongo())
     return {"ok": True, "id": str(res.inserted_id)}
+
+
+@app.post("/api/cart-enquiry")
+async def post_cart_enquiry(payload: CartEnquiryIn):
+    """Captures customer details + cart snapshot when they hand off to WhatsApp."""
+    summary_lines = [
+        f"{i.qty} × {i.name} ({i.mode}) — ₹{i.price * i.qty:,}"
+        for i in payload.items
+    ]
+    message = (
+        f"Cart enquiry · {payload.order_ref}\n"
+        f"Items:\n" + "\n".join(summary_lines) +
+        f"\nSubtotal: ₹{payload.subtotal:,}"
+    )
+    lead = Lead(
+        type="cart_enquiry",
+        name=payload.name,
+        phone=payload.phone,
+        message=message,
+        order_ref=payload.order_ref,
+        subtotal=payload.subtotal,
+        items=[i.model_dump() for i in payload.items],
+    )
+    res = await db.leads.insert_one(lead.to_mongo())
+    return {"ok": True, "id": str(res.inserted_id), "order_ref": payload.order_ref}
 
 
 # ---------- Categories meta ----------

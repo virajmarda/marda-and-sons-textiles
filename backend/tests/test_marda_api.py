@@ -165,3 +165,57 @@ class TestNewsletter:
     def test_newsletter_invalid_email_422(self, api_client, base_url):
         r = api_client.post(f"{base_url}/api/newsletter", json={"email": "bad"})
         assert r.status_code == 422
+
+
+# -------- Cart Enquiry --------
+class TestCartEnquiry:
+    def _payload(self, ref: str | None = None) -> dict:
+        return {
+            "name": "TEST_CartCustomer",
+            "phone": "+91 94224 60420",
+            "order_ref": ref or f"MS-TEST-{uuid.uuid4().hex[:4].upper()}",
+            "subtotal": 1798,
+            "items": [
+                {
+                    "slug": "royal-maroon-pheta",
+                    "name": "Royal Maroon Pheta",
+                    "mode": "retail",
+                    "qty": 2,
+                    "price": 899,
+                }
+            ],
+        }
+
+    def test_cart_enquiry_success(self, api_client, base_url):
+        payload = self._payload()
+        r = api_client.post(f"{base_url}/api/cart-enquiry", json=payload)
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert data.get("ok") is True
+        assert isinstance(data.get("id"), str) and len(data["id"]) > 0
+        assert data.get("order_ref") == payload["order_ref"]
+
+    def test_cart_enquiry_missing_required_422(self, api_client, base_url):
+        # Missing phone, order_ref, items
+        r = api_client.post(
+            f"{base_url}/api/cart-enquiry",
+            json={"name": "X", "subtotal": 100},
+        )
+        assert r.status_code == 422
+
+    def test_cart_enquiry_multi_item_persists(self, api_client, base_url):
+        payload = self._payload()
+        payload["items"].append({
+            "slug": "solapuri-classic-bath-towel",
+            "name": "Solapuri Classic Bath Towel",
+            "mode": "wholesale",
+            "qty": 12,
+            "price": 380,
+        })
+        payload["subtotal"] = 899 * 2 + 380 * 12
+        r = api_client.post(f"{base_url}/api/cart-enquiry", json=payload)
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert data.get("ok") is True
+        assert data.get("order_ref") == payload["order_ref"]
+

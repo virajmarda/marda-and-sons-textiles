@@ -79,6 +79,43 @@ export async function getCategories() {
   return data.categories;
 }
 
+export type CartEnquiryItem = {
+  slug: string;
+  name: string;
+  mode: 'retail' | 'wholesale';
+  qty: number;
+  price: number;
+};
+
+export async function submitCartEnquiry(payload: {
+  name: string;
+  phone: string;
+  order_ref: string;
+  subtotal: number;
+  items: CartEnquiryItem[];
+}) {
+  return fetchJSON<{ ok: boolean; id: string; order_ref: string }>(
+    '/api/cart-enquiry',
+    { method: 'POST', body: JSON.stringify(payload) },
+  );
+}
+
+export function generateOrderRef() {
+  // MS-XXXX-DDMM  (e.g. MS-A7K3-2601)
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // skip ambiguous chars
+  let chunk = '';
+  for (let i = 0; i < 4; i++) chunk += alphabet[Math.floor(Math.random() * alphabet.length)];
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  return `MS-${chunk}-${dd}${mm}`;
+}
+
+export function siteOrigin(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) return window.location.origin;
+  return BACKEND_URL;
+}
+
 export function inr(n: number) {
   return `₹${n.toLocaleString('en-IN')}`;
 }
