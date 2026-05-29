@@ -26,7 +26,6 @@ export default function HeritagePage() {
         headline={<>A family.<br />A city.<br /><span className="italic text-brand">A craft.</span></>}
         lede={<>The story of <span className="font-brand text-ink not-italic">मर्दा ॲन्ड सन्स</span> is, in many ways, the story of how Solapur dressed the Indian household.</>}
         bgImage={macro}
-        tone="light"
         height="xl"
       />
 
