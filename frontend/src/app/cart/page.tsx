@@ -71,8 +71,12 @@ export default function CartPage() {
   async function handleSend(e?: React.FormEvent) {
     e?.preventDefault();
     if (!canSend) return;
+
+    // Pre-open the WhatsApp tab synchronously while we're still inside the user gesture.
+    // (Safari / Firefox / mobile WebKit will block window.open() once we 'await' below.)
+    const waTab = window.open('about:blank', '_blank', 'noopener,noreferrer');
+
     setSending(true);
-    // Save the lead first (so we don't lose the customer if they never send the WA message).
     try {
       await submitCartEnquiry({
         name: name.trim(),
@@ -90,7 +94,14 @@ export default function CartPage() {
     } finally {
       setSending(false);
     }
-    window.open(whatsappLink(waMsg), '_blank', 'noopener,noreferrer');
+
+    const url = whatsappLink(waMsg);
+    if (waTab) {
+      waTab.location.href = url;
+    } else {
+      // Popup was blocked — fall back to same-tab navigation
+      window.location.href = url;
+    }
   }
 
   return (

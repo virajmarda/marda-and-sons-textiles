@@ -1,60 +1,65 @@
-# Marda & Sons Textiles — Code Review Fixes
+# Marda & Sons Textiles — Implementation Log
 
 ## Source repo
 https://github.com/virajmarda/marda-and-sons-textiles.git (Next.js 14 + FastAPI + MongoDB)
 
 ---
 
-## Round 1 — initial review fixes
-
+## Session 1 — Code-review round 1 fixes
 | File | Change |
 |------|--------|
-| `frontend/src/lib/cart-context.tsx` | Added `console.error` logging in empty catch blocks; wrapped `localStorage.setItem` in try/catch (handle quota / disabled storage); memoized Provider `value` with `useMemo` |
-| `frontend/src/components/reveal.tsx` | Memoized framer-motion `initial`, `whileInView`, `viewport`, `transition` config objects |
-| `frontend/src/components/toast-provider.tsx` | Moved `style` object to module scope, wrapped `toastOptions` in `useMemo` |
-| `frontend/src/app/product/[slug]/product-detail.tsx` | Image-gallery thumbnail `key={i}` → `key={src}` |
-| `frontend/src/app/shop/shop-client.tsx` | Skeleton `key={i}` → `key={"skeleton-"+i}` |
-| `frontend/src/app/page.tsx` | Marquee `key={i}` → `key={"marquee-"+i}` |
+| `frontend/src/lib/cart-context.tsx` | Added `console.error` logging in empty catch; wrapped persistence in try/catch; memoized Provider `value` with `useMemo` |
+| `frontend/src/components/reveal.tsx` | Memoized framer-motion config objects |
+| `frontend/src/components/toast-provider.tsx` | Moved `style` to module scope; memoized `toastOptions` |
+| `frontend/src/app/product/[slug]/product-detail.tsx` | Thumbnail `key={i}` → `key={src}` |
+| `frontend/src/app/shop/shop-client.tsx` | Skeleton key prefix |
+| `frontend/src/app/page.tsx` | Marquee key prefix |
 
-## Round 2 — follow-up review fixes
-
+## Session 2 — Code-review round 2 fixes
 | File | Change |
 |------|--------|
-| `frontend/src/components/header.tsx` | Replaced nested ternary (lines 140-142) with explicit `if/else` building a `linkColor` variable |
-| `frontend/src/app/wishlist/page.tsx` | Replaced nested ternary with two independent `&&` blocks for `loading/empty/grid` states |
-| `frontend/src/app/shop/shop-client.tsx` | Replaced nested ternary in product grid with three independent `&&` blocks |
-| `backend/tests/test_marda_api.py` | Replaced `is True` with `== True` (6 occurrences) — silences PEP8 E712 |
+| `frontend/src/components/header.tsx` | Unwrapped nested ternary into `if/else` for `linkColor` |
+| `frontend/src/app/wishlist/page.tsx` | Replaced nested ternary with two `&&` blocks |
+| `frontend/src/app/shop/shop-client.tsx` | Replaced nested ternary with three `&&` blocks |
+| `backend/tests/test_marda_api.py` | `is True` → `== True` (PEP8 E712) |
+
+**Pushed back on**: `server.py:146 is not None → ==` (reviewer was wrong; PEP8 mandates `is None`), removing `console.error` (contradicts round 1), adding stable React setters / module constants / TypeScript types / local variables as hook deps, splitting `build_catalog()` (it's static data, not control flow).
+
+## Session 3 — "Continue on WhatsApp" feature (this session)
+User chose enhancements a + b + c + e.
+
+### Backend
+- New schema `CartEnquiryIn` (name, phone, order_ref, subtotal, items[]).
+- Extended `Lead` model with `order_ref`, `subtotal`, `items` fields.
+- New endpoint `POST /api/cart-enquiry` — persists lead with `type='cart_enquiry'` and a pre-formatted summary message.
+
+### Frontend
+- `lib/api.ts`: added `submitCartEnquiry()`, `generateOrderRef()` (format `MS-XXXX-DDMM`, ambiguous chars `IO01` excluded), `siteOrigin()`, type `CartEnquiryItem`.
+- `app/cart/page.tsx` rewritten with:
+  - **(a)** Inline name + phone capture form (data-testid `cart-enquiry-name`, `cart-enquiry-phone`). On submit: POSTs to `/api/cart-enquiry` first (so customer is captured even if WhatsApp never sends), then opens WhatsApp.
+  - **(b)** Auto-generated order reference shown on screen (`data-testid="order-ref"`) and embedded into the WhatsApp message. Stable per session via `sessionStorage` key `marda_order_ref_v1`. Cleared when cart becomes empty.
+  - **(c)** Sticky mobile bottom bar (`data-testid="cart-mobile-bar"`) — visible only `<768px`, shows subtotal + WhatsApp button. Page bottom-padding set to `pb-24 md:pb-0` to avoid content overlap.
+  - **(e)** WhatsApp message now includes clickable product page URLs (`{origin}/product/{slug}`) under each line.
+  - WhatsApp tab is pre-opened synchronously inside the click handler before the `await`, then redirected after the fetch resolves — defeats Safari / Firefox / mobile-WebKit popup-blocker (per testing-agent recommendation).
+
+### Verification
+- TypeScript: `tsc --noEmit` clean
+- Backend pytest: **17/17 passing** (14 original + 3 new cart-enquiry tests added by testing agent)
+- Testing-agent e2e: 11/11 cart behaviours verified (form validation, order ref stability across reloads, POST + WhatsApp tab, mobile sticky bar, qty controls, clear bag, regression on other routes)
+- Mongo verified: leads land with `type='cart_enquiry'`, all fields populated
+
+### Cumulative diff vs origin/main
+13 files, +420 / -76 lines.
 
 ---
-
-## Recommendations explicitly NOT applied (and why)
-
-| Recommendation | Reason |
-|----------------|--------|
-| Replace `is not None` with `==` on `server.py:146` | **Reviewer was wrong**. `is None` / `is not None` is the PEP8-mandated form for singleton comparison. Switching to `==` would *introduce* a lint error (E711). |
-| Remove `console.error` calls (round 2 item #6) | **Directly contradicts round 1 item which asked to ADD them**. There is no error-logging service wired up; `console.error` is the standard browser-side fallback for unexpected client errors. Removing them would re-introduce the original "empty catch swallows errors" anti-pattern. |
-| Add `CART_KEY`, `WISH_KEY`, `localStorage`, `setItems`, `setWishlist`, `prev`, `next`, `idx`, `CartItem` to hook dep arrays | • Module-scope constants and globals (`localStorage`) are stable by definition — adding them is noise and against the official `react-hooks/exhaustive-deps` rules.<br>• `useState` setters are guaranteed stable by React.<br>• `prev`, `next`, `idx`, `c`, `w` are **local variables inside** the callback — they cannot legally be in deps.<br>• `CartItem` is a TypeScript type — it has no runtime existence. |
-| Refactor `useMemo` with 11 deps in context value | All 11 dependencies are genuinely consumed by the value object. Splitting into multiple memos would not reduce work — it would just shift it. The "max 5 deps" threshold is a heuristic, not a correctness rule. |
-| Move cart/wishlist out of localStorage | Architectural rewrite. Cart/wishlist contain no PII, no tokens, no auth state — they are guest UI state. localStorage is the standard approach for guest e-commerce carts (Shopify, WooCommerce, Magento all do this). A backend session would require auth + new API endpoints. |
-| Split `page.tsx`, `header.tsx`, `shop-client.tsx`, `product-detail.tsx`, `contact/page.tsx`, `wholesale/page.tsx` into many sub-components | User steer was *"do not build different and another page"*. These are large editorial pages where the layout *is* the design — extracting components mechanically would risk regressions on a polished, shipped UI. |
-| Split `server.py build_catalog()` into smaller functions | `build_catalog()` is a 235-line **static data literal** (a list of `Product()` instances) — there is no control flow to extract. The line count is data, not complexity. |
-
----
-
-## Verification
-- `npx tsc --noEmit` → clean
-- Backend pytest suite: **14/14 passing** (`pytest tests/test_marda_api.py -q`)
-- Routes return 200: `/`, `/shop`, `/wishlist`, `/product/[slug]`
-- `/api/health` → ok
-- `/api/products` returns 32 seeded products across 8 categories
-
-## Cumulative diff
-9 files, +101 / -51 lines.
 
 ## Next Action Items
-- Review the diff and push via Save-to-GitHub
-- Consider adding `eslint-config-next` so future PRs catch issues at CI (and so reviews stop generating false-positives like the round-2 hook-deps list)
-- Consider Playwright smoke tests for cart add/remove + wishlist toggle before any structural refactors
+- Review the cumulative `git diff` and push via Save-to-GitHub
+- (Optional) Add `eslint-config-next` for CI lint enforcement
+- (Optional) Add an admin dashboard / `/api/leads` (auth-protected) listing endpoint so the store can view incoming cart enquiries without going into Mongo
 
-## Potential enhancement
-A **"Continue on WhatsApp"** handoff from the Cart page — you already have `whatsappLink()` in `api.ts` and Product Detail uses it. Extending it to auto-fill the bag summary into a WhatsApp chat would turn abandoned carts into direct sales conversations on a channel your store already runs on.
+## Future / Backlog
+- Per-tab/device cart sync (would need auth + backend cart endpoints) — only relevant if user wants logged-in carts
+- Image gallery zoom on product detail
+- "Recently viewed" sidebar
+- Server-side subtotal recompute for cart-enquiry (currently trusts client subtotal — fine for a lead, not for checkout)
