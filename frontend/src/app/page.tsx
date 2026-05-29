@@ -33,13 +33,10 @@ export default async function HomePage() {
         <div className="relative w-full max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 pb-24 md:pb-32">
           <div className="grid lg:grid-cols-12 gap-12 items-end">
             <div className="lg:col-span-8">
-              <Reveal>
-                <p className="eyebrow text-gold-muted">Est. {ESTABLISHED} · Solapur, Maharashtra</p>
-              </Reveal>
               <Reveal delay={0.15}>
                 <h1 className="display-1 text-bg-primary text-[15vw] md:text-[10vw] lg:text-[8vw] mt-6">
-                  Where loom<br />
-                  meets <span className="text-gold not-italic font-heading italic">legacy.</span>
+                  All-in-one<br />
+                  Textile<span className="text-gold not-italic font-heading italic">Destination.</span>
                 </h1>
               </Reveal>
               <Reveal delay={0.35}>
@@ -70,8 +67,8 @@ export default async function HomePage() {
                 <div className="border border-gold/40 p-8 bg-ink/40 backdrop-blur-sm">
                   <p className="eyebrow text-gold mb-4">Visiting Solapur?</p>
                   <p className="font-sub text-bg-primary/90 leading-relaxed">
-                    Our atelier at <span className="italic">430, Chattigalli, Mangalwar Peth</span> has welcomed
-                    three generations of patrons.
+                    Our Store<span className="italic">430, Chattigalli, Mangalwar Peth</span> has welcomed
+                    three generations of TRUST.
                   </p>
                   <a
                     href={MAPS_DIRECTIONS}
@@ -103,8 +100,8 @@ export default async function HomePage() {
               <span>Woolen Blankets</span><span className="text-gold">◆</span>
               <span>Royal Phetas</span><span className="text-gold">◆</span>
               <span className="font-accent text-gold">परंपरा</span><span className="text-gold">◆</span>
-              <span>Wedding Trousseau</span><span className="text-gold">◆</span>
-              <span>Heritage Towels</span><span className="text-gold">◆</span>
+              <span>Heritage Shawls</span><span className="text-gold">◆</span>
+              <span>Quality Towels</span><span className="text-gold">◆</span>
               <span className="font-accent text-gold">मर्दा ॲन्ड सन्स</span><span className="text-gold">◆</span>
             </div>
           ))}
@@ -119,7 +116,7 @@ export default async function HomePage() {
               <SectionLabel number="01" label="The House" />
               <Reveal>
                 <h2 className="display-2 text-5xl md:text-6xl lg:text-7xl text-ink mt-8">
-                  A textile<br />house<br />
+                  A textile<br />destination<br />
                   <span className="italic text-brand">of Solapur.</span>
                 </h2>
               </Reveal>
@@ -127,26 +124,26 @@ export default async function HomePage() {
             <div className="lg:col-span-6 lg:col-start-7">
               <Reveal delay={0.2}>
                 <p className="font-sub text-xl md:text-2xl text-ink leading-relaxed">
-                  In a city the world once turned to for its textile, our family began with a single loom and a
-                  single promise — that every weave would outlive its weaver.
+                  In a city the world once turned to for its textile, our family began with one small shop and a
+                  single promise — that textile reaches household with happiness and trust.
                 </p>
                 <p className="text-ink-soft mt-8 leading-relaxed">
                   Five and a half decades later, that promise has clothed temples, homes, weddings, and gifting
-                  houses across India. We are now opening our atelier to a generation that asks for honesty,
-                  provenance, and the slow craft of Indian textile.
+                  houses across India. We are now opening our store to a generation that asks for honesty,
+                  provenance, and the skill craft of Indian textiles.
                 </p>
                 <div className="mt-10 flex flex-wrap gap-x-12 gap-y-6">
                   <div>
                     <p className="font-heading italic text-5xl text-brand">55+</p>
-                    <p className="eyebrow mt-1">Years of weaving</p>
+                    <p className="eyebrow mt-1">Years of Legacy</p>
                   </div>
                   <div>
                     <p className="font-heading italic text-5xl text-brand">8</p>
-                    <p className="eyebrow mt-1">Heritage categories</p>
+                    <p className="eyebrow mt-1">Textile Chapters</p>
                   </div>
                   <div>
                     <p className="font-heading italic text-5xl text-brand">3</p>
-                    <p className="eyebrow mt-1">Generations of trust</p>
+                    <p className="eyebrow mt-1">Generations of Trust</p>
                   </div>
                 </div>
               </Reveal>
@@ -162,7 +159,7 @@ export default async function HomePage() {
             <div>
               <SectionLabel number="02" label="The Collections" />
               <h2 className="display-2 text-5xl md:text-6xl text-ink mt-6">
-                Eight chapters of <span className="italic text-brand">Solapur.</span>
+                Eight chapters of <span className="italic text-brand">Textiles.</span>
               </h2>
             </div>
             <Link href="/categories" data-testid="all-categories-link" className="eyebrow link-underline self-start md:self-end">View all collections →</Link>
@@ -199,9 +196,9 @@ export default async function HomePage() {
             <div>
               <SectionLabel number="03" label="Curated for You" />
               <h2 className="display-2 text-5xl md:text-6xl text-ink mt-6">
-                The Marda <span className="italic text-brand">Edit.</span>
+                The Textile <span className="italic text-brand">Story.</span>
               </h2>
-              <p className="font-sub text-ink-soft mt-4 max-w-xl">Eight quietly extraordinary pieces — handpicked by our atelier this season.</p>
+              <p className="font-sub text-ink-soft mt-4 max-w-xl">Eight quietly extraordinary pieces — handpicked by our store for you this season.</p>
             </div>
             <Link href="/shop" data-testid="shop-all-link" className="eyebrow link-underline self-start md:self-end">Shop all →</Link>
           </div>
@@ -225,8 +222,8 @@ export default async function HomePage() {
               We weave for <span className="italic text-gold">trust.</span>
             </h2>
             <p className="font-sub text-bg-primary/80 text-lg mt-10 leading-relaxed max-w-xl">
-              From a wholesale loom in Mangalwar Peth in 1970, to homes and gifting houses across the country —
-              this is the longer story of a family, a city, and a craft that refused to disappear.
+              From a wholesale shop in Chattigalli, Solapur in 1970, to homes and gifting houses across the country —
+              this is the longer story of a family, a city, and a craft that built its legacy.
             </p>
             <Link href="/heritage" data-testid="heritage-cta" className="inline-flex items-center gap-3 mt-12 text-gold eyebrow link-underline">
               Read the full story <ArrowRight size={14} />
@@ -291,7 +288,7 @@ export default async function HomePage() {
               orders from a hundred pieces to a hundred thousand, with the same loom-level honesty.
             </p>
             <Link href="/wholesale" data-testid="wholesale-cta-home" className="inline-flex items-center gap-3 mt-12 eyebrow link-underline">
-              Become a partner <ArrowRight size={14} />
+              Be our wholesale partner <ArrowRight size={14} />
             </Link>
           </div>
           <div className="bg-paper-3 text-ink px-6 md:px-16 py-24 md:py-32 relative overflow-hidden">
@@ -316,7 +313,7 @@ export default async function HomePage() {
             <div>
               <SectionLabel number="08" label="Visit Us" />
               <h2 className="display-2 text-5xl md:text-6xl text-ink mt-6">
-                The atelier in <span className="italic text-brand">Chattigalli.</span>
+                The store in <span className="italic text-brand">Chattigalli.</span>
               </h2>
               <p className="font-sub text-ink-soft mt-6 leading-relaxed text-lg max-w-xl">
                 The kind of shop where time slows down — where weavers, brides, and innkeepers all sit on
