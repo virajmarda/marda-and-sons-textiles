@@ -94,7 +94,7 @@ export default async function HomePage() {
       <section aria-hidden className="bg-ink text-bg-primary py-6 overflow-hidden border-y border-gold/20">
         <div className="marquee-track gap-12 px-4 whitespace-nowrap">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-12 shrink-0 font-heading italic text-2xl md:text-3xl">
+            <div key={`marquee-${i}`} className="flex items-center gap-12 shrink-0 font-heading italic text-2xl md:text-3xl">
               <span>Handloom Bedsheets</span><span className="text-gold">◆</span>
               <span className="font-accent text-gold">सोलापूरची शान</span><span className="text-gold">◆</span>
               <span>Woolen Blankets</span><span className="text-gold">◆</span>

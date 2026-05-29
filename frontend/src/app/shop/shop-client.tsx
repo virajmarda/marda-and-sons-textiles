@@ -187,7 +187,7 @@ export function ShopClient() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
+                <div key={`skeleton-${i}`} className="animate-pulse">
                   <div className="aspect-[4/5] bg-bg-secondary" />
                   <div className="h-4 bg-bg-secondary mt-4 w-2/3" />
                   <div className="h-3 bg-bg-secondary mt-2 w-1/3" />

@@ -42,7 +42,7 @@ export function ProductDetail({ product }: { product: Product }) {
         <div className="flex flex-col gap-3">
           {product.images.map((src, i) => (
             <button
-              key={i}
+              key={src}
               onClick={() => setActive(i)}
               data-testid={`thumb-${i}`}
               className={`aspect-[4/5] overflow-hidden border ${active === i ? 'border-brand' : 'border-line'} transition`}
