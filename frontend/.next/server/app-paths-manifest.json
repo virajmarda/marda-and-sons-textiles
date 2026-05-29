@@ -1,5 +1,4 @@
 {
-  "/wishlist/page": "app/wishlist/page.js",
-  "/shop/page": "app/shop/page.js",
+  "/cart/page": "app/cart/page.js",
   "/page": "app/page.js"
 }
