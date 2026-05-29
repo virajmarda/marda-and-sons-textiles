@@ -5,80 +5,80 @@ https://github.com/virajmarda/marda-and-sons-textiles.git (Next.js 14 + FastAPI 
 
 ---
 
-## Session 1 — Code-review round 1 fixes
-Empty catch logging, memoized Provider value, stable array keys, memoized inline objects (`reveal.tsx`, `toast-provider.tsx`).
+## Session 1 — Code-review round 1 (Critical fixes)
+Empty catch logging, memoized Provider value, stable array keys, memoized inline objects.
 
-## Session 2 — Code-review round 2 fixes
-Three nested ternaries unwrapped (`header.tsx`, `wishlist/page.tsx`, `shop-client.tsx`); `is True` → `== True` in tests. Pushed back on linter false-positives.
+## Session 2 — Code-review round 2 (Nested ternaries + Python tests)
+Unwrapped 3 nested ternaries; `is True` → `== True` in pytest. Pushed back on linter false-positives & contradictions.
 
 ## Session 3 — "Continue on WhatsApp" feature
-Cart page: name+phone capture form, auto order-ref MS-XXXX-DDMM, mobile sticky bar, product URLs in WA message, lead saved via `POST /api/cart-enquiry` before opening WhatsApp, pre-opened tab to defeat popup-blockers. Backend pytest 17/17 (3 new TestCartEnquiry cases).
+Name+phone capture form, auto order-ref `MS-XXXX-DDMM`, mobile sticky bar, product URLs in WA message, lead saved via `POST /api/cart-enquiry` before opening WhatsApp, pre-opened tab to defeat popup-blockers.
 
-## Session 4 — Navbar legibility + masterpiece heroes (this session)
+## Session 4 — Navbar legibility + masterpiece heroes
+Always-visible solid-cream header with dark ink text; new reusable `<PageHero>` component applied to 7 interior pages with consistent editorial vocabulary (chapter mark, paisley ornament, vertical Est rail, italic-accented headline, marathi accent, decorative diamond hairline). Wrapped `.eyebrow` in `@layer components` so Tailwind color utilities win the cascade.
 
-### Header rewrite (`components/header.tsx`)
-- **Removed** the `onHero` theme-switching logic that made the navbar dark over light pages.
-- **Always** solid cream `bg-[#FDFBF7]/[0.97]` backdrop with `text-ink` nav links and `text-brand` for the active route.
-- Subtle border/shadow that elevates only on scroll (`scrolled > 24px`).
-- Top gold thread always present.
-- Cart/wishlist badges now `rounded-full`.
-- Mobile drawer also uses `text-ink` / `text-brand` for active.
+## Session 5 — `/admin/leads` page (this session)
 
-### New `<PageHero>` component (`components/page-hero.tsx`)
-Single reusable masterpiece hero used across every interior page. Editorial vocabulary kept consistent:
-- **Chapter mark** — oversized serif italic number (e.g. "01", "02") with horizontal gold thread + "CHAPTER" label
-- **Top gold thread** — subtle gradient hairline beneath the header
-- **Paisley SVG ornament** in the top-right (very subtle, gold/brand-tinted)
-- **Vertical rail** on the right edge: "Est. 1970 · Solapur · India" (with mid-line divider, vertical writing mode)
-- **Eyebrow** + **Headline** (animated via framer-motion, supports JSX with italic accent span) + **Marathi** accent + **Lede**
-- **Decorative bottom hairline** with centered gold diamond ornament
-- Supports `tone='light'|'dark'`, `layout='single'|'split'` (split = sidebar prop), `height='md'|'lg'|'xl'`, optional `bgImage` with slow Ken-Burns motion
+### Backend (`backend/server.py`, `.env`)
+- New env var: `ADMIN_TOKEN` (set to `marda-atelier-2026` for this preview)
+- New FastAPI dependency `require_admin` validates `X-Admin-Token` header against the env var
+- Extended `Lead` model with `contacted_at: Optional[datetime]`
+- New endpoints:
+  - `GET /api/admin/leads` — supports `?type=`, `?contacted=`, `?limit=`. Returns `{ok, leads[], counts{all,contact,wholesale,newsletter,cart_enquiry,uncontacted}}`.
+  - `PATCH /api/admin/leads/{id}` — body `{contacted: true|false}` toggles `contacted_at` (now/None). 400 on invalid id, 404 on not-found, 401 on missing/wrong token.
 
-### PageHero applied to (with consistent chapter numbering)
-| Page | Chapter | Notes |
-|------|---------|-------|
-| Shop (`shop-client.tsx`) | 02 | bgImage = active category image when filtered |
-| Categories | 03 | "Eight chapters. One Solapur." |
-| Heritage | 04 | bgImage = macro thread shot, `height='xl'` |
-| Wholesale | 05 | "Become a house partner." |
-| Contact | 06 | `layout='split'` with sidebar greeting |
-| Wishlist | 07 | `height='md'`, dynamic headline (empty vs N pieces saved) |
-| Cart | 08 | `height='md'`, order-ref shown as lede |
+### Frontend
+- `lib/api.ts`: `AdminLead` + `AdminCounts` types, `getAdminLeads()`, `markLeadContacted()`, internal `adminFetch()` helper that clears token on 401.
+- New page `/admin/leads`:
+  - **Login screen** — `PageHero` chapter 09 ("The ledger."), centered token form. Token stored in localStorage `marda_admin_token_v1`.
+  - **Authenticated workspace** — 5 filter tabs (All / Cart enquiries / Contact / Wholesale / Newsletter) with live counts, "Only uncontacted" checkbox, client-side search (name/email/phone/order_ref), Refresh, Sign out.
+  - **Table** — type badge (color-coded), name+email+phone+company, type-specific detail (cart total + item count / message preview / wholesale city), timestamp, status with **Mark contacted** toggle (optimistic UI), per-row WhatsApp deep-link (`wa.me/{digits}`).
+  - **Expandable rows** for cart_enquiry (full bag breakdown + subtotal), wholesale (interested_in, volume, message), contact (full message). Newsletter rows are not expandable.
 
-### Home hero (`app/page.tsx`) — kept bespoke + elevated
-Retained the full-bleed dark hero image but layered in the same masterpiece vocabulary:
-- "01 · CHAPTER" gold serif mark
-- "THE HOUSE OF मर्दा ॲन्ड सन्स" eyebrow
-- Existing massive split headline kept
-- Vertical "Est. 1970 · Solapur · India" rail
-- Subtle paisley SVG ornament top-right
-- Decorative bottom diamond hairline above the marquee
-- Removed the now-unnecessary top scrim (header is solid cream)
+### Verification (iteration_5 testing report)
+- **Backend pytest: 29/29 passing** (17 original + 12 new admin tests in `tests/test_admin_leads.py`)
+  - Token enforcement: 401 missing, 401 wrong, 200 correct
+  - Filters: ?type=, ?contacted=true/false, ?limit
+  - PATCH: happy path (writes ISO contacted_at, persists via GET, toggles back), 400 invalid id, 404 not-found, 400 empty body, 401 no-token
+- **Frontend Playwright: 21/21 assertions passing**
+  - Login disabled when blank, wrong token shows `admin-auth-error`, correct token transitions to `admin-leads-page`
+  - All 5 tabs render with counts; switching tabs filters rows
+  - Only-uncontacted checkbox filters; search filters
+  - Mark-contacted toggle is optimistic AND persisted across refresh
+  - Newsletter rows have NO expand chevron (correctly)
+  - Sign-out clears localStorage and returns to login
+- **All 8 existing site routes** still return 200; PageHero / cart enquiry / navbar visibility unchanged
 
-### Critical CSS fix (`globals.css`)
-- Wrapped `.eyebrow` rule in `@layer components` so Tailwind utility classes (`text-gold`, `text-bg-primary`, etc.) win the cascade. Previously `.eyebrow { color: var(--ink-soft) }` was overriding every utility, making gold eyebrows on the dark hero unreadable.
+### Cumulative diff vs origin/main (sessions 1–5)
+**21 files**, **+1529 / -259 lines**.
 
-### Verification
-- TypeScript: `tsc --noEmit` clean
-- Backend pytest: **17/17 passing**
-- Testing-agent iteration_4: **100%** pass — all 8 routes, navbar visibility on every page, masterpiece hero treatments, active route highlighting, mobile drawer, cart regression
-- Computed nav-link colors verified:
-  - Inactive: `rgb(42, 29, 26)` (ink) — AAA contrast on cream
-  - Active: `rgb(106, 26, 42)` (brand maroon)
-
-### Cumulative diff vs origin/main (sessions 1+2+3+4)
-17 files, ~+970 / -310 lines.
+| File | Status |
+|------|--------|
+| `backend/server.py` | +115 |
+| `backend/tests/test_admin_leads.py` | NEW (+209) — 12 admin tests |
+| `backend/tests/test_marda_api.py` | +66 (TestCartEnquiry block from session 3) |
+| `frontend/src/app/admin/leads/page.tsx` | NEW (+394) |
+| `frontend/src/components/page-hero.tsx` | NEW (+213) |
+| `frontend/src/components/header.tsx` | rewritten |
+| `frontend/src/app/page.tsx` | hero elevated |
+| `frontend/src/app/{shop,categories,heritage,wholesale,contact,wishlist,cart}/*.tsx` | use PageHero |
+| `frontend/src/app/globals.css` | `.eyebrow` in `@layer components` |
+| `frontend/src/lib/api.ts` | +95 (cart enquiry + admin helpers) |
+| `frontend/src/lib/cart-context.tsx` | error handling + memoized value |
 
 ---
 
 ## Next Action Items
-- Review the cumulative `git diff origin/main` and push via Save-to-GitHub
-- (Optional) Admin `/api/leads` (token-gated) listing endpoint so the store can read cart enquiries / contact / wholesale / newsletter leads from the browser
-- (Optional) Add `eslint-config-next` for CI lint enforcement
-- (Optional, low-priority) The Wishlist empty-state CTA is currently gated behind `!loading`; consider showing the skeleton during fetch or always rendering the CTA to avoid the brief empty moment during navigation (called out by testing agent)
+- Review `git diff origin/main` and push via Save-to-GitHub
+- **Rotate `ADMIN_TOKEN`** in production (it's `marda-atelier-2026` for this preview; replace with `openssl rand -hex 32`)
+- (Optional) Per-type uncontacted counts so the admin tabs can show e.g. "Cart enquiries 13 · 7 pending"
+- (Optional) Replace `payload: dict` in `PATCH /api/admin/leads/{id}` with a tight Pydantic model for explicit allow-listing
 
 ## Future / Backlog
-- Per-user cart sync across devices (requires auth)
-- Product detail page image zoom
-- "Recently viewed" sidebar
-- Internationalisation (Marathi-first toggle)
+- CSV export from `/admin/leads`
+- Per-user cart sync (requires auth)
+- Product detail image zoom
+- Marathi-first language toggle
+
+## Test credentials
+See `/app/memory/test_credentials.md`.
