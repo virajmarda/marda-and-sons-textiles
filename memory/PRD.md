@@ -6,60 +6,79 @@ https://github.com/virajmarda/marda-and-sons-textiles.git (Next.js 14 + FastAPI 
 ---
 
 ## Session 1 — Code-review round 1 fixes
-| File | Change |
-|------|--------|
-| `frontend/src/lib/cart-context.tsx` | Added `console.error` logging in empty catch; wrapped persistence in try/catch; memoized Provider `value` with `useMemo` |
-| `frontend/src/components/reveal.tsx` | Memoized framer-motion config objects |
-| `frontend/src/components/toast-provider.tsx` | Moved `style` to module scope; memoized `toastOptions` |
-| `frontend/src/app/product/[slug]/product-detail.tsx` | Thumbnail `key={i}` → `key={src}` |
-| `frontend/src/app/shop/shop-client.tsx` | Skeleton key prefix |
-| `frontend/src/app/page.tsx` | Marquee key prefix |
+Empty catch logging, memoized Provider value, stable array keys, memoized inline objects (`reveal.tsx`, `toast-provider.tsx`).
 
 ## Session 2 — Code-review round 2 fixes
-| File | Change |
-|------|--------|
-| `frontend/src/components/header.tsx` | Unwrapped nested ternary into `if/else` for `linkColor` |
-| `frontend/src/app/wishlist/page.tsx` | Replaced nested ternary with two `&&` blocks |
-| `frontend/src/app/shop/shop-client.tsx` | Replaced nested ternary with three `&&` blocks |
-| `backend/tests/test_marda_api.py` | `is True` → `== True` (PEP8 E712) |
+Three nested ternaries unwrapped (`header.tsx`, `wishlist/page.tsx`, `shop-client.tsx`); `is True` → `== True` in tests. Pushed back on linter false-positives.
 
-**Pushed back on**: `server.py:146 is not None → ==` (reviewer was wrong; PEP8 mandates `is None`), removing `console.error` (contradicts round 1), adding stable React setters / module constants / TypeScript types / local variables as hook deps, splitting `build_catalog()` (it's static data, not control flow).
+## Session 3 — "Continue on WhatsApp" feature
+Cart page: name+phone capture form, auto order-ref MS-XXXX-DDMM, mobile sticky bar, product URLs in WA message, lead saved via `POST /api/cart-enquiry` before opening WhatsApp, pre-opened tab to defeat popup-blockers. Backend pytest 17/17 (3 new TestCartEnquiry cases).
 
-## Session 3 — "Continue on WhatsApp" feature (this session)
-User chose enhancements a + b + c + e.
+## Session 4 — Navbar legibility + masterpiece heroes (this session)
 
-### Backend
-- New schema `CartEnquiryIn` (name, phone, order_ref, subtotal, items[]).
-- Extended `Lead` model with `order_ref`, `subtotal`, `items` fields.
-- New endpoint `POST /api/cart-enquiry` — persists lead with `type='cart_enquiry'` and a pre-formatted summary message.
+### Header rewrite (`components/header.tsx`)
+- **Removed** the `onHero` theme-switching logic that made the navbar dark over light pages.
+- **Always** solid cream `bg-[#FDFBF7]/[0.97]` backdrop with `text-ink` nav links and `text-brand` for the active route.
+- Subtle border/shadow that elevates only on scroll (`scrolled > 24px`).
+- Top gold thread always present.
+- Cart/wishlist badges now `rounded-full`.
+- Mobile drawer also uses `text-ink` / `text-brand` for active.
 
-### Frontend
-- `lib/api.ts`: added `submitCartEnquiry()`, `generateOrderRef()` (format `MS-XXXX-DDMM`, ambiguous chars `IO01` excluded), `siteOrigin()`, type `CartEnquiryItem`.
-- `app/cart/page.tsx` rewritten with:
-  - **(a)** Inline name + phone capture form (data-testid `cart-enquiry-name`, `cart-enquiry-phone`). On submit: POSTs to `/api/cart-enquiry` first (so customer is captured even if WhatsApp never sends), then opens WhatsApp.
-  - **(b)** Auto-generated order reference shown on screen (`data-testid="order-ref"`) and embedded into the WhatsApp message. Stable per session via `sessionStorage` key `marda_order_ref_v1`. Cleared when cart becomes empty.
-  - **(c)** Sticky mobile bottom bar (`data-testid="cart-mobile-bar"`) — visible only `<768px`, shows subtotal + WhatsApp button. Page bottom-padding set to `pb-24 md:pb-0` to avoid content overlap.
-  - **(e)** WhatsApp message now includes clickable product page URLs (`{origin}/product/{slug}`) under each line.
-  - WhatsApp tab is pre-opened synchronously inside the click handler before the `await`, then redirected after the fetch resolves — defeats Safari / Firefox / mobile-WebKit popup-blocker (per testing-agent recommendation).
+### New `<PageHero>` component (`components/page-hero.tsx`)
+Single reusable masterpiece hero used across every interior page. Editorial vocabulary kept consistent:
+- **Chapter mark** — oversized serif italic number (e.g. "01", "02") with horizontal gold thread + "CHAPTER" label
+- **Top gold thread** — subtle gradient hairline beneath the header
+- **Paisley SVG ornament** in the top-right (very subtle, gold/brand-tinted)
+- **Vertical rail** on the right edge: "Est. 1970 · Solapur · India" (with mid-line divider, vertical writing mode)
+- **Eyebrow** + **Headline** (animated via framer-motion, supports JSX with italic accent span) + **Marathi** accent + **Lede**
+- **Decorative bottom hairline** with centered gold diamond ornament
+- Supports `tone='light'|'dark'`, `layout='single'|'split'` (split = sidebar prop), `height='md'|'lg'|'xl'`, optional `bgImage` with slow Ken-Burns motion
+
+### PageHero applied to (with consistent chapter numbering)
+| Page | Chapter | Notes |
+|------|---------|-------|
+| Shop (`shop-client.tsx`) | 02 | bgImage = active category image when filtered |
+| Categories | 03 | "Eight chapters. One Solapur." |
+| Heritage | 04 | bgImage = macro thread shot, `height='xl'` |
+| Wholesale | 05 | "Become a house partner." |
+| Contact | 06 | `layout='split'` with sidebar greeting |
+| Wishlist | 07 | `height='md'`, dynamic headline (empty vs N pieces saved) |
+| Cart | 08 | `height='md'`, order-ref shown as lede |
+
+### Home hero (`app/page.tsx`) — kept bespoke + elevated
+Retained the full-bleed dark hero image but layered in the same masterpiece vocabulary:
+- "01 · CHAPTER" gold serif mark
+- "THE HOUSE OF मर्दा ॲन्ड सन्स" eyebrow
+- Existing massive split headline kept
+- Vertical "Est. 1970 · Solapur · India" rail
+- Subtle paisley SVG ornament top-right
+- Decorative bottom diamond hairline above the marquee
+- Removed the now-unnecessary top scrim (header is solid cream)
+
+### Critical CSS fix (`globals.css`)
+- Wrapped `.eyebrow` rule in `@layer components` so Tailwind utility classes (`text-gold`, `text-bg-primary`, etc.) win the cascade. Previously `.eyebrow { color: var(--ink-soft) }` was overriding every utility, making gold eyebrows on the dark hero unreadable.
 
 ### Verification
 - TypeScript: `tsc --noEmit` clean
-- Backend pytest: **17/17 passing** (14 original + 3 new cart-enquiry tests added by testing agent)
-- Testing-agent e2e: 11/11 cart behaviours verified (form validation, order ref stability across reloads, POST + WhatsApp tab, mobile sticky bar, qty controls, clear bag, regression on other routes)
-- Mongo verified: leads land with `type='cart_enquiry'`, all fields populated
+- Backend pytest: **17/17 passing**
+- Testing-agent iteration_4: **100%** pass — all 8 routes, navbar visibility on every page, masterpiece hero treatments, active route highlighting, mobile drawer, cart regression
+- Computed nav-link colors verified:
+  - Inactive: `rgb(42, 29, 26)` (ink) — AAA contrast on cream
+  - Active: `rgb(106, 26, 42)` (brand maroon)
 
-### Cumulative diff vs origin/main
-13 files, +420 / -76 lines.
+### Cumulative diff vs origin/main (sessions 1+2+3+4)
+17 files, ~+970 / -310 lines.
 
 ---
 
 ## Next Action Items
-- Review the cumulative `git diff` and push via Save-to-GitHub
+- Review the cumulative `git diff origin/main` and push via Save-to-GitHub
+- (Optional) Admin `/api/leads` (token-gated) listing endpoint so the store can read cart enquiries / contact / wholesale / newsletter leads from the browser
 - (Optional) Add `eslint-config-next` for CI lint enforcement
-- (Optional) Add an admin dashboard / `/api/leads` (auth-protected) listing endpoint so the store can view incoming cart enquiries without going into Mongo
+- (Optional, low-priority) The Wishlist empty-state CTA is currently gated behind `!loading`; consider showing the skeleton during fetch or always rendering the CTA to avoid the brief empty moment during navigation (called out by testing agent)
 
 ## Future / Backlog
-- Per-tab/device cart sync (would need auth + backend cart endpoints) — only relevant if user wants logged-in carts
-- Image gallery zoom on product detail
+- Per-user cart sync across devices (requires auth)
+- Product detail page image zoom
 - "Recently viewed" sidebar
-- Server-side subtotal recompute for cart-enquiry (currently trusts client subtotal — fine for a lead, not for checkout)
+- Internationalisation (Marathi-first toggle)
