@@ -6,6 +6,7 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, MessageCircle, Hash } fro
 import { useCart } from '@/lib/cart-context';
 import { inr, whatsappLink, submitCartEnquiry, generateOrderRef, siteOrigin } from '@/lib/api';
 import { Reveal, SectionLabel } from '@/components/reveal';
+import { PageHero } from '@/components/page-hero';
 
 const REF_KEY = 'marda_order_ref_v1';
 
@@ -105,26 +106,23 @@ export default function CartPage() {
   }
 
   return (
-    <div data-testid="cart-page" className="bg-paper min-h-[80vh] relative overflow-hidden pb-24 md:pb-0">
-      <div aria-hidden className="absolute top-32 -right-40 w-[600px] h-[600px] rounded-full bg-brand/[0.05] blur-3xl pointer-events-none" />
-      <div aria-hidden className="absolute -bottom-20 -left-40 w-[500px] h-[500px] rounded-full bg-gold/[0.07] blur-3xl pointer-events-none" />
-
-      <section className="relative pt-40 pb-12 max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
-        <p className="eyebrow">Your Bag · पिशवी</p>
-        <h1 className="display-1 text-5xl md:text-7xl lg:text-8xl text-ink mt-6 leading-[0.95]">
-          {empty
-            ? <>Your bag is <span className="italic text-brand">unwoven.</span></>
-            : <>The bag, <span className="italic text-brand">curated.</span></>}
-        </h1>
-        <p className="font-accent text-brand mt-6 text-xl md:text-2xl">
-          {empty ? 'अजून रिकामी' : `${items.length} ${items.length === 1 ? 'वस्तू' : 'वस्तू'} निवडल्या आहेत`}
-        </p>
-        {!empty && orderRef && (
-          <p data-testid="order-ref" className="eyebrow text-ink-soft mt-6 inline-flex items-center gap-2">
-            <Hash size={12} /> Reference {orderRef}
-          </p>
+    <div data-testid="cart-page" className="bg-paper min-h-[80vh] relative pb-24 md:pb-0">
+      <PageHero
+        chapter="08"
+        eyebrow="Your Bag · पिशवी"
+        marathi={empty ? 'अजून रिकामी' : `${items.length} वस्तू निवडल्या आहेत`}
+        headline={empty ? (
+          <>Your bag is <span className="italic text-brand">unwoven.</span></>
+        ) : (
+          <>The bag, <span className="italic text-brand">curated.</span></>
         )}
-      </section>
+        lede={!empty && orderRef ? (
+          <span data-testid="order-ref" className="inline-flex items-center gap-2 eyebrow text-ink">
+            <Hash size={12} /> Reference {orderRef}
+          </span>
+        ) : undefined}
+        height="md"
+      />
 
       {empty && (
         <section className="max-w-[800px] mx-auto px-6 pb-32 text-center">

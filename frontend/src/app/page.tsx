@@ -20,26 +20,61 @@ export default async function HomePage() {
     <div data-testid="home-page" className="bg-paper">
       {/* HERO */}
       <section data-testid="hero-section" className="relative min-h-[100vh] flex items-end overflow-hidden">
-        <img src={hero} alt="Heritage textile boutique" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={hero} alt="Heritage textile boutique" className="absolute inset-0 w-full h-full object-cover scale-105 origin-center" />
         {/* layered scrim for premium contrast & readable hero copy */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/60 to-ink/40" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/65 via-ink/15 to-transparent" />
-        {/* extra top scrim for header readability */}
-        <div aria-hidden className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-ink/70 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/55 to-ink/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/20 to-transparent" />
 
-        {/* top thread */}
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gold/40" />
+        {/* top gold thread under the header */}
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
-        <div className="relative w-full max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 pb-24 md:pb-32">
+        {/* Paisley ornament — top right */}
+        <svg
+          aria-hidden
+          viewBox="0 0 200 200"
+          className="absolute top-32 right-6 md:right-16 w-40 md:w-56 text-gold/15 pointer-events-none"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.6"
+        >
+          <path d="M100 30 C 60 30, 30 60, 30 100 C 30 140, 60 170, 100 170 C 130 170, 150 140, 150 110 C 150 80, 130 70, 110 70 C 95 70, 85 80, 85 95 C 85 105, 95 110, 105 110" />
+          <circle cx="100" cy="100" r="60" />
+          <circle cx="100" cy="100" r="30" />
+          <path d="M40 100 L 160 100 M 100 40 L 100 160" strokeDasharray="2 4" />
+        </svg>
+
+        {/* Vertical Est rail */}
+        <div
+          aria-hidden
+          className="hidden lg:flex absolute right-4 top-1/2 -translate-y-1/2 flex-col items-center gap-4 text-bg-primary/70"
+          style={{ writingMode: 'vertical-rl' }}
+        >
+          <span className="eyebrow text-[10px]">Est. 1970</span>
+          <span className="w-px h-20 bg-gold/45" style={{ writingMode: 'horizontal-tb' }} />
+          <span className="eyebrow text-[10px]">Solapur · India</span>
+        </div>
+
+        <div className="relative w-full max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 pb-24 md:pb-32 pt-44 md:pt-56">
           <div className="grid lg:grid-cols-12 gap-12 items-end">
             <div className="lg:col-span-8">
-              <Reveal delay={0.15}>
-                <h1 className="display-1 text-bg-primary text-[15vw] md:text-[10vw] lg:text-[8vw] mt-6">
+              {/* Chapter mark */}
+              <Reveal delay={0.05}>
+                <div className="flex items-center gap-4 mb-8">
+                  <span className="font-heading italic text-5xl md:text-6xl leading-none text-gold">01</span>
+                  <span className="w-12 h-px bg-gold/70" />
+                  <span className="eyebrow text-[10px] text-bg-primary/80">Chapter</span>
+                </div>
+              </Reveal>
+              <Reveal delay={0.12}>
+                <p className="eyebrow text-gold-muted">The House of मर्दा ॲन्ड सन्स</p>
+              </Reveal>
+              <Reveal delay={0.18}>
+                <h1 className="display-1 text-bg-primary text-[15vw] md:text-[10vw] lg:text-[8vw] mt-6 leading-[0.92]">
                   All-in-one<br />
                   Textile<span className="text-gold not-italic font-heading italic">Destination.</span>
                 </h1>
               </Reveal>
-              <Reveal delay={0.35}>
+              <Reveal delay={0.38}>
                 <p className="font-accent text-gold mt-8 text-lg md:text-2xl tracking-wide">
                   विश्वास की परंपरा, वर्षों का साथ
                 </p>
@@ -82,6 +117,12 @@ export default async function HomePage() {
                 </div>
               </Reveal>
             </div>
+          </div>
+
+          {/* Bottom decorative hairline with centered diamond */}
+          <div className="relative mt-16 md:mt-20" aria-hidden>
+            <div className="h-px bg-bg-primary/20" />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-gold/70 text-xs select-none">◆</span>
           </div>
         </div>
 

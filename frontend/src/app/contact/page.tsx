@@ -7,6 +7,7 @@ import {
   fetchJSON, MAPS_DIRECTIONS, MAPS_EMBED_SRC, STORE_ADDRESS, STORE_HOURS, WHATSAPP_DISPLAY, whatsappLink,
 } from '@/lib/api';
 import { Reveal, SectionLabel } from '@/components/reveal';
+import { PageHero } from '@/components/page-hero';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
@@ -33,29 +34,22 @@ export default function ContactPage() {
 
   return (
     <div data-testid="contact-page" className="bg-paper">
-      {/* Hero — editorial split with paisley accent */}
-      <section className="relative pt-40 pb-24 overflow-hidden">
-        <div aria-hidden className="absolute -top-20 -right-20 w-[600px] h-[600px] rounded-full bg-brand/[0.06] blur-3xl" />
-        <div aria-hidden className="absolute -bottom-32 -left-20 w-[500px] h-[500px] rounded-full bg-gold/[0.08] blur-3xl" />
-
-        <div className="relative max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 grid lg:grid-cols-12 gap-12 items-end">
-          <div className="lg:col-span-8">
-            <p className="eyebrow">Visit · संपर्क</p>
-            <h1 className="display-1 text-6xl md:text-8xl lg:text-[10rem] text-ink mt-6 leading-[0.95]">
-              Walk in.<br />
-              <span className="italic text-brand">Or write to us.</span>
-            </h1>
-            <p className="font-accent text-brand mt-8 text-2xl md:text-3xl">आपलं स्वागत आहे</p>
-          </div>
-          <div className="lg:col-span-4">
+      <PageHero
+        chapter="06"
+        eyebrow="Visit · संपर्क"
+        marathi="आपलं स्वागत आहे"
+        headline={<>Walk in.<br /><span className="italic text-brand">Or write to us.</span></>}
+        layout="split"
+        sidebar={(
+          <>
             <p className="font-sub text-ink-soft text-lg leading-relaxed">
               The <span className="font-brand text-ink not-italic">मर्दा ॲन्ड सन्स</span> atelier is a slow,
               generous shop. Come for chai, stay for the weaves, leave with a story.
             </p>
             <div className="mt-8 h-px bg-gradient-to-r from-gold via-gold/40 to-transparent" />
-          </div>
-        </div>
-      </section>
+          </>
+        )}
+      />
 
       {/* Quick contact */}
       <section className="bg-paper-2 py-16">

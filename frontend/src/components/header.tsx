@@ -24,7 +24,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
@@ -32,22 +32,21 @@ export function Header() {
 
   useEffect(() => setOpen(false), [path]);
 
-  // On hero / unscrolled state we use a light text + dark scrim so the navbar is always legible.
-  const onHero = !scrolled;
-
+  // ALWAYS solid cream with dark text — guarantees nav is legible on every page,
+  // over every hero, at every scroll position.
+  // The only thing that changes on scroll is elevation (shadow + line darkness).
   return (
     <header
       data-testid="site-header"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? 'bg-[#FDFBF7]/92 backdrop-blur-xl border-b border-line/60 shadow-[0_4px_24px_-12px_rgba(42,29,26,0.18)]'
-          : 'bg-ink/55 backdrop-blur-md border-b border-bg-primary/10'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-[box-shadow,border-color] duration-300
+        bg-[#FDFBF7]/[0.97] backdrop-blur-xl border-b
+        ${scrolled
+          ? 'border-line/70 shadow-[0_4px_28px_-12px_rgba(42,29,26,0.22)]'
+          : 'border-line/40'
+        }`}
     >
-      {/* On hero: add an extra top gradient so curved bright spots in images can't drown the nav */}
-      {onHero && (
-        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/40 to-ink/10 pointer-events-none" />
-      )}
+      {/* Top gold thread — subtle but constant across all pages */}
+      <div aria-hidden className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
       <div className="max-w-[1600px] mx-auto px-5 md:px-10 lg:px-16">
         <div className="grid grid-cols-3 items-center py-4 md:py-5">
@@ -55,15 +54,15 @@ export function Header() {
           <div className="flex items-center gap-3">
             <button
               data-testid="mobile-menu-toggle"
-              className={`md:hidden ${onHero ? 'text-bg-primary' : 'text-ink'}`}
+              className="md:hidden text-ink"
               onClick={() => setOpen((v) => !v)}
               aria-label="Menu"
             >
               {open ? <X size={20} /> : <Menu size={20} />}
             </button>
             <div className="hidden md:flex flex-col leading-none">
-              <span className={`eyebrow text-[10px] ${onHero ? 'text-gold-muted' : ''}`}>Est. {ESTABLISHED}</span>
-              <span className={`text-[11px] tracking-[0.3em] mt-1 ${onHero ? 'text-bg-primary/80' : 'text-ink-soft'}`}>SOLAPUR · INDIA</span>
+              <span className="eyebrow text-[10px] text-ink">Est. {ESTABLISHED}</span>
+              <span className="text-[11px] tracking-[0.3em] mt-1 text-ink-soft">SOLAPUR · INDIA</span>
             </div>
           </div>
 
@@ -73,36 +72,33 @@ export function Header() {
             data-testid="brand-logo"
             className="flex flex-col items-center justify-center text-center group"
           >
-            <BrandName
-              variant="micro"
-              className={onHero ? 'text-bg-primary' : 'text-ink'}
-            />
-            <span className={`font-accent text-[10px] md:text-[11px] mt-1 tracking-wider ${onHero ? 'text-gold-muted' : 'text-brand'}`}>
+            <BrandName variant="micro" className="text-ink" />
+            <span className="font-accent text-[10px] md:text-[11px] mt-1 tracking-wider text-brand">
               विश्वास की परंपरा
             </span>
           </Link>
 
           {/* Right: actions */}
-          <div className={`flex items-center justify-end gap-4 md:gap-6 ${onHero ? 'text-bg-primary' : 'text-ink'}`}>
+          <div className="flex items-center justify-end gap-4 md:gap-6 text-ink">
             <Link
               href="/shop"
               data-testid="header-search-link"
               aria-label="Search"
-              className="hidden md:inline-flex hover:text-gold transition-colors"
+              className="hidden md:inline-flex hover:text-brand transition-colors"
             >
               <Search size={18} strokeWidth={1.4} />
             </Link>
             <Link
               href="/wishlist"
               data-testid="header-wishlist-link"
-              className="relative hover:text-gold transition-colors"
+              className="relative hover:text-brand transition-colors"
               aria-label="Wishlist"
             >
               <Heart size={18} strokeWidth={1.4} />
               {mounted && wishlist.length > 0 && (
                 <span
                   data-testid="wishlist-count"
-                  className="absolute -top-2 -right-2 bg-brand text-bg-primary text-[9px] w-4 h-4 flex items-center justify-center font-medium"
+                  className="absolute -top-2 -right-2 bg-brand text-bg-primary text-[9px] w-4 h-4 flex items-center justify-center font-medium rounded-full"
                 >
                   {wishlist.length}
                 </span>
@@ -111,14 +107,14 @@ export function Header() {
             <Link
               href="/cart"
               data-testid="header-cart-link"
-              className="relative hover:text-gold transition-colors"
+              className="relative hover:text-brand transition-colors"
               aria-label="Cart"
             >
               <ShoppingBag size={18} strokeWidth={1.4} />
               {mounted && count > 0 && (
                 <span
                   data-testid="cart-count"
-                  className="absolute -top-2 -right-2 bg-brand text-bg-primary text-[9px] w-4 h-4 flex items-center justify-center font-medium"
+                  className="absolute -top-2 -right-2 bg-brand text-bg-primary text-[9px] w-4 h-4 flex items-center justify-center font-medium rounded-full"
                 >
                   {count}
                 </span>
@@ -127,22 +123,18 @@ export function Header() {
           </div>
         </div>
 
-        {/* Bottom nav row */}
-        <nav className={`hidden md:flex items-center justify-center gap-12 pb-4 pt-3 border-t ${onHero ? 'border-bg-primary/15' : 'border-line/40'}`}>
+        {/* Bottom nav row — always ink text, brand color on active */}
+        <nav className="hidden md:flex items-center justify-center gap-12 pb-4 pt-3 border-t border-line/40">
           {NAV.map((n) => {
             const active = path === n.href || (n.href !== '/' && path?.startsWith(n.href));
-            let linkColor: string;
-            if (active) {
-              linkColor = onHero ? 'text-gold' : 'text-brand';
-            } else {
-              linkColor = onHero ? 'text-bg-primary' : 'text-ink';
-            }
             return (
               <Link
                 key={n.href}
                 href={n.href}
                 data-testid={`nav-${n.label.toLowerCase()}`}
-                className={`eyebrow text-[10.5px] link-underline ${linkColor}`}
+                className={`eyebrow text-[11px] link-underline transition-colors ${
+                  active ? 'text-brand font-medium' : 'text-ink hover:text-brand'
+                }`}
               >
                 {n.label}
               </Link>
@@ -155,16 +147,19 @@ export function Header() {
       {open && (
         <div className="md:hidden bg-[#FDFBF7] border-t border-line/60">
           <div className="px-6 py-6 flex flex-col gap-5">
-            {NAV.map((n) => (
-              <Link
-                key={n.href}
-                href={n.href}
-                data-testid={`mobile-nav-${n.label.toLowerCase()}`}
-                className="font-sub text-2xl text-ink tracking-tight"
-              >
-                {n.label}
-              </Link>
-            ))}
+            {NAV.map((n) => {
+              const active = path === n.href || (n.href !== '/' && path?.startsWith(n.href));
+              return (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  data-testid={`mobile-nav-${n.label.toLowerCase()}`}
+                  className={`font-sub text-2xl tracking-tight ${active ? 'text-brand' : 'text-ink'}`}
+                >
+                  {n.label}
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}

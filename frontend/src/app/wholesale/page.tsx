@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Building2, Globe2, HeartHandshake, ArrowRight } from 'lucide-react';
 import { fetchJSON } from '@/lib/api';
 import { Reveal, SectionLabel } from '@/components/reveal';
+import { PageHero } from '@/components/page-hero';
 
 const PRODUCT_OPTIONS = [
   'Towels', 'Bedsheets', 'Shawls', 'Phetas', 'Topis', 'Lungi', 'Woolen Blankets', 'Chatais',
@@ -54,23 +55,13 @@ export default function WholesalePage() {
 
   return (
     <div data-testid="wholesale-page" className="bg-paper">
-      {/* Hero */}
-      <section className="relative pt-40 pb-20 overflow-hidden">
-        <div aria-hidden className="absolute -top-32 -right-32 w-[700px] h-[700px] rounded-full bg-brand/[0.06] blur-3xl pointer-events-none" />
-        <div aria-hidden className="absolute -bottom-32 -left-32 w-[600px] h-[600px] rounded-full bg-gold/[0.07] blur-3xl pointer-events-none" />
-        <div className="relative max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
-          <p className="eyebrow text-brand">For partners · घाऊक</p>
-          <h1 className="display-1 text-6xl md:text-8xl lg:text-[9rem] text-ink mt-6 leading-[0.95]">
-            Become a<br />
-            <span className="italic text-brand">house partner.</span>
-          </h1>
-          <p className="font-accent text-brand mt-8 text-2xl md:text-3xl">साथ पन्नास वर्षांचा</p>
-          <p className="font-sub text-ink-soft text-lg mt-6 max-w-2xl">
-            Our wholesale roots run fifty-five years deep. Today, we extend the same loom-level honesty to
-            retailers, gifting houses, exporters, and wedding curators across India and abroad.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        chapter="05"
+        eyebrow="For partners · घाऊक"
+        marathi="साथ पन्नास वर्षांचा"
+        headline={<>Become a<br /><span className="italic text-brand">house partner.</span></>}
+        lede={<>Our wholesale roots run fifty-five years deep. Today, we extend the same loom-level honesty to retailers, gifting houses, exporters, and wedding curators across India and abroad.</>}
+      />
 
       {/* Partner categories */}
       <section id="retailers" className="py-16 md:py-24">

@@ -6,6 +6,7 @@ import { Heart } from 'lucide-react';
 import { useCart } from '@/lib/cart-context';
 import { getProducts, type Product } from '@/lib/api';
 import { ProductCard } from '@/components/product-card';
+import { PageHero } from '@/components/page-hero';
 
 export default function WishlistPage() {
   const { wishlist } = useCart();
@@ -22,23 +23,18 @@ export default function WishlistPage() {
   const items = all.filter((p) => wishlist.includes(p.slug));
 
   return (
-    <div data-testid="wishlist-page" className="bg-paper min-h-[80vh] relative overflow-hidden">
-      <div aria-hidden className="absolute top-32 -left-40 w-[600px] h-[600px] rounded-full bg-brand/[0.05] blur-3xl pointer-events-none" />
-      <div aria-hidden className="absolute -bottom-20 -right-40 w-[500px] h-[500px] rounded-full bg-gold/[0.07] blur-3xl pointer-events-none" />
-
-      <section className="relative pt-40 pb-12 max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
-        <p className="eyebrow">Your Wishlist · आवडते</p>
-        <h1 className="display-1 text-5xl md:text-7xl lg:text-8xl text-ink mt-6 leading-[0.95]">
-          {items.length === 0 ? (
-            <>Nothing saved <span className="italic text-brand">yet.</span></>
-          ) : (
-            <>{items.length} {items.length === 1 ? 'piece' : 'pieces'} <span className="italic text-brand">saved.</span></>
-          )}
-        </h1>
-        <p className="font-accent text-brand mt-6 text-xl md:text-2xl">
-          {items.length === 0 ? 'काही जोडलं नाही' : 'तुमचे आवडते विणकाम'}
-        </p>
-      </section>
+    <div data-testid="wishlist-page" className="bg-paper min-h-[80vh]">
+      <PageHero
+        chapter="07"
+        eyebrow="Your Wishlist · आवडते"
+        marathi={items.length === 0 ? 'काही जोडलं नाही' : 'तुमचे आवडते विणकाम'}
+        headline={items.length === 0 ? (
+          <>Nothing saved <span className="italic text-brand">yet.</span></>
+        ) : (
+          <>{items.length} {items.length === 1 ? 'piece' : 'pieces'} <span className="italic text-brand">saved.</span></>
+        )}
+        height="md"
+      />
 
       {!loading && items.length === 0 && (
         <section className="max-w-[800px] mx-auto px-6 pb-32 text-center">
