@@ -131,16 +131,18 @@ export function Header() {
         <nav className={`hidden md:flex items-center justify-center gap-12 pb-4 pt-3 border-t ${onHero ? 'border-bg-primary/15' : 'border-line/40'}`}>
           {NAV.map((n) => {
             const active = path === n.href || (n.href !== '/' && path?.startsWith(n.href));
+            let linkColor: string;
+            if (active) {
+              linkColor = onHero ? 'text-gold' : 'text-brand';
+            } else {
+              linkColor = onHero ? 'text-bg-primary' : 'text-ink';
+            }
             return (
               <Link
                 key={n.href}
                 href={n.href}
                 data-testid={`nav-${n.label.toLowerCase()}`}
-                className={`eyebrow text-[10.5px] link-underline ${
-                  active
-                    ? onHero ? 'text-gold' : 'text-brand'
-                    : onHero ? 'text-bg-primary' : 'text-ink'
-                }`}
+                className={`eyebrow text-[10.5px] link-underline ${linkColor}`}
               >
                 {n.label}
               </Link>

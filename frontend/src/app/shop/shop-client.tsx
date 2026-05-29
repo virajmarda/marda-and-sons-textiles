@@ -184,7 +184,7 @@ export function ShopClient() {
 
         {/* Grid */}
         <div data-testid="shop-grid">
-          {loading ? (
+          {loading && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={`skeleton-${i}`} className="animate-pulse">
@@ -194,12 +194,14 @@ export function ShopClient() {
                 </div>
               ))}
             </div>
-          ) : sorted.length === 0 ? (
+          )}
+          {!loading && sorted.length === 0 && (
             <div className="py-24 text-center">
               <p className="font-heading italic text-3xl text-ink">Nothing here yet.</p>
               <p className="font-sub text-ink-soft mt-4">Try a different category or clear your search.</p>
             </div>
-          ) : (
+          )}
+          {!loading && sorted.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-16">
               {sorted.map((p, i) => (
                 <ProductCard key={p.slug} p={p} index={i} />

@@ -68,7 +68,7 @@ class TestProducts:
         assert r.status_code == 200
         data = r.json()
         assert data["count"] > 0
-        assert all(p["featured"] is True for p in data["products"])
+        assert all(p["featured"] == True for p in data["products"])
 
     def test_search_query_towel(self, api_client, base_url):
         r = api_client.get(f"{base_url}/api/products", params={"q": "towel"})
@@ -107,7 +107,7 @@ class TestContact:
         r = api_client.post(f"{base_url}/api/contact", json=payload)
         assert r.status_code == 200, r.text
         data = r.json()
-        assert data.get("ok") is True
+        assert data.get("ok") == True
         assert "id" in data and isinstance(data["id"], str) and len(data["id"]) > 0
 
     def test_contact_invalid_email_422(self, api_client, base_url):
@@ -134,7 +134,7 @@ class TestWholesale:
         r = api_client.post(f"{base_url}/api/wholesale", json=payload)
         assert r.status_code == 200, r.text
         data = r.json()
-        assert data.get("ok") is True
+        assert data.get("ok") == True
         assert "id" in data and len(data["id"]) > 0
 
     def test_wholesale_missing_phone_422(self, api_client, base_url):
@@ -152,15 +152,15 @@ class TestNewsletter:
         r1 = api_client.post(f"{base_url}/api/newsletter", json={"email": email})
         assert r1.status_code == 200, r1.text
         d1 = r1.json()
-        assert d1.get("ok") is True
+        assert d1.get("ok") == True
         assert "id" in d1
 
         # Duplicate should return ok:true, duplicate:true
         r2 = api_client.post(f"{base_url}/api/newsletter", json={"email": email})
         assert r2.status_code == 200, r2.text
         d2 = r2.json()
-        assert d2.get("ok") is True
-        assert d2.get("duplicate") is True
+        assert d2.get("ok") == True
+        assert d2.get("duplicate") == True
 
     def test_newsletter_invalid_email_422(self, api_client, base_url):
         r = api_client.post(f"{base_url}/api/newsletter", json={"email": "bad"})

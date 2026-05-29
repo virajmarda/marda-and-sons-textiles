@@ -40,7 +40,7 @@ export default function WishlistPage() {
         </p>
       </section>
 
-      {loading ? null : items.length === 0 ? (
+      {!loading && items.length === 0 && (
         <section className="max-w-[800px] mx-auto px-6 pb-32 text-center">
           <Heart size={26} className="text-brand mx-auto mb-6" strokeWidth={1.2} />
           <p className="font-sub text-ink-soft text-lg">
@@ -50,7 +50,8 @@ export default function WishlistPage() {
             Browse the collection
           </Link>
         </section>
-      ) : (
+      )}
+      {!loading && items.length > 0 && (
         <section className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 pb-32">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
             {items.map((p, i) => (
