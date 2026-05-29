@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 
 from bson import ObjectId
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, BeforeValidator, ConfigDict, EmailStr, Field
@@ -19,6 +19,7 @@ load_dotenv()
 MONGO_URL = os.environ["MONGO_URL"]
 DB_NAME = os.environ["DB_NAME"]
 CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*").split(",")
+ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
 
 # ---------- MongoDB helpers ----------
 PyObjectId = Annotated[str, BeforeValidator(str)]
@@ -79,6 +80,7 @@ class Lead(BaseDocument):
     order_ref: Optional[str] = None
     subtotal: Optional[int] = None
     items: Optional[List[dict]] = None
+    contacted_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -236,6 +238,69 @@ async def post_cart_enquiry(payload: CartEnquiryIn):
     )
     res = await db.leads.insert_one(lead.to_mongo())
     return {"ok": True, "id": str(res.inserted_id), "order_ref": payload.order_ref}
+
+
+# ---------- Admin (token-gated) ----------
+def require_admin(x_admin_token: Optional[str] = Header(default=None)):
+    if not ADMIN_TOKEN:
+        raise HTTPException(status_code=503, detail="Admin disabled: ADMIN_TOKEN not configured on server")
+    if x_admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    return True
+
+
+@app.get("/api/admin/leads")
+async def list_leads(
+    _: bool = Depends(require_admin),
+    type: Optional[str] = Query(default=None, description="Filter: contact | wholesale | newsletter | cart_enquiry"),
+    contacted: Optional[bool] = Query(default=None, description="Filter by contacted state"),
+    limit: int = Query(default=200, ge=1, le=1000),
+):
+    q: dict = {}
+    if type:
+        q["type"] = type
+    if contacted is True:
+        q["contacted_at"] = {"$ne": None}
+    elif contacted is False:
+        q["contacted_at"] = None
+    cursor = db.leads.find(q).sort("created_at", -1).limit(limit)
+    leads = [Lead.from_mongo(doc).model_dump(by_alias=False) for doc in await cursor.to_list(limit)]
+    # convert datetime to ISO
+    for lead in leads:
+        for k in ("created_at", "contacted_at"):
+            if lead.get(k) and not isinstance(lead[k], str):
+                lead[k] = lead[k].isoformat()
+    counts = {
+        "all": await db.leads.count_documents({}),
+        "contact": await db.leads.count_documents({"type": "contact"}),
+        "wholesale": await db.leads.count_documents({"type": "wholesale"}),
+        "newsletter": await db.leads.count_documents({"type": "newsletter"}),
+        "cart_enquiry": await db.leads.count_documents({"type": "cart_enquiry"}),
+        "uncontacted": await db.leads.count_documents({"contacted_at": None, "type": {"$ne": "newsletter"}}),
+    }
+    return {"ok": True, "leads": leads, "counts": counts}
+
+
+@app.patch("/api/admin/leads/{lead_id}")
+async def update_lead(
+    lead_id: str,
+    payload: dict,
+    _: bool = Depends(require_admin),
+):
+    """Allowed body: { contacted: true|false }"""
+    try:
+        oid = ObjectId(lead_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid lead id")
+    update: dict = {}
+    if "contacted" in payload:
+        update["contacted_at"] = datetime.now(timezone.utc) if payload["contacted"] else None
+    if not update:
+        raise HTTPException(status_code=400, detail="Nothing to update")
+    result = await db.leads.update_one({"_id": oid}, {"$set": update})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    return {"ok": True, "contacted_at": update.get("contacted_at").isoformat() if update.get("contacted_at") else None}
 
 
 # ---------- Categories meta ----------

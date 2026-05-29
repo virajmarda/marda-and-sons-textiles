@@ -1,10 +1,11 @@
 {
-  "/page": "app/page.js",
-  "/wishlist/page": "app/wishlist/page.js",
   "/contact/page": "app/contact/page.js",
   "/shop/page": "app/shop/page.js",
   "/heritage/page": "app/heritage/page.js",
-  "/wholesale/page": "app/wholesale/page.js",
+  "/cart/page": "app/cart/page.js",
+  "/admin/leads/page": "app/admin/leads/page.js",
+  "/page": "app/page.js",
   "/categories/page": "app/categories/page.js",
-  "/cart/page": "app/cart/page.js"
+  "/wholesale/page": "app/wholesale/page.js",
+  "/wishlist/page": "app/wishlist/page.js"
 }

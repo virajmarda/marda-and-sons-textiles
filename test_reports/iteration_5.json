@@ -1,0 +1,34 @@
+{
+  "summary": "Comprehensive testing of new /admin/leads feature (backend token-gated endpoints + frontend workspace) + regression. Added 12 pytest cases for admin auth/filters/PATCH; ran 21-check Playwright suite for the admin UI. 29/29 backend tests pass, 21/21 frontend assertions pass, all 8 main site routes return 200.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_admin_leads.py",
+    "/app/backend/tests/test_marda_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Minor: GET /api/admin/leads returns `counts.uncontacted` excluding newsletter (good), but does not expose per-type uncontacted counts; could help admin UX. Not blocking.",
+    "Minor: PATCH /api/admin/leads/{id} only supports `contacted` toggle; an unrecognised key would still result in 400 'Nothing to update' which is fine, but explicit allow-list validation via Pydantic would be cleaner than `payload: dict`.",
+    "Minor: `_id` field is correctly excluded from response (mapped to `id`); good.",
+    "Minor: ADMIN_TOKEN in plain .env intentional per task note; production should rotate."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_admin_leads.py (new)"
+  ],
+  "success_rate": {"backend": "100% (29/29)", "frontend": "100% (21/21)"},
+  "test_credentials": "ADMIN_TOKEN=marda-atelier-2026 (X-Admin-Token header). No other auth used.",
+  "seed_data_creation": "Each admin pytest seeds a fresh cart_enquiry lead via POST /api/cart-enquiry with name_prefix TEST_ADMIN_* before exercising filters / PATCH. Frontend test exercises toggle on the most-recent cart_enquiry row and reverts it.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend admin tests in /app/backend/tests/test_admin_leads.py (12 tests). Use header X-Admin-Token: marda-atelier-2026. localStorage key for frontend: marda_admin_token_v1. Verified flows: missing/wrong token=>401; correct token=>200 with {ok, leads[], counts{all,contact,wholesale,newsletter,cart_enquiry,uncontacted}}; ?type filter; ?contacted true/false; ?limit; PATCH happy path (writes ISO contacted_at, persists via GET, toggles back to null); PATCH invalid id=>400, valid-but-missing=>404, empty body=>400, no-token=>401. Frontend: login disabled when blank, wrong token shows data-testid='admin-auth-error', correct token transitions to admin-leads-page with admin-leads-table; all 5 tabs present; toggle is optimistic AND persisted across refresh; expand reveals Subtotal for cart_enquiry; newsletter rows have NO admin-expand-*; sign-out clears localStorage and returns to admin-login.",
+  "rca of the issue": "N/A — no issues found."
+}

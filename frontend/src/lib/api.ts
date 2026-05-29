@@ -116,6 +116,64 @@ export function siteOrigin(): string {
   return BACKEND_URL;
 }
 
+// ---------- Admin (token-gated) ----------
+export type AdminLead = {
+  id: string;
+  type: 'contact' | 'wholesale' | 'newsletter' | 'cart_enquiry';
+  name?: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  city?: string;
+  message?: string;
+  interested_in?: string[];
+  quantity_estimate?: string;
+  order_ref?: string;
+  subtotal?: number;
+  items?: Array<{ slug: string; name: string; mode: string; qty: number; price: number }>;
+  contacted_at?: string | null;
+  created_at: string;
+};
+
+export type AdminCounts = {
+  all: number;
+  contact: number;
+  wholesale: number;
+  newsletter: number;
+  cart_enquiry: number;
+  uncontacted: number;
+};
+
+async function adminFetch<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${BACKEND_URL}${path}`, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Token': token,
+      ...(init.headers || {}),
+    },
+  });
+  if (res.status === 401) throw new Error('Invalid admin token');
+  if (!res.ok) throw new Error(`Admin request failed (${res.status})`);
+  return res.json();
+}
+
+export async function getAdminLeads(token: string, params: { type?: string; contacted?: boolean } = {}) {
+  const search = new URLSearchParams();
+  if (params.type) search.set('type', params.type);
+  if (typeof params.contacted === 'boolean') search.set('contacted', String(params.contacted));
+  const qs = search.toString() ? `?${search.toString()}` : '';
+  return adminFetch<{ ok: boolean; leads: AdminLead[]; counts: AdminCounts }>(`/api/admin/leads${qs}`, token);
+}
+
+export async function markLeadContacted(token: string, leadId: string, contacted: boolean) {
+  return adminFetch<{ ok: boolean; contacted_at: string | null }>(
+    `/api/admin/leads/${leadId}`,
+    token,
+    { method: 'PATCH', body: JSON.stringify({ contacted }) },
+  );
+}
+
 export function inr(n: number) {
   return `₹${n.toLocaleString('en-IN')}`;
 }
