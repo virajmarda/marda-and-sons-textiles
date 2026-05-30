@@ -36,86 +36,128 @@ export function ProductDetail({ product }: { product: Product }) {
   }
 
   return (
-    <section className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 py-10 grid lg:grid-cols-[1.1fr_1fr] gap-16">
+    <section className="mx-auto grid max-w-[1600px] gap-10 px-4 py-8 sm:px-6 sm:py-10 md:px-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-24">
       {/* Gallery */}
-      <div data-testid="product-gallery" className="grid grid-cols-[80px_1fr] gap-4">
-        <div className="flex flex-col gap-3">
+      <div data-testid="product-gallery" className="grid gap-4 md:grid-cols-[80px_1fr]">
+        <div className="order-2 flex gap-3 overflow-x-auto pb-1 md:order-1 md:flex-col md:overflow-visible">
           {product.images.map((src, i) => (
             <button
               key={src}
+              type="button"
               onClick={() => setActive(i)}
               data-testid={`thumb-${i}`}
-              className={`aspect-[4/5] overflow-hidden border ${active === i ? 'border-brand' : 'border-line'} transition`}
+              className={`h-24 w-20 shrink-0 overflow-hidden border transition md:h-auto md:w-auto md:aspect-[4/5] ${
+                active === i ? 'border-brand' : 'border-line'
+              }`}
             >
-              <img src={src} alt="" className="w-full h-full object-cover" />
+              <img src={src} alt="" className="h-full w-full object-cover" />
             </button>
           ))}
         </div>
-        <div className="aspect-[4/5] bg-bg-secondary overflow-hidden">
-          <img src={product.images[active]} alt={product.name} className="w-full h-full object-cover" />
+
+        <div className="order-1 aspect-[4/5] overflow-hidden bg-bg-secondary md:order-2">
+          <img src={product.images[active]} alt={product.name} className="h-full w-full object-cover" />
         </div>
       </div>
 
       {/* Detail */}
-      <div className="lg:sticky lg:top-32 self-start">
+      <div className="self-start lg:sticky lg:top-32">
         {product.badges && product.badges.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-5">
+          <div className="mb-5 flex flex-wrap gap-2">
             {product.badges.map((b) => (
-              <span key={b} className="eyebrow text-brand border-b border-gold pb-0.5">{b}</span>
+              <span key={b} className="eyebrow border-b border-gold pb-0.5 text-brand">
+                {b}
+              </span>
             ))}
           </div>
         )}
-        <p className="font-accent text-gold-dark text-sm tracking-wide mb-2 capitalize">{product.category}</p>
-        <h1 className="display-2 text-4xl md:text-5xl lg:text-6xl text-ink leading-[1.05]">{product.name}</h1>
-        {product.subtitle && <p className="font-sub text-ink-soft text-lg mt-3 italic">{product.subtitle}</p>}
 
-        <div className="flex items-center gap-2 mt-6">
+        <p className="mb-2 text-sm capitalize tracking-wide text-gold-dark font-accent">
+          {product.category}
+        </p>
+
+        <h1 className="display-2 text-4xl leading-[1.05] text-ink sm:text-5xl lg:text-6xl">
+          {product.name}
+        </h1>
+
+        {product.subtitle && (
+          <p className="mt-3 text-base italic text-ink-soft font-sub sm:text-lg">
+            {product.subtitle}
+          </p>
+        )}
+
+        <div className="mt-6 flex items-center gap-2">
           {[1, 2, 3, 4, 5].map((s) => (
             <Star key={s} size={14} className="fill-gold text-gold" strokeWidth={0} />
           ))}
-          <span className="eyebrow text-ink-soft ml-2">Loved by 1,200+ families</span>
+          <span className="ml-2 text-[11px] text-ink-soft eyebrow sm:text-xs">
+            Loved by 1,200+ families
+          </span>
         </div>
 
         {/* Pricing toggle */}
-        <div className="mt-10 border-y border-line py-6">
-          <div className="flex gap-3 mb-4">
+        <div className="mt-8 border-y border-line py-6 sm:mt-10">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
             <button
+              type="button"
               data-testid="mode-retail"
               onClick={() => setMode('retail')}
-              className={`eyebrow px-4 py-2 border ${mode === 'retail' ? 'bg-ink text-bg-primary border-ink' : 'border-line text-ink'}`}
+              className={`eyebrow px-4 py-2 border ${
+                mode === 'retail'
+                  ? 'border-ink bg-ink text-bg-primary'
+                  : 'border-line text-ink'
+              }`}
             >
               Retail
             </button>
+
             <button
+              type="button"
               data-testid="mode-wholesale"
               onClick={() => setMode('wholesale')}
-              className={`eyebrow px-4 py-2 border ${mode === 'wholesale' ? 'bg-ink text-bg-primary border-ink' : 'border-line text-ink'}`}
+              className={`eyebrow px-4 py-2 border ${
+                mode === 'wholesale'
+                  ? 'border-ink bg-ink text-bg-primary'
+                  : 'border-line text-ink'
+              }`}
             >
               Wholesale (MOQ {product.moq_wholesale})
             </button>
           </div>
-          <p className="font-heading italic text-5xl text-brand">{inr(price)}</p>
-          <p className="font-sub text-ink-soft text-sm mt-2">
-            {mode === 'wholesale' ? `Per piece · minimum ${product.moq_wholesale} units` : 'Inclusive of all taxes · Free shipping above ₹999'}
+
+          <p className="text-4xl italic text-brand font-heading sm:text-5xl">{inr(price)}</p>
+
+          <p className="mt-2 text-sm text-ink-soft font-sub">
+            {mode === 'wholesale'
+              ? `Per piece · minimum ${product.moq_wholesale} units`
+              : 'Inclusive of all taxes · Free shipping above ₹999'}
           </p>
         </div>
 
         {/* Story */}
-        <p className="font-sub text-ink text-lg leading-relaxed mt-8">{product.description}</p>
-        {product.story && <p className="font-accent text-brand mt-4 italic">"{product.story}"</p>}
+        <p className="mt-8 text-base leading-relaxed text-ink font-sub sm:text-lg">
+          {product.description}
+        </p>
+
+        {product.story && (
+          <p className="mt-4 italic text-brand font-accent">"{product.story}"</p>
+        )}
 
         {/* Colors */}
         {product.colors && product.colors.length > 0 && (
           <div className="mt-8">
-            <p className="eyebrow mb-3">Colourway</p>
+            <p className="mb-3 eyebrow">Colourway</p>
             <div className="flex flex-wrap gap-2">
               {product.colors.map((c) => (
                 <button
                   key={c}
+                  type="button"
                   data-testid={`color-${c}`}
                   onClick={() => setColor(c)}
-                  className={`px-4 py-2 text-sm font-sub border ${
-                    color === c ? 'border-ink bg-ink text-bg-primary' : 'border-line text-ink hover:border-ink'
+                  className={`border px-4 py-2 text-sm font-sub ${
+                    color === c
+                      ? 'border-ink bg-ink text-bg-primary'
+                      : 'border-line text-ink hover:border-ink'
                   }`}
                 >
                   {c}
@@ -126,29 +168,36 @@ export function ProductDetail({ product }: { product: Product }) {
         )}
 
         {/* Qty */}
-        <div className="mt-8 flex items-center gap-6">
+        <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
           <p className="eyebrow">Quantity</p>
+
           <div className="flex items-center border border-line">
             <button
+              type="button"
               data-testid="qty-decrease"
               data-testid-alias="qty-dec"
               onClick={() => setQty((q) => Math.max(mode === 'wholesale' ? minQty : 1, q - 1))}
-              className="w-10 h-10 flex items-center justify-center hover:bg-bg-secondary"
+              className="flex h-11 w-11 items-center justify-center hover:bg-bg-secondary"
             >
               <Minus size={14} />
             </button>
+
             <input
               type="number"
+              inputMode="numeric"
+              min={mode === 'wholesale' ? minQty : 1}
               data-testid="qty-input"
               value={actualQty}
-              onChange={(e) => setQty(Math.max(1, parseInt(e.target.value || '1')))}
-              className="w-16 h-10 text-center bg-transparent outline-none border-x border-line font-sub"
+              onChange={(e) => setQty(Math.max(1, parseInt(e.target.value || '1', 10)))}
+              className="h-11 w-16 border-x border-line bg-transparent text-center outline-none font-sub"
             />
+
             <button
+              type="button"
               data-testid="qty-increase"
               data-testid-alias="qty-inc"
               onClick={() => setQty((q) => q + 1)}
-              className="w-10 h-10 flex items-center justify-center hover:bg-bg-secondary"
+              className="flex h-11 w-11 items-center justify-center hover:bg-bg-secondary"
             >
               <Plus size={14} />
             </button>
@@ -156,11 +205,18 @@ export function ProductDetail({ product }: { product: Product }) {
         </div>
 
         {/* CTAs */}
-        <div className="mt-10 grid sm:grid-cols-2 gap-3">
-          <button data-testid="add-to-bag" onClick={handleAdd} className="btn-primary justify-center">
+        <div className="mt-10 grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            data-testid="add-to-bag"
+            onClick={handleAdd}
+            className="btn-primary justify-center"
+          >
             <ShoppingBag size={14} /> Add to Bag
           </button>
+
           <button
+            type="button"
             data-testid="wishlist-toggle"
             onClick={() => {
               toggleWishlist(product.slug);
@@ -168,16 +224,22 @@ export function ProductDetail({ product }: { product: Product }) {
             }}
             className="btn-ghost justify-center"
           >
-            <Heart size={14} className={wished ? 'fill-brand text-brand' : ''} /> {wished ? 'Saved' : 'Save for Later'}
+            <Heart size={14} className={wished ? 'fill-brand text-brand' : ''} />
+            {wished ? 'Saved' : 'Save for Later'}
           </button>
         </div>
 
-        <button data-testid="product-whatsapp" onClick={handleWhatsApp} className="mt-4 w-full border border-gold text-brand py-4 uppercase tracking-[0.22em] text-[11px] flex items-center justify-center gap-2 hover:bg-gold/10 transition">
+        <button
+          type="button"
+          data-testid="product-whatsapp"
+          onClick={handleWhatsApp}
+          className="mt-4 flex w-full items-center justify-center gap-2 border border-gold py-4 text-[11px] uppercase tracking-[0.22em] text-brand transition hover:bg-gold/10"
+        >
           <MessageCircle size={14} /> Ask on WhatsApp
         </button>
 
         {/* Specs */}
-        <div className="mt-12 border-t border-line pt-8 space-y-4">
+        <div className="mt-12 space-y-4 border-t border-line pt-8">
           {product.materials && product.materials.length > 0 && (
             <Spec label="Materials" value={product.materials.join(' · ')} />
           )}
@@ -193,9 +255,9 @@ export function ProductDetail({ product }: { product: Product }) {
 
 function Spec({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-[140px_1fr] gap-6">
+    <div className="grid gap-2 sm:grid-cols-[140px_1fr] sm:gap-6">
       <p className="eyebrow">{label}</p>
-      <p className="font-sub text-ink">{value}</p>
+      <p className="text-ink font-sub">{value}</p>
     </div>
   );
 }
