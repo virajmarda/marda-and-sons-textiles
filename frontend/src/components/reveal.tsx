@@ -1,22 +1,53 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-export function Reveal({ children, delay = 0, y = 32 }: { children: ReactNode; delay?: number; y?: number }) {
-  // Memoize the framer-motion config objects so they keep stable identity
-  // across re-renders.
-  const initial = useMemo(() => ({ opacity: 0, y }), [y]);
-  const whileInView = useMemo(() => ({ opacity: 1, y: 0 }), []);
-  const viewport = useMemo(() => ({ once: true, margin: '-80px' }), []);
+export function Reveal({
+  children,
+  delay = 0,
+  y = 32,
+  className,
+}: {
+  children: ReactNode;
+  delay?: number;
+  y?: number;
+  className?: string;
+}) {
+  const reduceMotion = useReducedMotion();
+
+  const initial = useMemo(
+    () => (reduceMotion ? { opacity: 0 } : { opacity: 0, y }),
+    [reduceMotion, y]
+  );
+
+  const whileInView = useMemo(
+    () => (reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }),
+    [reduceMotion]
+  );
+
+  const viewport = useMemo(
+    () => ({
+      once: true,
+      margin: '-48px 0px',
+      amount: 0.2,
+    }),
+    []
+  );
+
   const transition = useMemo(
-    () => ({ duration: 1, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }),
-    [delay],
+    () => ({
+      duration: reduceMotion ? 0.35 : 0.9,
+      delay,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+    }),
+    [delay, reduceMotion]
   );
 
   return (
     <motion.div
+      className={className}
       initial={initial}
       whileInView={whileInView}
       viewport={viewport}
@@ -27,11 +58,19 @@ export function Reveal({ children, delay = 0, y = 32 }: { children: ReactNode; d
   );
 }
 
-export function SectionLabel({ number, label }: { number: string; label: string }) {
+export function SectionLabel({
+  number,
+  label,
+  className,
+}: {
+  number: string;
+  label: string;
+  className?: string;
+}) {
   return (
-    <div className="flex items-center gap-4">
+    <div className={`flex items-center gap-3 sm:gap-4 ${className ?? ''}`}>
       <span className="num-block">{number}</span>
-      <span className="w-10 h-px bg-gold" />
+      <span className="h-px w-8 bg-gold sm:w-10" />
       <span className="eyebrow">{label}</span>
     </div>
   );
