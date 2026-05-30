@@ -53,14 +53,6 @@ export function WhatsAppFab() {
 
       <div className="flex items-center gap-3">
         {!open && (
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="eyebrow hidden border border-line bg-bg-primary/90 px-3 py-2 text-ink shadow-lg backdrop-blur md:inline-flex"
-            aria-label="Show WhatsApp help"
-          >
-            Chat
-          </button>
         )}
 
         <a
