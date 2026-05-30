@@ -4,7 +4,6 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { ArrowRight, Clock, Mail, MapPin, Phone } from 'lucide-react';
 import {
-  fetchJSON,
   MAPS_DIRECTIONS,
   MAPS_EMBED_SRC,
   STORE_ADDRESS,
@@ -24,12 +23,11 @@ export default function ContactPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!form.name || !form.email || !form.message) {
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       toast.error('Please complete the required fields.');
       return;
     }
@@ -37,14 +35,25 @@ export default function ContactPage() {
     setLoading(true);
 
     try {
-      await fetchJSON('/api/contact', {
-        method: 'POST',
-        body: JSON.stringify(form),
-      });
-      toast.success('Message received · we will respond shortly.');
-      setDone(true);
+      const whatsappMessage = [
+        'Hello मर्दा ॲन्ड सन्स,',
+        '',
+        'I would like to contact you.',
+        '',
+        `Name: ${form.name.trim()}`,
+        `Email: ${form.email.trim()}`,
+        `Phone: ${form.phone.trim() || '—'}`,
+        '',
+        'Message:',
+        form.message.trim(),
+      ].join('\n');
+
+      const url = whatsappLink(whatsappMessage);
+      window.open(url, '_blank', 'noopener,noreferrer');
+
+      toast.success('Opening WhatsApp...');
     } catch {
-      toast.error('Could not send. Please try WhatsApp.');
+      toast.error('Could not open WhatsApp.');
     } finally {
       setLoading(false);
     }
@@ -66,7 +75,7 @@ export default function ContactPage() {
         layout="split"
         sidebar={
           <>
-            <p className="text-base leading-relaxed text-ink-soft font-sub sm:text-lg">
+            <p className="font-sub text-base leading-relaxed text-ink-soft sm:text-lg">
               The <span className="font-brand not-italic text-ink">मर्दा ॲन्ड सन्स</span> atelier is a slow,
               generous shop. Come for chai, stay for the weaves, leave with a story.
             </p>
@@ -75,14 +84,15 @@ export default function ContactPage() {
         }
       />
 
-      {/* Quick contact */}
       <section className="bg-paper-2 py-14 sm:py-16">
         <div className="mx-auto grid max-w-[1600px] gap-8 px-4 sm:px-6 md:grid-cols-2 md:gap-10 md:px-12 lg:grid-cols-3 lg:gap-12 lg:px-24">
           <Reveal>
             <div className="border-t border-line pt-6 md:pt-8">
               <MapPin size={22} strokeWidth={1.2} className="text-brand" />
               <p className="mt-5 eyebrow md:mt-6">The Atelier</p>
-              <p className="mt-3 text-base leading-relaxed text-ink font-sub sm:text-lg">{STORE_ADDRESS}</p>
+              <p className="mt-3 font-sub text-base leading-relaxed text-ink sm:text-lg">
+                {STORE_ADDRESS}
+              </p>
               <a
                 href={MAPS_DIRECTIONS}
                 target="_blank"
@@ -99,7 +109,9 @@ export default function ContactPage() {
             <div className="border-t border-line pt-6 md:pt-8">
               <Phone size={22} strokeWidth={1.2} className="text-brand" />
               <p className="mt-5 eyebrow md:mt-6">Call · WhatsApp</p>
-              <p className="mt-3 break-words text-base text-ink font-sub sm:text-lg">{WHATSAPP_DISPLAY}</p>
+              <p className="mt-3 break-words font-sub text-base text-ink sm:text-lg">
+                {WHATSAPP_DISPLAY}
+              </p>
               <a
                 href={whatsappLink('Hello मर्दा ॲन्ड सन्स, I would like to know more.')}
                 target="_blank"
@@ -116,14 +128,15 @@ export default function ContactPage() {
             <div className="border-t border-line pt-6 md:pt-8">
               <Clock size={22} strokeWidth={1.2} className="text-brand" />
               <p className="mt-5 eyebrow md:mt-6">Atelier Hours</p>
-              <p className="mt-3 text-base text-ink font-sub sm:text-lg">{STORE_HOURS}</p>
-              <p className="mt-2 text-sm italic text-ink-soft font-sub">Sundays · by appointment</p>
+              <p className="mt-3 font-sub text-base text-ink sm:text-lg">{STORE_HOURS}</p>
+              <p className="mt-2 font-sub text-sm italic text-ink-soft">
+                Sundays · by appointment
+              </p>
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* Form + Map */}
       <section className="py-16 sm:py-20 md:py-24">
         <div className="mx-auto grid max-w-[1600px] gap-12 px-4 sm:px-6 md:px-12 lg:grid-cols-2 lg:gap-16 lg:px-24">
           <div>
@@ -134,71 +147,66 @@ export default function ContactPage() {
               <span className="italic text-brand">side of the table.</span>
             </h2>
 
-            {done ? (
-              <div data-testid="contact-success" className="mt-10 md:mt-12">
-                <p className="font-accent text-2xl text-brand sm:text-3xl">धन्यवाद 🙏</p>
-                <p className="mt-4 max-w-md text-base text-ink font-sub sm:text-lg">
-                  Your message has reached the atelier. We will respond within one business day.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={submit} data-testid="contact-form" className="mt-10 space-y-7 md:mt-12 md:space-y-8">
+            <form
+              onSubmit={submit}
+              data-testid="contact-form"
+              className="mt-10 space-y-7 md:mt-12 md:space-y-8"
+            >
+              <input
+                className="input-line"
+                placeholder="YOUR NAME *"
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                data-testid="contact-name"
+              />
+
+              <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
+                <input
+                  type="email"
+                  className="input-line"
+                  placeholder="EMAIL *"
+                  required
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  data-testid="contact-email"
+                />
                 <input
                   className="input-line"
-                  placeholder="YOUR NAME *"
-                  required
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  data-testid="contact-name"
+                  placeholder="PHONE"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  data-testid="contact-phone"
                 />
+              </div>
 
-                <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
-                  <input
-                    type="email"
-                    className="input-line"
-                    placeholder="EMAIL *"
-                    required
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    data-testid="contact-email"
-                  />
-                  <input
-                    className="input-line"
-                    placeholder="PHONE"
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    data-testid="contact-phone"
-                  />
-                </div>
+              <textarea
+                className="input-line resize-none"
+                placeholder="YOUR MESSAGE *"
+                rows={6}
+                required
+                value={form.message}
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
+                data-testid="contact-message"
+              />
 
-                <textarea
-                  className="input-line resize-none"
-                  placeholder="YOUR MESSAGE *"
-                  rows={6}
-                  required
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  data-testid="contact-message"
-                />
+              <button
+                type="submit"
+                disabled={loading}
+                data-testid="contact-submit"
+                className="btn-primary w-full justify-center disabled:opacity-50"
+              >
+                {loading ? 'Opening…' : 'Send on WhatsApp'} <ArrowRight size={14} />
+              </button>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  data-testid="contact-submit"
-                  className="btn-primary w-full justify-center disabled:opacity-50"
-                >
-                  {loading ? 'Sending…' : 'Send Message'} <ArrowRight size={14} />
-                </button>
-
-                <p className="text-[10px] uppercase tracking-[0.2em] text-ink-soft sm:text-[11px] sm:tracking-[0.22em]">
-                  We promise — no automated replies, only humans from Solapur.
-                </p>
-              </form>
-            )}
+              <p className="text-[10px] uppercase tracking-[0.2em] text-ink-soft sm:text-[11px] sm:tracking-[0.22em]">
+                We promise — no automated replies, only humans from Solapur.
+              </p>
+            </form>
 
             <div className="mt-12 border-t border-line pt-6 sm:mt-14 md:mt-16 md:pt-8">
               <p className="mb-3 eyebrow">Other ways</p>
-              <ul className="space-y-3 text-ink font-sub">
+              <ul className="space-y-3 font-sub text-ink">
                 <li className="flex items-start gap-3">
                   <Mail size={14} className="mt-1 shrink-0 text-gold" />
                   <span className="break-all">hello@mardaandsons.in</span>
