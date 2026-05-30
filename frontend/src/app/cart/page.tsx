@@ -141,7 +141,7 @@ export default function CartPage() {
       {empty && (
         <section className="mx-auto max-w-[800px] px-4 pb-24 text-center sm:px-6 md:pb-32">
           <Reveal>
-            <p className="text-base text-ink-soft font-sub sm:text-lg">
+            <p className="font-sub text-base text-ink-soft sm:text-lg">
               Nothing here yet. Begin with our most-loved weaves.
             </p>
             <Link
@@ -185,18 +185,19 @@ export default function CartPage() {
 
                   <Link
                     href={`/product/${item.slug}`}
-                    className="mt-1 inline-block text-xl text-ink hover:text-brand font-heading italic sm:text-2xl"
+                    className="mt-1 inline-block font-heading text-xl italic text-ink hover:text-brand sm:text-2xl"
                   >
                     {item.name}
                   </Link>
 
-                  <p className="mt-2 text-ink-soft font-sub">
+                  <p className="mt-2 font-sub text-ink-soft">
                     {inr(item.price)} <span className="text-ink-soft/60">/ piece</span>
                   </p>
 
                   <div className="mt-5 flex flex-wrap items-center gap-4">
                     <div className="flex items-center border border-line">
                       <button
+                        type="button"
                         data-testid={`cart-dec-${item.slug}`}
                         onClick={() => setQty(item.slug, item.mode, item.qty - 1)}
                         className="flex h-10 w-10 items-center justify-center hover:bg-bg-secondary"
@@ -208,6 +209,7 @@ export default function CartPage() {
                       <span className="w-10 text-center font-sub">{item.qty}</span>
 
                       <button
+                        type="button"
                         data-testid={`cart-inc-${item.slug}`}
                         onClick={() => setQty(item.slug, item.mode, item.qty + 1)}
                         className="flex h-10 w-10 items-center justify-center hover:bg-bg-secondary"
@@ -218,6 +220,7 @@ export default function CartPage() {
                     </div>
 
                     <button
+                      type="button"
                       data-testid={`cart-remove-${item.slug}`}
                       onClick={() => remove(item.slug, item.mode)}
                       className="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-brand"
@@ -227,18 +230,19 @@ export default function CartPage() {
                     </button>
                   </div>
 
-                  <p className="mt-4 text-lg text-brand font-heading italic md:hidden">
+                  <p className="mt-4 font-heading text-lg italic text-brand md:hidden">
                     {inr(item.qty * item.price)}
                   </p>
                 </div>
 
-                <p className="hidden whitespace-nowrap text-2xl text-brand font-heading md:block md:text-right">
+                <p className="hidden whitespace-nowrap font-heading text-2xl text-brand md:block md:text-right">
                   {inr(item.qty * item.price)}
                 </p>
               </article>
             ))}
 
             <button
+              type="button"
               data-testid="cart-clear"
               onClick={clear}
               className="eyebrow link-underline text-ink-soft hover:text-brand"
@@ -253,7 +257,7 @@ export default function CartPage() {
           >
             <SectionLabel number="02" label="Order Summary" />
 
-            <div className="mt-6 space-y-3 text-ink font-sub sm:mt-8">
+            <div className="mt-6 space-y-3 font-sub text-ink sm:mt-8">
               <div className="flex justify-between gap-4">
                 <span>Subtotal</span>
                 <span>{inr(subtotal)}</span>
@@ -267,7 +271,7 @@ export default function CartPage() {
                 <span>Inclusive</span>
               </div>
               <div className="my-4 border-t border-line" />
-              <div className="flex justify-between text-2xl text-brand font-heading italic">
+              <div className="flex justify-between font-heading text-2xl italic text-brand">
                 <span>Total</span>
                 <span>{inr(subtotal)}</span>
               </div>
@@ -286,7 +290,7 @@ export default function CartPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Aparna Apte"
-                  className="mt-2 w-full border border-line bg-paper px-3 py-3 text-ink font-sub outline-none focus:border-brand"
+                  className="mt-2 w-full border border-line bg-paper px-3 py-3 font-sub text-ink outline-none focus:border-brand"
                 />
               </label>
 
@@ -298,7 +302,7 @@ export default function CartPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+91 9XXXX XXXXX"
-                  className="mt-2 w-full border border-line bg-paper px-3 py-3 text-ink font-sub outline-none focus:border-brand"
+                  className="mt-2 w-full border border-line bg-paper px-3 py-3 font-sub text-ink outline-none focus:border-brand"
                 />
               </label>
 
@@ -355,11 +359,14 @@ export default function CartPage() {
           className="fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 border-t border-line bg-[#FDFBF7]/95 px-4 py-3 shadow-[0_-4px_24px_-12px_rgba(42,29,26,0.18)] backdrop-blur md:hidden"
         >
           <div className="min-w-0 flex-1">
-            <p className="truncate text-ink-soft eyebrow">Subtotal</p>
-            <p className="text-xl text-brand font-heading italic leading-none">{inr(subtotal)}</p>
+            <p className="eyebrow truncate text-ink-soft">Subtotal</p>
+            <p className="font-heading text-xl italic leading-none text-brand">
+              {inr(subtotal)}
+            </p>
           </div>
 
           <button
+            type="button"
             data-testid="cart-mobile-whatsapp"
             onClick={() => handleSend()}
             disabled={!canSend}
