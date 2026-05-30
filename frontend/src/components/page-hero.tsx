@@ -18,10 +18,10 @@ type Props = {
 };
 
 const heights = {
-  md: 'pt-36 pb-16 md:pt-44 md:pb-20',
-  lg: 'pt-40 pb-24 md:pt-52 md:pb-28',
-  xl: 'pt-44 pb-32 md:pt-56 md:pb-40',
-};
+  md: 'pt-28 pb-12 sm:pt-32 sm:pb-14 md:pt-40 md:pb-20',
+  lg: 'pt-32 pb-16 sm:pt-36 sm:pb-18 md:pt-48 md:pb-28',
+  xl: 'pt-36 pb-20 sm:pt-40 sm:pb-24 md:pt-52 md:pb-40',
+} as const;
 
 export function PageHero({
   chapter,
@@ -36,6 +36,7 @@ export function PageHero({
   height = 'lg',
 }: Props) {
   const isDark = tone === 'dark';
+
   const textColor = isDark ? 'text-bg-primary' : 'text-ink';
   const lightText = isDark ? 'text-bg-primary/82' : 'text-ink/82';
   const accent = isDark ? 'text-gold' : 'text-brand';
@@ -61,8 +62,8 @@ export function PageHero({
             alt=""
             className={`h-full w-full object-cover object-center ${
               isDark
-                ? 'opacity-78'
-                : 'opacity-100 contrast-[1.08] saturate-[1.04] brightness-[0.98]'
+                ? 'opacity-80'
+                : 'opacity-100 brightness-[0.98] contrast-[1.08] saturate-[1.04]'
             }`}
           />
         </motion.div>
@@ -75,46 +76,43 @@ export function PageHero({
             <>
               <div
                 aria-hidden
-                className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/48 to-ink/88"
+                className="absolute inset-0 bg-gradient-to-b from-ink/82 via-ink/52 to-ink/90"
               />
               <div
                 aria-hidden
-                className="absolute inset-y-0 left-0 w-[52%] bg-ink/20"
+                className="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-ink/40 via-ink/12 to-transparent md:w-[52%] md:bg-none md:bg-ink/20"
               />
             </>
           ) : (
             <>
               <div
                 aria-hidden
-                className="absolute inset-0 bg-[linear-gradient(to_right,rgba(245,241,232,0.68)_0%,rgba(245,241,232,0.34)_28%,rgba(245,241,232,0.10)_54%,rgba(245,241,232,0.00)_100%)]"
+                className="absolute inset-0 bg-[linear-gradient(to_right,rgba(245,241,232,0.82)_0%,rgba(245,241,232,0.48)_30%,rgba(245,241,232,0.16)_58%,rgba(245,241,232,0.00)_100%)] md:bg-[linear-gradient(to_right,rgba(245,241,232,0.68)_0%,rgba(245,241,232,0.34)_28%,rgba(245,241,232,0.10)_54%,rgba(245,241,232,0.00)_100%)]"
               />
               <div
                 aria-hidden
-                className="absolute inset-0 bg-[linear-gradient(to_top,rgba(245,241,232,0.28)_0%,rgba(245,241,232,0.10)_28%,rgba(245,241,232,0.00)_58%,rgba(245,241,232,0.00)_100%)]"
+                className="absolute inset-0 bg-[linear-gradient(to_top,rgba(245,241,232,0.34)_0%,rgba(245,241,232,0.14)_30%,rgba(245,241,232,0.00)_60%,rgba(245,241,232,0.00)_100%)] md:bg-[linear-gradient(to_top,rgba(245,241,232,0.28)_0%,rgba(245,241,232,0.10)_28%,rgba(245,241,232,0.00)_58%,rgba(245,241,232,0.00)_100%)]"
               />
               <div
                 aria-hidden
-                className="absolute inset-y-0 left-0 w-[54%] bg-white/8"
+                className="absolute inset-y-0 left-0 w-full bg-white/10 md:w-[54%] md:bg-white/8"
               />
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-black/[0.04]"
-              />
+              <div aria-hidden className="absolute inset-0 bg-black/[0.04]" />
             </>
           )}
         </>
       )}
 
-      {/* Soft ambient circles when no bgImage */}
+      {/* Ambient circles when no bgImage */}
       {!bgImage && !isDark && (
         <>
           <div
             aria-hidden
-            className="pointer-events-none absolute -top-32 -right-32 h-[640px] w-[640px] rounded-full bg-brand/[0.05] blur-3xl"
+            className="pointer-events-none absolute -right-24 -top-24 h-[360px] w-[360px] rounded-full bg-brand/[0.05] blur-3xl sm:h-[480px] sm:w-[480px] md:-right-32 md:-top-32 md:h-[640px] md:w-[640px]"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -bottom-32 -left-32 h-[560px] w-[560px] rounded-full bg-gold/[0.07] blur-3xl"
+            className="pointer-events-none absolute -bottom-24 -left-24 h-[320px] w-[320px] rounded-full bg-gold/[0.07] blur-3xl sm:h-[420px] sm:w-[420px] md:-bottom-32 md:-left-32 md:h-[560px] md:w-[560px]"
           />
         </>
       )}
@@ -122,14 +120,14 @@ export function PageHero({
       {/* Top gold thread */}
       <div
         aria-hidden
-        className="absolute left-0 right-0 top-[64px] h-px bg-gradient-to-r from-transparent via-gold/55 to-transparent md:top-[110px]"
+        className="absolute left-0 right-0 top-[72px] h-px bg-gradient-to-r from-transparent via-gold/55 to-transparent md:top-[110px]"
       />
 
-      {/* Top-right paisley ornament */}
+      {/* Top-right ornament */}
       <svg
         aria-hidden
         viewBox="0 0 200 200"
-        className={`pointer-events-none absolute -top-4 right-6 w-32 md:right-12 md:w-44 ${
+        className={`pointer-events-none absolute right-4 top-16 w-24 sm:w-28 md:right-12 md:top-8 md:w-44 ${
           isDark ? 'text-gold/15' : 'text-brand/10'
         }`}
         fill="none"
@@ -145,7 +143,7 @@ export function PageHero({
       {/* Vertical rail */}
       <div
         aria-hidden
-        className={`absolute right-4 top-1/2 hidden -translate-y-1/2 lg:flex flex-col items-center gap-4 ${lightText}`}
+        className={`absolute right-4 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-4 lg:flex ${lightText}`}
         style={{ writingMode: 'vertical-rl' }}
       >
         <span className="eyebrow text-[10px]">Est. {ESTABLISHED}</span>
@@ -157,20 +155,28 @@ export function PageHero({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-[1600px] px-6 md:px-12 lg:px-24">
-        <div className={layout === 'split' ? 'grid items-end gap-12 lg:grid-cols-12' : ''}>
+      <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
+        <div
+          className={
+            layout === 'split'
+              ? 'grid gap-10 md:gap-12 lg:grid-cols-12 lg:items-end'
+              : ''
+          }
+        >
           <div className={layout === 'split' ? 'lg:col-span-8' : ''}>
             {chapter && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="mb-8 flex items-center gap-4"
+                className="mb-6 flex items-center gap-3 sm:mb-7 sm:gap-4 md:mb-8"
               >
-                <span className={`font-heading text-5xl italic leading-none md:text-6xl ${accent}`}>
+                <span
+                  className={`font-heading text-4xl italic leading-none sm:text-5xl md:text-6xl ${accent}`}
+                >
                   {chapter}
                 </span>
-                <span className={`h-px w-12 ${isDark ? 'bg-gold/60' : 'bg-gold'}`} />
+                <span className={`h-px w-10 sm:w-12 ${isDark ? 'bg-gold/60' : 'bg-gold'}`} />
                 <span className={`eyebrow text-[10px] ${lightText}`}>Chapter</span>
               </motion.div>
             )}
@@ -188,7 +194,9 @@ export function PageHero({
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-              className={`display-1 mt-6 text-6xl leading-[0.92] md:text-8xl lg:text-[9.5rem] ${textColor} drop-shadow-[0_2px_10px_rgba(255,248,240,0.16)]`}
+              className={`display-1 mt-5 text-[2.9rem] leading-[0.92] sm:mt-6 sm:text-[4.1rem] md:text-8xl lg:text-[9.5rem] ${textColor} ${
+                isDark ? 'drop-shadow-[0_2px_10px_rgba(255,248,240,0.16)]' : ''
+              }`}
             >
               {headline}
             </motion.h1>
@@ -198,7 +206,7 @@ export function PageHero({
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.4 }}
-                className={`font-accent mt-8 text-2xl tracking-wide md:text-3xl ${accent}`}
+                className={`font-accent mt-6 text-lg tracking-wide sm:mt-7 sm:text-xl md:mt-8 md:text-3xl ${accent}`}
               >
                 {marathi}
               </motion.p>
@@ -209,7 +217,7 @@ export function PageHero({
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.55 }}
-                className={`font-sub mt-6 max-w-2xl text-lg leading-relaxed ${lightText}`}
+                className={`font-sub mt-5 max-w-2xl text-base leading-relaxed sm:mt-6 sm:text-lg ${lightText}`}
               >
                 {lede}
               </motion.div>
@@ -221,14 +229,14 @@ export function PageHero({
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="lg:col-span-4"
+              className="lg:col-span-4 lg:pl-4"
             >
               {sidebar}
             </motion.aside>
           )}
         </div>
 
-        <div className="relative mt-16 md:mt-20" aria-hidden>
+        <div className="relative mt-12 sm:mt-14 md:mt-20" aria-hidden>
           <div className={`h-px ${lineColor}`} />
           <span
             className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xs ${ornamentColor}`}
