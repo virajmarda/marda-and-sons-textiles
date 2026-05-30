@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
@@ -60,7 +61,12 @@ export function ShopClient() {
         setProducts(p);
         setCats(c);
       })
-      .catch(() => {})
+      .catch((error) => {
+        console.error('[shop] Failed to load products/categories:', error);
+        if (!alive) return;
+        setProducts([]);
+        setCats([]);
+      })
       .finally(() => {
         if (alive) setLoading(false);
       });
@@ -73,10 +79,15 @@ export function ShopClient() {
   const sorted = useMemo(() => {
     const list = [...products];
 
-    if (sort === 'price-asc') list.sort((a, b) => a.price_retail - b.price_retail);
-    else if (sort === 'price-desc') list.sort((a, b) => b.price_retail - a.price_retail);
-    else if (sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
-    else list.sort((a, b) => Number(b.featured) - Number(a.featured));
+    if (sort === 'price-asc') {
+      list.sort((a, b) => a.price_retail - b.price_retail);
+    } else if (sort === 'price-desc') {
+      list.sort((a, b) => b.price_retail - a.price_retail);
+    } else if (sort === 'name') {
+      list.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      list.sort((a, b) => Number(b.featured) - Number(a.featured));
+    }
 
     return list;
   }, [products, sort]);
@@ -85,8 +96,11 @@ export function ShopClient() {
     const params = new URLSearchParams(sp.toString());
 
     Object.entries(updates).forEach(([key, value]) => {
-      if (!value) params.delete(key);
-      else params.set(key, value);
+      if (!value) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
     });
 
     const qs = params.toString();
@@ -135,11 +149,11 @@ export function ShopClient() {
         bgImage={activeCategoryObj?.image}
       />
 
-      {/* Toolbar */}
       <div className="sticky top-[72px] z-30 border-y border-line/60 bg-paper/90 backdrop-blur md:top-[110px]">
         <div className="mx-auto flex max-w-[1600px] flex-col gap-4 px-4 py-4 sm:px-6 md:px-12 lg:px-24">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <button
+              type="button"
               data-testid="filters-toggle"
               onClick={() => setShowFilters(true)}
               className="inline-flex min-h-[44px] items-center gap-2 self-start text-ink transition-colors hover:text-brand"
@@ -225,7 +239,6 @@ export function ShopClient() {
         </div>
       </div>
 
-      {/* Mobile filter overlay */}
       <div
         className={`fixed inset-0 z-40 bg-ink/30 backdrop-blur-[2px] transition-all duration-300 lg:hidden ${
           showFilters ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
@@ -234,9 +247,7 @@ export function ShopClient() {
         aria-hidden="true"
       />
 
-      {/* Body */}
       <div className="mx-auto grid max-w-[1600px] gap-8 px-4 py-10 sm:px-6 sm:py-12 md:px-12 lg:grid-cols-[260px_1fr] lg:gap-12 lg:px-24 lg:py-16">
-        {/* Filters */}
         <aside
           data-testid="filters-panel"
           className={`fixed left-0 top-0 z-50 h-[100dvh] w-[88vw] max-w-[360px] overflow-y-auto bg-paper px-5 py-6 shadow-2xl transition-transform duration-300 lg:static lg:h-auto lg:w-auto lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none ${
@@ -246,6 +257,7 @@ export function ShopClient() {
           <div className="mb-6 flex items-center justify-between lg:hidden">
             <p className="eyebrow">Filter by</p>
             <button
+              type="button"
               onClick={() => setShowFilters(false)}
               className="inline-flex h-10 w-10 items-center justify-center text-ink"
               aria-label="Close filters"
@@ -254,11 +266,12 @@ export function ShopClient() {
             </button>
           </div>
 
-          <p className="mb-5 hidden lg:block eyebrow">Categories</p>
+          <p className="eyebrow mb-5 hidden lg:block">Categories</p>
 
           <ul className="flex flex-col gap-1 lg:gap-0">
             <li>
               <button
+                type="button"
                 data-testid="cat-filter-all"
                 onClick={() => setCategory('all')}
                 className={`w-full py-3 text-left font-sub transition-colors lg:border-b lg:border-line/60 lg:py-2 ${
@@ -275,6 +288,7 @@ export function ShopClient() {
             {cats.map((c) => (
               <li key={c.slug}>
                 <button
+                  type="button"
                   data-testid={`cat-filter-${c.slug}`}
                   onClick={() => setCategory(c.slug)}
                   className={`w-full py-3 text-left font-sub transition-colors lg:border-b lg:border-line/60 lg:py-2 ${
@@ -291,7 +305,7 @@ export function ShopClient() {
           </ul>
 
           <div className="mt-8 border-t border-line pt-6 lg:mt-10 lg:pt-8">
-            <p className="mb-3 eyebrow">Help & Service</p>
+            <p className="eyebrow mb-3">Help & Service</p>
             <p className="font-sub text-sm leading-relaxed text-ink-soft">
               Need a custom weave, bulk order, or wedding curation?
             </p>
@@ -305,7 +319,6 @@ export function ShopClient() {
           </div>
         </aside>
 
-        {/* Grid */}
         <div data-testid="shop-grid">
           {loading && (
             <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:gap-y-12 lg:grid-cols-3">
@@ -321,8 +334,10 @@ export function ShopClient() {
 
           {!loading && sorted.length === 0 && (
             <div className="py-20 text-center sm:py-24">
-              <p className="font-heading text-2xl italic text-ink sm:text-3xl">Nothing here yet.</p>
-              <p className="mt-4 text-ink-soft font-sub">
+              <p className="font-heading text-2xl italic text-ink sm:text-3xl">
+                Nothing here yet.
+              </p>
+              <p className="mt-4 font-sub text-ink-soft">
                 Try a different category or clear your search.
               </p>
             </div>
