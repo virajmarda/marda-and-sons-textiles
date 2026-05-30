@@ -50,7 +50,7 @@ const tiro = Tiro_Devanagari_Marathi({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://mardaandsons.com'),
+  metadataBase: new URL('https://marda-and-sons-textiles.vercel.app'),
   title: {
     default: 'मर्दा ॲन्ड सन्स · Marda & Sons — Premium Solapuri Textiles · Est. 1970',
     template: '%s · Marda & Sons',
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     title: 'मर्दा ॲन्ड सन्स — Solapuri Textiles Since 1970',
     description:
       'A heritage textile house from Solapur. Handloom bedsheets, shawls, woolen blankets, phetas & ceremonial textiles.',
-    url: 'https://mardaandsons.com',
+    url: 'https://marda-and-sons-textiles.vercel.app',
     siteName: 'Marda & Sons',
     type: 'website',
     locale: 'en_IN',
