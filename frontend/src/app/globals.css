@@ -3,22 +3,27 @@
 @tailwind utilities;
 
 :root {
-  --bg-primary: #FDFBF7;
-  --bg-secondary: #F3EFE6;
-  --bg-tertiary: #EBE4D5;
-  --ink: #2A1D1A;
-  --ink-soft: #5C4A45;
-  --brand: #6A1A2A;
-  --brand-hover: #50121F;
-  --gold: #C5A059;
-  --gold-muted: #E5D4B3;
-  --line: #D8CDBF;
+  --bg-primary: #fdfbf7;
+  --bg-secondary: #f3efe6;
+  --bg-tertiary: #ebe4d5;
+  --ink: #2a1d1a;
+  --ink-soft: #5c4a45;
+  --brand: #6a1a2a;
+  --brand-hover: #50121f;
+  --gold: #c5a059;
+  --gold-muted: #e5d4b3;
+  --line: #d8cdbf;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 html {
@@ -27,6 +32,7 @@ html {
 }
 
 body {
+  position: relative;
   background-color: var(--bg-primary);
   color: var(--ink);
   font-family: var(--font-jost), 'Jost', system-ui, sans-serif;
@@ -35,13 +41,12 @@ body {
   font-feature-settings: 'ss01', 'ss02';
 }
 
-/* Paper grain overlay */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  pointer-events: none;
   z-index: 1;
+  pointer-events: none;
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
@@ -51,14 +56,27 @@ body::before {
   color: var(--bg-primary);
 }
 
-/* Typography */
-.font-heading { font-family: var(--font-bodoni), 'Bodoni Moda', serif; }
-.font-sub     { font-family: var(--font-marcellus), 'Marcellus', serif; }
-.font-body    { font-family: var(--font-jost), 'Jost', sans-serif; }
-.font-accent  { font-family: var(--font-yatra), 'Yatra One', cursive; }
-.font-brand   { font-family: var(--font-tiro), 'Tiro Devanagari Marathi', serif; font-style: normal; }
+.font-heading {
+  font-family: var(--font-bodoni), 'Bodoni Moda', serif;
+}
 
-/* Editorial display headlines */
+.font-sub {
+  font-family: var(--font-marcellus), 'Marcellus', serif;
+}
+
+.font-body {
+  font-family: var(--font-jost), 'Jost', sans-serif;
+}
+
+.font-accent {
+  font-family: var(--font-yatra), 'Yatra One', cursive;
+}
+
+.font-brand {
+  font-family: var(--font-tiro), 'Tiro Devanagari Marathi', serif;
+  font-style: normal;
+}
+
 .display-1 {
   font-family: var(--font-bodoni), serif;
   font-weight: 500;
@@ -66,11 +84,12 @@ body::before {
   letter-spacing: -0.04em;
   line-height: 0.92;
 }
+
 .display-2 {
   font-family: var(--font-bodoni), serif;
   font-weight: 500;
   letter-spacing: -0.025em;
-  line-height: 1.0;
+  line-height: 1;
 }
 
 @layer components {
@@ -84,21 +103,27 @@ body::before {
   }
 }
 
-/* Decorative rule */
 .gold-rule {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold) 20%,
+    var(--gold) 80%,
+    transparent
+  );
 }
 
-/* Animated link underline */
 .link-underline {
   position: relative;
   display: inline-block;
 }
+
 .link-underline::after {
   content: '';
   position: absolute;
-  left: 0; bottom: -3px;
+  left: 0;
+  bottom: -3px;
   width: 100%;
   height: 1px;
   background: currentColor;
@@ -106,9 +131,11 @@ body::before {
   transform-origin: left;
   transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.link-underline:hover::after { transform: scaleX(1); }
 
-/* Marquee container */
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+
 .marquee-track {
   display: flex;
   width: max-content;
@@ -116,144 +143,200 @@ body::before {
 }
 
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
-/* Diamond bullet */
 .diamond::before {
   content: '◆';
-  color: var(--gold);
   margin-right: 0.6rem;
+  color: var(--gold);
   font-size: 0.7em;
   vertical-align: middle;
 }
 
-/* Hide scrollbar utility */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
-/* Slow zoom on hover */
-.img-zoom { transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1); }
-.img-zoom-host:hover .img-zoom { transform: scale(1.06); }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
-/* Sharp luxury button */
+.img-zoom {
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.img-zoom-host:hover .img-zoom {
+  transform: scale(1.06);
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  border: 1px solid var(--brand);
   background: var(--brand);
   color: var(--bg-primary);
   padding: 1rem 1.8rem;
   font-family: var(--font-jost), sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
   font-size: 11px;
   font-weight: 500;
-  transition: background-color 0.5s ease, transform 0.4s ease, letter-spacing 0.4s ease;
-  border: 1px solid var(--brand);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
   cursor: pointer;
+  transition:
+    background-color 0.5s ease,
+    transform 0.4s ease,
+    letter-spacing 0.4s ease;
 }
+
 .btn-primary:hover {
   background: var(--brand-hover);
   letter-spacing: 0.28em;
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .btn-ghost {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  border: 1px solid var(--ink);
   background: transparent;
   color: var(--ink);
-  border: 1px solid var(--ink);
   padding: 1rem 1.8rem;
   font-family: var(--font-jost), sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
   font-size: 11px;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
   cursor: pointer;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
 }
+
 .btn-ghost:hover {
   background: var(--ink);
   color: var(--bg-primary);
 }
 
-/* Form inputs — luxury print form style */
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
 .input-line {
   width: 100%;
-  background: transparent;
   border: none;
   border-bottom: 1px solid var(--line);
+  background: transparent;
   padding: 0.9rem 0.25rem;
-  font-family: var(--font-jost), sans-serif;
   color: var(--ink);
-  transition: border-color 0.4s ease;
+  font-family: var(--font-jost), sans-serif;
   outline: none;
+  transition: border-color 0.4s ease;
 }
+
 .input-line:focus {
   border-bottom-color: var(--brand);
 }
+
 .input-line::placeholder {
   color: var(--ink-soft);
   opacity: 0.55;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 11px;
 }
 
 .input-dark {
-  background: transparent;
+  width: 100%;
   border: none;
   border-bottom: 1px solid rgba(229, 212, 179, 0.4);
-  color: var(--bg-primary);
+  background: transparent;
   padding: 0.9rem 0.25rem;
-  width: 100%;
-  outline: none;
+  color: var(--bg-primary);
   font-family: var(--font-jost), sans-serif;
+  outline: none;
 }
-.input-dark:focus { border-bottom-color: var(--gold); }
+
+.input-dark:focus {
+  border-bottom-color: var(--gold);
+}
+
 .input-dark::placeholder {
   color: rgba(229, 212, 179, 0.55);
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 11px;
 }
 
-/* Scroll cue */
 .scroll-cue {
   position: absolute;
-  bottom: 28px;
   right: 28px;
+  bottom: 28px;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  letter-spacing: 0.3em;
   font-size: 10px;
   text-transform: uppercase;
+  letter-spacing: 0.3em;
 }
 
-/* Background paper */
-.bg-paper { background-color: var(--bg-primary); }
-.bg-paper-2 { background-color: var(--bg-secondary); }
-.bg-paper-3 { background-color: var(--bg-tertiary); }
-.bg-deep { background-color: var(--ink); color: var(--bg-primary); }
-.bg-brand { background-color: var(--brand); color: var(--bg-primary); }
+.bg-paper {
+  background-color: var(--bg-primary);
+}
 
-/* Watermark accent */
+.bg-paper-2 {
+  background-color: var(--bg-secondary);
+}
+
+.bg-paper-3 {
+  background-color: var(--bg-tertiary);
+}
+
+.bg-deep {
+  background-color: var(--ink);
+  color: var(--bg-primary);
+}
+
+.bg-brand {
+  background-color: var(--brand);
+  color: var(--bg-primary);
+}
+
 .watermark-hindi {
-  font-family: var(--font-yatra), serif;
   color: var(--brand);
   opacity: 0.05;
   pointer-events: none;
   user-select: none;
+  font-family: var(--font-yatra), serif;
 }
 
-/* Number block */
 .num-block {
-  font-family: var(--font-bodoni), serif;
-  font-style: italic;
   color: var(--gold);
+  font-family: var(--font-bodoni), serif;
   font-size: 14px;
+  font-style: italic;
   letter-spacing: 0.1em;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
