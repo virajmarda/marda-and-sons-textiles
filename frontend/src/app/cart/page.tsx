@@ -198,7 +198,7 @@ export default function CartPage() {
                     <div className="flex items-center border border-line">
                       <button
                         data-testid={`cart-dec-${item.slug}`}
-                        onClick={() => setQty(item.slug, item.qty - 1)}
+                        onClick={() => setQty(item.slug, item.mode, item.qty - 1)}
                         className="flex h-10 w-10 items-center justify-center hover:bg-bg-secondary"
                         aria-label={`Decrease quantity of ${item.name}`}
                       >
@@ -209,7 +209,7 @@ export default function CartPage() {
 
                       <button
                         data-testid={`cart-inc-${item.slug}`}
-                        onClick={() => setQty(item.slug, item.qty + 1)}
+                        onClick={() => setQty(item.slug, item.mode, item.qty + 1)}
                         className="flex h-10 w-10 items-center justify-center hover:bg-bg-secondary"
                         aria-label={`Increase quantity of ${item.name}`}
                       >
@@ -219,7 +219,7 @@ export default function CartPage() {
 
                     <button
                       data-testid={`cart-remove-${item.slug}`}
-                      onClick={() => remove(item.slug)}
+                      onClick={() => remove(item.slug, item.mode)}
                       className="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-brand"
                       aria-label={`Remove ${item.name} from cart`}
                     >
