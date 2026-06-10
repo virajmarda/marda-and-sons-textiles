@@ -29,6 +29,7 @@ const config: Config = {
           dark: '#9A7C3F',
         },
         line: '#D8CDBF',
+        border: '#D8CDBF',
       },
       fontFamily: {
         heading: ['var(--font-bodoni)', 'Bodoni Moda', 'serif'],
@@ -45,6 +46,8 @@ const config: Config = {
         marquee: 'marquee 35s linear infinite',
         'fade-up': 'fade-up 1s cubic-bezier(0.16, 1, 0.3, 1) both',
         shimmer: 'shimmer 2.4s linear infinite',
+        'fade-in': 'fade-in 0.2s ease both',
+        'slide-up': 'slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both',
       },
       keyframes: {
         marquee: {
@@ -58,6 +61,14 @@ const config: Config = {
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
+        },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'slide-up': {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },
