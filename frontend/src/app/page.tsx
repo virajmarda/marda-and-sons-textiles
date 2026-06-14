@@ -448,7 +448,7 @@ export default async function HomePage() {
       </section>
 
       {/* VISIT US */}
-      <section className="bg-paper py-10 sm:py-12 md:py-16">
+              <section className="bg-paper pt-0 pb-10 sm:pb-12 md:pb-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
             <div>
