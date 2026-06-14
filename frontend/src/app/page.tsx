@@ -448,7 +448,7 @@ export default async function HomePage() {
       </section>
 
       {/* VISIT US */}
-              <section className="bg-paper pt-0 pb-10 sm:pb-12 md:pb-16">
+              <section className="bg-paper py-16 sm:py-20 md:py-24">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
             <div>
@@ -498,7 +498,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[4/4] lg:aspect-[4/5]">
+            <div className="relative mt-12 sm:mt-16 aspect-[4/5] overflow-hidden sm:aspect-[4/4] lg:aspect-[4/5]">
               <iframe
                 title="Marda & Sons map"
                 src="https://www.google.com/maps?q=Marda+%26+Sons+Chattigalli+Mangalwar+Peth+Solapur&output=embed"
