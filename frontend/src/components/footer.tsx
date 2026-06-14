@@ -27,7 +27,7 @@ export function Footer() {
         method: 'POST',
         body: JSON.stringify({ email: email.trim() }),
       });
-      toast.success('Welcome to the Marda Atelier · आपका स्वागत है');
+      toast.success('You're in — आपका स्वागत है');
       setEmail('');
     } catch {
       toast.error('Could not subscribe. Please try again.');
@@ -50,7 +50,7 @@ export function Footer() {
         {/* Newsletter */}
         <div className="grid gap-10 border-b border-bg-primary/15 pb-12 sm:pb-14 md:gap-12 md:pb-16 lg:grid-cols-2 lg:items-end lg:pb-20">
           <div>
-            <p className="eyebrow text-gold-muted">The Atelier Letter</p>
+            <p className="eyebrow text-gold-muted">Our Newsletter</p>
             <h3 className="mt-4 font-heading text-3xl italic leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               Heritage notes, new weaves
               <br className="hidden sm:block" /> and quiet invitations.
