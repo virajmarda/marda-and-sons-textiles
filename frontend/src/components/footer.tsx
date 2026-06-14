@@ -27,7 +27,7 @@ export function Footer() {
         method: 'POST',
         body: JSON.stringify({ email: email.trim() }),
       });
-      toast.success("Subscribed!/ आपका स्वागत है");
+        toast.success("Subscribed! आपका स्वागत है");
       setEmail('');
     } catch {
       toast.error('Could not subscribe. Please try again.');
