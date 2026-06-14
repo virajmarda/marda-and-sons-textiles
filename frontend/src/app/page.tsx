@@ -185,7 +185,7 @@ export default async function HomePage() {
       </section>
 
       {/* THE HOUSE */}
-      <section className="py-16 sm:py-20 md:py-32 md:py-40">
+      <section className="py-10 sm:py-12 md:py-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-16">
             <div className="lg:col-span-5">
@@ -234,7 +234,7 @@ export default async function HomePage() {
       </section>
 
       {/* CATEGORIES */}
-      <section data-testid="categories-section" className="bg-paper-2 py-16 sm:py-20 md:py-32 md:py-40">
+      <section data-testid="categories-section" className="bg-paper-2 py-10 sm:py-12 md:py-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="mb-12 flex flex-col gap-6 md:mb-20 md:flex-row md:items-end md:justify-between md:gap-8">
             <div>
@@ -281,7 +281,7 @@ export default async function HomePage() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section data-testid="featured-section" className="py-16 sm:py-20 md:py-32 md:py-40">
+      <section data-testid="featured-section" className="py-10 sm:py-12 md:py-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="mb-12 flex flex-col gap-6 md:mb-20 md:flex-row md:items-end md:justify-between md:gap-8">
             <div>
@@ -342,7 +342,7 @@ export default async function HomePage() {
       </section>
 
       {/* VALUE PILLARS */}
-      <section className="bg-paper py-16 sm:py-20 md:py-32 md:py-40">
+      <section className="bg-paper py-10 sm:py-12 md:py-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <SectionLabel number="05" label="Why Marda" />
           <h2 className="display-2 mt-5 max-w-3xl text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
@@ -401,8 +401,8 @@ export default async function HomePage() {
       </section>
 
       {/* WHOLESALE / RETAIL SPLIT */}
-      <section className="bg-paper">
-        <div className="grid md:grid-cols-2">
+      <section className="bg-paper overflow-hidden">
+        <div className="grid md:grid-cols-2 items-stretch">
           <div className="relative overflow-hidden bg-brand px-4 py-16 text-bg-primary sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
             <span className="pointer-events-none absolute -bottom-6 -right-4 font-accent text-[22vw] leading-none opacity-10 md:-bottom-10 md:-right-10 md:text-[10vw]">
               घाऊक
@@ -448,7 +448,7 @@ export default async function HomePage() {
       </section>
 
       {/* VISIT US */}
-      <section className="bg-paper py-16 sm:py-20 md:py-32 md:py-40">
+      <section className="bg-paper py-10 sm:py-12 md:py-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
             <div>
