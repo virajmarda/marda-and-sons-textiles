@@ -28,7 +28,7 @@ export default function HeritagePage() {
     {
       y: '2002',
       t: 'Beyond linens',
-      d: 'We expand to towels, shawls, phetas, woolen blankets, and ceremonial textiles — the looms of Solapur, in eight chapters.',
+      d: 'We expand to towels, shawls, phetas, woolen blankets, and ceremonial textiles — the looms of Solapur, in eight product lines.',
       img: editorial,
     },
     {
@@ -39,8 +39,8 @@ export default function HeritagePage() {
     },
     {
       y: '2026',
-      t: 'The atelier opens',
-      d: 'Today, we open our doors to the world — retail and wholesale, in one heritage atelier.',
+      t: 'We open to the world',
+      d: 'Today, we open our doors to the world — retail and wholesale, retail and wholesale, all in one place.',
       img: editorial,
     },
   ];
@@ -99,7 +99,7 @@ export default function HeritagePage() {
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-12 lg:px-24">
           <SectionLabel number="02" label="A timeline" />
           <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
-            From a single loom <span className="italic text-brand">to an atelier.</span>
+            From a single loom <span className="italic text-brand">to where we are today.</span>
           </h2>
 
           <div className="mt-12 space-y-12 sm:mt-14 sm:space-y-14 md:mt-20 md:space-y-20 lg:space-y-24">
