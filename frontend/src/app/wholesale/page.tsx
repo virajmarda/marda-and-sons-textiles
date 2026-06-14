@@ -99,8 +99,8 @@ export default function WholesalePage() {
         }
         lede={
           <>
-            Our wholesale roots run fifty-five years deep. Today, we extend the same loom-level honesty to
-            retailers, gifting houses, exporters, and wedding curators across India and abroad.
+            Our wholesale roots run fifty-five years deep. Today, we extend the same the same honest standards to
+            retailers, gifting houses, exporters, and wedding planners across India and abroad.
           </>
         }
       />
@@ -120,7 +120,7 @@ export default function WholesalePage() {
               {
                 icon: HeartHandshake,
                 t: 'Corporate Gifting',
-                d: 'Wedding return-gift bundles, Diwali hampers, employee gifting — packaged with heritage.',
+                d: 'Wedding return-gift bundles, Diwali hampers, employee gifting — packed with care.',
                 id: 'gifting',
               },
               {
@@ -170,13 +170,13 @@ export default function WholesalePage() {
 
           <SectionLabel number="02" label="What you'll receive" />
           <h2 className="display-2 mt-6 text-3xl sm:text-4xl md:mt-8 md:text-5xl">
-            A curated partnership.
+            How it works.
           </h2>
 
           <ul className="mt-8 space-y-4 font-sub text-base text-bg-primary/85 sm:mt-10 sm:text-lg">
-            <li className="diamond">Tailored price list within 24 hours</li>
+            <li className="diamond">Price list sent within 24 hours</li>
             <li className="diamond">Free fabric swatches dispatched to your office</li>
-            <li className="diamond">Dedicated wholesale relationship manager</li>
+            <li className="diamond">One person to handle your account directly</li>
             <li className="diamond">Custom weaves, sizes, packaging on request</li>
             <li className="diamond">Pan-India dispatch · export documentation</li>
           </ul>
