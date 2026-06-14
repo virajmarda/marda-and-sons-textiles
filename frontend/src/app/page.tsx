@@ -35,7 +35,7 @@ export default async function HomePage() {
       >
         <img
           src={hero}
-          alt="Heritage textile boutique"
+          alt="Solapur handloom textiles"
           className="absolute inset-0 h-full w-full object-cover object-center scale-105 origin-center"
         />
 
@@ -82,7 +82,7 @@ export default async function HomePage() {
               </Reveal>
 
               <Reveal delay={0.12}>
-                <p className="eyebrow text-gold-muted">The House of मर्दा ॲन्ड सन्स</p>
+                <p className="eyebrow text-gold-muted">मर्दा ॲन्ड सन्स</p>
               </Reveal>
 
               <Reveal delay={0.18}>
@@ -104,7 +104,7 @@ export default async function HomePage() {
                 <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-bg-primary/90 sm:max-w-2xl sm:text-lg md:mt-6 md:text-xl">
                   For fifty-five years, the looms of Solapur have woven for one family that listens. Today,
                   <span className="font-brand not-italic text-gold-muted"> मर्दा ॲन्ड सन्स </span>
-                  brings that quiet mastery into your home — and into the world.
+                  brings that craft and care into your home — and into the world.
                 </p>
               </Reveal>
 
@@ -210,7 +210,7 @@ export default async function HomePage() {
                 <p className="mt-6 leading-relaxed text-ink-soft md:mt-8">
                   Five and a half decades later, that promise has clothed temples, homes, weddings, and gifting
                   houses across India. We are now opening our store to a generation that asks for honesty,
-                  provenance, and the skill craft of Indian textiles.
+                  where it comes from, and the craftsmanship of Indian textiles.
                 </p>
 
                 <div className="mt-8 grid grid-cols-2 gap-x-8 gap-y-6 sm:flex sm:flex-wrap sm:gap-x-12 md:mt-10">
@@ -290,7 +290,7 @@ export default async function HomePage() {
                 The Textile <span className="italic text-brand">Story.</span>
               </h2>
               <p className="mt-4 max-w-xl text-ink-soft font-sub">
-                Eight quietly extraordinary pieces — handpicked by our store for you this season.
+                Eight of our best pieces — handpicked by our store for you this season.
               </p>
             </div>
             <Link
@@ -365,7 +365,7 @@ export default async function HomePage() {
               },
               {
                 icon: Award,
-                label: 'Heritage Pricing',
+                label: 'Fair Pricing',
                 text: 'Wholesale roots mean retail prices that feel almost too fair.',
               },
               {
@@ -396,7 +396,7 @@ export default async function HomePage() {
           <p className="mt-5 font-heading text-2xl italic leading-snug text-ink sm:text-3xl md:mt-6 md:text-4xl">
             "We have bought our family's bedsheets only from Marda — since my grandfather's time."
           </p>
-          <p className="eyebrow mt-6 md:mt-8">— Apte family, Pune · patrons since 1988</p>
+          <p className="eyebrow mt-6 md:mt-8">— Apte family, Pune · customers since 1988</p>
         </div>
       </section>
 
@@ -409,7 +409,7 @@ export default async function HomePage() {
             </span>
             <SectionLabel number="06" label="Wholesale" />
             <h3 className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl">
-              For partners of scale.
+              For bulk buyers and trade orders.
             </h3>
             <p className="font-sub mt-5 max-w-md leading-relaxed text-bg-primary/85 md:mt-6">
               Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has fulfilled
@@ -430,7 +430,7 @@ export default async function HomePage() {
             </span>
             <SectionLabel number="07" label="Retail" />
             <h3 className="display-2 mt-6 text-4xl italic text-brand sm:text-5xl md:mt-8 md:text-6xl">
-              For homes that listen.
+              For homes and families.
             </h3>
             <p className="font-sub mt-5 max-w-md leading-relaxed text-ink-soft md:mt-6">
               From your first bath towel to your daughter's wedding trousseau — shop the same heritage our
