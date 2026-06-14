@@ -3,7 +3,7 @@ import type { ElementType } from 'react';
 type Variant = 'inline' | 'large' | 'huge' | 'micro';
 
 const SIZES: Record<Variant, string> = {
-  micro: 'text-[15px] leading-none md:text-[17px]',
+  micro: 'text-[22px] leading-none md:text-[26px]',
   inline: 'text-xl leading-none md:text-2xl',
   large: 'text-4xl leading-[0.95] md:text-6xl',
   huge: 'text-[clamp(3.5rem,16vw,10rem)] leading-[0.9] md:text-[clamp(5rem,12vw,12rem)]',
