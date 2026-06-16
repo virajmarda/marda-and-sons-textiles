@@ -450,8 +450,8 @@ export default async function HomePage() {
       {/* VISIT US */}
               <section className="bg-paper py-16 sm:py-20 md:py-24">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-            <div>
+                  <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-16">
+                    <div className="lg:flex lg:flex-col lg:justify-center">
               <SectionLabel number="08" label="Visit Us" />
               <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
                 The store in <span className="italic text-brand">Chattigalli.</span>
@@ -498,7 +498,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="relative mt-12 sm:mt-16 aspect-[4/5] overflow-hidden sm:aspect-[4/4] lg:aspect-[4/5]">
+                    <div className="relative mt-12 sm:mt-16 lg:mt-0 aspect-[4/5] sm:aspect-[16/9] lg:aspect-auto lg:h-full min-h-[320px] overflow-hidden rounded-2xl shadow-lg">
               <iframe
                 title="Marda & Sons map"
                 src="https://www.google.com/maps?q=Marda+%26+Sons+Chattigalli+Mangalwar+Peth+Solapur&output=embed"
