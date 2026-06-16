@@ -31,7 +31,7 @@ export default async function HomePage() {
       {/* HERO */}
       <section
         data-testid="hero-section"
-        className="relative flex min-h-[92svh] items-end overflow-hidden md:min-h-[100vh]"
+                  className="relative flex min-h-[100svh] items-end overflow-hidden"
       >
         <img
           src={hero}
@@ -44,19 +44,6 @@ export default async function HomePage() {
 
         <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
-        <svg
-          aria-hidden
-          viewBox="0 0 200 200"
-          className="pointer-events-none absolute right-4 top-24 w-28 text-gold/12 sm:w-36 md:right-16 md:top-32 md:w-56 md:text-gold/15"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.6"
-        >
-          <path d="M100 30 C 60 30, 30 60, 30 100 C 30 140, 60 170, 100 170 C 130 170, 150 140, 150 110 C 150 80, 130 70, 110 70 C 95 70, 85 80, 85 95 C 85 105, 95 110, 105 110" />
-          <circle cx="100" cy="100" r="60" />
-          <circle cx="100" cy="100" r="30" />
-          <path d="M40 100 L 160 100 M 100 40 L 100 160" strokeDasharray="2 4" />
-        </svg>
 
         <div
           aria-hidden
@@ -68,8 +55,8 @@ export default async function HomePage() {
           <span className="eyebrow text-[10px]">Solapur · India</span>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[1600px] px-4 pb-16 pt-32 sm:px-6 sm:pb-20 sm:pt-36 md:px-12 md:pb-28 md:pt-48 lg:px-24 lg:pb-32 lg:pt-56">
-          <div className="grid items-end gap-10 lg:grid-cols-12 lg:gap-12">
+                  <div className="relative mx-auto w-full max-w-[1600px] px-4 pb-10 pt-24 sm:px-6 sm:pb-20 sm:pt-36 md:px-12 md:pb-28 md:pt-48 lg:px-24 lg:pb-32 lg:pt-56"
+                      <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12 lg:items-end">
             <div className="lg:col-span-8">
               <Reveal delay={0.05}>
                 <div className="mb-6 flex items-center gap-3 sm:gap-4 md:mb-8">
@@ -86,7 +73,7 @@ export default async function HomePage() {
               </Reveal>
 
               <Reveal delay={0.18}>
-                <h1 className="display-1 mt-5 text-[3.1rem] leading-[0.9] text-bg-primary sm:text-[4.35rem] md:mt-6 md:text-[10vw] lg:text-[8vw]">
+                            <h1 className="display-1 mt-4 text-[2.2rem] leading-[0.92] text-bg-primary xs:text-[2.6rem] sm:text-[4.35rem] sm:leading-[0.9] sm:mt-5 md:mt-6 md:text-[10vw] lg:text-[8vw]">
                   All-in-one
                   <br />
                   Textile
@@ -126,9 +113,8 @@ export default async function HomePage() {
                   </Link>
                 </div>
               </Reveal>
-            </div>
-
-            <div className="hidden lg:col-span-4 lg:block">
+                      
+                  <div className="mt-8 lg:col-span-4 sm:mt-10 lg:mt-0">
               <Reveal delay={0.7}>
                 <div className="border border-gold/40 bg-ink/40 p-8 backdrop-blur-sm">
                   <p className="eyebrow mb-4 text-gold">Visiting Solapur?</p>
