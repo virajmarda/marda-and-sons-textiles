@@ -28,7 +28,7 @@ export default async function HomePage() {
     'https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/6ee061934d03a5fc78962a067d6eb5b00c915d6aee9992d61cd1ff9b93f6da20.png';
 
   return (
-    <div data-testid="home-page" className="bg-paper">
+    <div data-testid="home-page" className="bg-paper" />
       {/* HERO */}
       <section
         data-testid="hero-section"
