@@ -66,7 +66,7 @@ export default function HeritagePage() {
             ways, the story of how Solapur dressed the Indian household.
           </>
         }
-        bgImage={macro}
+                bgImage={macro} tone="dark"
         height="xl"
       />
 
