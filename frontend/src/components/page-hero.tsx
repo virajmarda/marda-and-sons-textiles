@@ -123,23 +123,7 @@ export function PageHero({
         className="absolute left-0 right-0 top-[72px] h-px bg-gradient-to-r from-transparent via-gold/55 to-transparent md:top-[110px]"
       />
 
-      {/* Top-right ornament */}
-      <svg
-        aria-hidden
-        viewBox="0 0 200 200"
-        className={`pointer-events-none absolute right-4 top-16 w-24 sm:w-28 md:right-12 md:top-8 md:w-44 ${
-          isDark ? 'text-gold/15' : 'text-brand/10'
-        }`}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="0.7"
-      >
-        <path d="M100 30 C 60 30, 30 60, 30 100 C 30 140, 60 170, 100 170 C 130 170, 150 140, 150 110 C 150 80, 130 70, 110 70 C 95 70, 85 80, 85 95 C 85 105, 95 110, 105 110" />
-        <circle cx="100" cy="100" r="60" />
-        <circle cx="100" cy="100" r="30" />
-        <path d="M40 100 L 160 100 M 100 40 L 100 160" strokeDasharray="2 4" />
-      </svg>
-
+      
       {/* Vertical rail */}
       <div
         aria-hidden
