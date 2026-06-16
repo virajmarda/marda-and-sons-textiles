@@ -24,15 +24,14 @@ export default async function HomePage() {
   const macro =
     'https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/85fde45f54ca0616d6a74571cd3f6b4b0497577453850b7019bdb09ade3190b3.png';
   const editorial =
-        'https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/6ee061934d03a5fc78962a067d6eb5b00c915d6aee9992d61cd1ff9b93f6da20.png';
     'https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/6ee061934d03a5fc78962a067d6eb5b00c915d6aee9992d61cd1ff9b93f6da20.png';
 
   return (
-    <div data-testid="home-page" className="bg-paper" />
-      /* HERO */
+    <div data-testid="home-page" className="bg-paper">
+      {/* HERO */}
       <section
         data-testid="hero-section"
-                  className="relative flex min-h-[100svh] items-end overflow-hidden"
+        className="relative flex min-h-[100svh] items-end overflow-hidden"
       >
         <img
           src={hero}
@@ -42,9 +41,7 @@ export default async function HomePage() {
 
         <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/55 to-ink/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-ink/78 via-ink/28 to-transparent md:from-ink/70 md:via-ink/20" />
-
         <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-
 
         <div
           aria-hidden
@@ -56,8 +53,8 @@ export default async function HomePage() {
           <span className="eyebrow text-[10px]">Solapur · India</span>
         </div>
 
-                  <div className="relative mx-auto w-full max-w-[1600px] px-4 pb-10 pt-24 sm:px-6 sm:pb-20 sm:pt-36 md:px-12 md:pb-28 md:pt-48 lg:px-24 lg:pb-32 lg:pt-56"
-                      <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12 lg:items-end">
+        <div className="relative mx-auto w-full max-w-[1600px] px-4 pb-10 pt-24 sm:px-6 sm:pb-20 sm:pt-36 md:px-12 md:pb-28 md:pt-48 lg:px-24 lg:pb-32 lg:pt-56">
+          <div className="grid items-start gap-10 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="lg:col-span-8">
               <Reveal delay={0.05}>
                 <div className="mb-6 flex items-center gap-3 sm:gap-4 md:mb-8">
@@ -74,7 +71,7 @@ export default async function HomePage() {
               </Reveal>
 
               <Reveal delay={0.18}>
-                            <h1 className="display-1 mt-4 text-[2.2rem] leading-[0.92] text-bg-primary xs:text-[2.6rem] sm:text-[4.35rem] sm:leading-[0.9] sm:mt-5 md:mt-6 md:text-[10vw] lg:text-[8vw]">
+                <h1 className="display-1 mt-4 text-[2.2rem] leading-[0.92] text-bg-primary xs:text-[2.6rem] sm:mt-5 sm:text-[4.35rem] sm:leading-[0.9] md:mt-6 md:text-[10vw] lg:text-[8vw]">
                   All-in-one
                   <br />
                   Textile
@@ -90,7 +87,8 @@ export default async function HomePage() {
 
               <Reveal delay={0.5}>
                 <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-bg-primary/90 sm:max-w-2xl sm:text-lg md:mt-6 md:text-xl">
-                  For fifty-five years, the looms of Solapur have woven for one family that listens. Today,
+                  For fifty-five years, the looms of Solapur have woven for one family that listens.
+                  Today,
                   <span className="font-brand not-italic text-gold-muted"> मर्दा ॲन्ड सन्स </span>
                   brings that craft and care into your home — and into the world.
                 </p>
@@ -114,14 +112,15 @@ export default async function HomePage() {
                   </Link>
                 </div>
               </Reveal>
-                      
-                  <div className="mt-8 lg:col-span-4 sm:mt-10 lg:mt-0">
+            </div>
+
+            <div className="mt-8 lg:col-span-4 sm:mt-10 lg:mt-0">
               <Reveal delay={0.7}>
                 <div className="border border-gold/40 bg-ink/40 p-8 backdrop-blur-sm">
                   <p className="eyebrow mb-4 text-gold">Visiting Solapur?</p>
                   <p className="font-sub leading-relaxed text-bg-primary/90">
-                    Our Store<span className="italic">430, Chattigalli, Mangalwar Peth</span> has welcomed
-                    three generations of TRUST.
+                    Our Store <span className="italic">430, Chattigalli, Mangalwar Peth</span> has
+                    welcomed three generations of TRUST.
                   </p>
                   <a
                     href={MAPS_DIRECTIONS}
@@ -151,21 +150,32 @@ export default async function HomePage() {
       </section>
 
       {/* MARQUEE */}
-      <section aria-hidden className="overflow-hidden border-y border-gold/20 bg-ink py-4 text-bg-primary sm:py-5 md:py-6">
+      <section
+        aria-hidden
+        className="overflow-hidden border-y border-gold/20 bg-ink py-4 text-bg-primary sm:py-5 md:py-6"
+      >
         <div className="marquee-track whitespace-nowrap px-4 gap-8 sm:gap-10 md:gap-12">
           {Array.from({ length: 2 }).map((_, i) => (
             <div
               key={`marquee-${i}`}
               className="flex shrink-0 items-center gap-8 font-heading text-xl italic sm:gap-10 sm:text-2xl md:gap-12 md:text-3xl"
             >
-              <span>Handloom Bedsheets</span><span className="text-gold">◆</span>
-              <span className="font-accent text-gold">सोलापूरची शान</span><span className="text-gold">◆</span>
-              <span>Woolen Blankets</span><span className="text-gold">◆</span>
-              <span>Royal Phetas</span><span className="text-gold">◆</span>
-              <span className="font-accent text-gold">परंपरा</span><span className="text-gold">◆</span>
-              <span>Heritage Shawls</span><span className="text-gold">◆</span>
-              <span>Quality Towels</span><span className="text-gold">◆</span>
-              <span className="font-accent text-gold">मर्दा ॲन्ड सन्स</span><span className="text-gold">◆</span>
+              <span>Handloom Bedsheets</span>
+              <span className="text-gold">◆</span>
+              <span className="font-accent text-gold">सोलापूरची शान</span>
+              <span className="text-gold">◆</span>
+              <span>Woolen Blankets</span>
+              <span className="text-gold">◆</span>
+              <span>Royal Phetas</span>
+              <span className="text-gold">◆</span>
+              <span className="font-accent text-gold">परंपरा</span>
+              <span className="text-gold">◆</span>
+              <span>Heritage Shawls</span>
+              <span className="text-gold">◆</span>
+              <span>Quality Towels</span>
+              <span className="text-gold">◆</span>
+              <span className="font-accent text-gold">मर्दा ॲन्ड सन्स</span>
+              <span className="text-gold">◆</span>
             </div>
           ))}
         </div>
@@ -191,13 +201,15 @@ export default async function HomePage() {
             <div className="lg:col-span-6 lg:col-start-7">
               <Reveal delay={0.2}>
                 <p className="font-sub text-lg leading-relaxed text-ink sm:text-xl md:text-2xl">
-                  In a city the world once turned to for its textile, our family began with one small shop and a
-                  single promise — that textile reaches household with happiness and trust.
+                  In a city the world once turned to for its textile, our family began with one
+                  small shop and a single promise — that textile reaches household with happiness
+                  and trust.
                 </p>
                 <p className="mt-6 leading-relaxed text-ink-soft md:mt-8">
-                  Five and a half decades later, that promise has clothed temples, homes, weddings, and gifting
-                  houses across India. We are now opening our store to a generation that asks for honesty,
-                  where it comes from, and the craftsmanship of Indian textiles.
+                  Five and a half decades later, that promise has clothed temples, homes, weddings,
+                  and gifting houses across India. We are now opening our store to a generation
+                  that asks for honesty, where it comes from, and the craftsmanship of Indian
+                  textiles.
                 </p>
 
                 <div className="mt-8 grid grid-cols-2 gap-x-8 gap-y-6 sm:flex sm:flex-wrap sm:gap-x-12 md:mt-10">
@@ -249,17 +261,23 @@ export default async function HomePage() {
                 >
                   <div
                     className={`relative overflow-hidden bg-bg-tertiary ${
-                      i % 2 === 0 ? 'aspect-[4/5] md:aspect-[3/4]' : 'aspect-[4/5] md:aspect-square md:mt-12'
+                      i % 2 === 0
+                        ? 'aspect-[4/5] md:aspect-[3/4]'
+                        : 'aspect-[4/5] md:aspect-square md:mt-12'
                     }`}
                   >
                     <img src={c.image} alt={c.name} className="img-zoom h-full w-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
-                      <p className="mb-1 text-sm text-gold-muted md:text-base font-accent">{c.marathi}</p>
-                      <p className="font-heading text-2xl italic text-bg-primary md:text-3xl">{c.name}</p>
+                      <p className="mb-1 font-accent text-sm text-gold-muted md:text-base">
+                        {c.marathi}
+                      </p>
+                      <p className="font-heading text-2xl italic text-bg-primary md:text-3xl">
+                        {c.name}
+                      </p>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm text-ink-soft md:mt-4 font-sub">{c.tagline}</p>
+                  <p className="mt-3 font-sub text-sm text-ink-soft md:mt-4">{c.tagline}</p>
                 </Link>
               </Reveal>
             ))}
@@ -276,7 +294,7 @@ export default async function HomePage() {
               <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
                 The Textile <span className="italic text-brand">Story.</span>
               </h2>
-              <p className="mt-4 max-w-xl text-ink-soft font-sub">
+              <p className="mt-4 max-w-xl font-sub text-ink-soft">
                 Eight of our best pieces — handpicked by our store for you this season.
               </p>
             </div>
@@ -299,7 +317,12 @@ export default async function HomePage() {
 
       {/* HERITAGE STORY CTA */}
       <section className="relative overflow-hidden bg-ink text-bg-primary">
-        <img src={macro} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-25" />
+        <img
+          src={macro}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover opacity-25"
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-transparent" />
         <div className="relative mx-auto grid max-w-[1600px] gap-10 px-4 py-16 sm:px-6 sm:py-20 md:px-12 md:py-32 lg:grid-cols-2 lg:gap-16 lg:px-24 lg:py-44">
           <div>
@@ -310,8 +333,9 @@ export default async function HomePage() {
               We weave for <span className="italic text-gold">trust.</span>
             </h2>
             <p className="font-sub mt-6 max-w-xl text-base leading-relaxed text-bg-primary/80 sm:text-lg md:mt-10">
-              From a wholesale shop in Chattigalli, Solapur in 1970, to homes and gifting houses across the country —
-              this is the longer story of a family, a city, and a craft that built its legacy.
+              From a wholesale shop in Chattigalli, Solapur in 1970, to homes and gifting houses
+              across the country — this is the longer story of a family, a city, and a craft that
+              built its legacy.
             </p>
             <Link
               href="/heritage"
@@ -323,7 +347,11 @@ export default async function HomePage() {
           </div>
 
           <div className="hidden lg:block">
-            <img src={editorial} alt="Pheta and shawls flat lay" className="h-full w-full object-cover" />
+            <img
+              src={editorial}
+              alt="Pheta and shawls flat lay"
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
       </section>
@@ -364,8 +392,10 @@ export default async function HomePage() {
               <Reveal key={p.label} delay={i * 0.08}>
                 <div className="border-t border-line pt-6 md:pt-8">
                   <p.icon size={28} strokeWidth={1.2} className="text-brand" />
-                  <h3 className="mt-5 font-heading text-2xl italic text-ink md:mt-6">{p.label}</h3>
-                  <p className="mt-3 leading-relaxed text-ink-soft font-sub">{p.text}</p>
+                  <h3 className="mt-5 font-heading text-2xl italic text-ink md:mt-6">
+                    {p.label}
+                  </h3>
+                  <p className="mt-3 font-sub leading-relaxed text-ink-soft">{p.text}</p>
                 </div>
               </Reveal>
             ))}
@@ -388,8 +418,8 @@ export default async function HomePage() {
       </section>
 
       {/* WHOLESALE / RETAIL SPLIT */}
-      <section className="bg-paper overflow-hidden">
-        <div className="grid md:grid-cols-2 items-stretch">
+      <section className="overflow-hidden bg-paper">
+        <div className="grid items-stretch md:grid-cols-2">
           <div className="relative overflow-hidden bg-brand px-4 py-16 text-bg-primary sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
             <span className="pointer-events-none absolute -bottom-6 -right-4 font-accent text-[22vw] leading-none opacity-10 md:-bottom-10 md:-right-10 md:text-[10vw]">
               घाऊक
@@ -399,8 +429,9 @@ export default async function HomePage() {
               For bulk buyers and trade orders.
             </h3>
             <p className="font-sub mt-5 max-w-md leading-relaxed text-bg-primary/85 md:mt-6">
-              Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has fulfilled
-              orders from a hundred pieces to a hundred thousand, with the same loom-level honesty.
+              Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has
+              fulfilled orders from a hundred pieces to a hundred thousand, with the same
+              loom-level honesty.
             </p>
             <Link
               href="/wholesale"
@@ -420,8 +451,8 @@ export default async function HomePage() {
               For homes and families.
             </h3>
             <p className="font-sub mt-5 max-w-md leading-relaxed text-ink-soft md:mt-6">
-              From your first bath towel to your daughter's wedding trousseau — shop the same heritage our
-              wholesale partners receive, now beautifully retailed.
+              From your first bath towel to your daughter's wedding trousseau — shop the same
+              heritage our wholesale partners receive, now beautifully retailed.
             </p>
             <Link
               href="/shop"
@@ -435,20 +466,20 @@ export default async function HomePage() {
       </section>
 
       {/* VISIT US */}
-              <section className="bg-paper py-16 sm:py-20 md:py-24">
+      <section className="bg-paper py-16 sm:py-20 md:py-24">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
-                  <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-16">
-                    <div className="lg:flex lg:flex-col lg:justify-center">
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-16">
+            <div className="lg:flex lg:flex-col lg:justify-center">
               <SectionLabel number="08" label="Visit Us" />
               <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
                 The store in <span className="italic text-brand">Chattigalli.</span>
               </h2>
               <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg md:mt-6">
-                The kind of shop where time slows down — where weavers, brides, and innkeepers all sit on
-                the same takhat with chai.
+                The kind of shop where time slows down — where weavers, brides, and innkeepers all
+                sit on the same takhat with chai.
               </p>
 
-              <ul className="mt-8 space-y-4 text-ink font-sub md:mt-10">
+              <ul className="mt-8 space-y-4 font-sub text-ink md:mt-10">
                 <li className="flex gap-3">
                   <span className="num-block w-8 shrink-0">01</span>
                   {STORE_ADDRESS}
@@ -485,7 +516,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-                    <div className="relative mt-12 sm:mt-16 lg:mt-0 aspect-[4/5] sm:aspect-[16/9] lg:aspect-auto lg:h-full min-h-[320px] overflow-hidden rounded-2xl shadow-lg">
+            <div className="relative mt-12 aspect-[4/5] min-h-[320px] overflow-hidden rounded-2xl shadow-lg sm:mt-16 sm:aspect-[16/9] lg:mt-0 lg:h-full lg:aspect-auto">
               <iframe
                 title="Marda & Sons map"
                 src="https://www.google.com/maps?q=Marda+%26+Sons+Chattigalli+Mangalwar+Peth+Solapur&output=embed"
