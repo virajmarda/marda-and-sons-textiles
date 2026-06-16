@@ -29,7 +29,7 @@ export default async function HomePage() {
 
   return (
     <div data-testid="home-page" className="bg-paper" />
-      {/* HERO */}
+      /* HERO */
       <section
         data-testid="hero-section"
                   className="relative flex min-h-[100svh] items-end overflow-hidden"
