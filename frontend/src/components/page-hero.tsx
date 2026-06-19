@@ -38,7 +38,7 @@ export function PageHero({
   const isDark = tone === 'dark';
 
   const textColor = isDark ? 'text-bg-primary' : 'text-ink';
-  const lightText = isDark ? 'text-bg-primary/82' : 'text-ink/82';
+  const lightText = isDark ? 'text-bg-primary/70' : 'text-ink/82';
   const accent = isDark ? 'text-gold' : 'text-brand';
   const lineColor = isDark ? 'bg-bg-primary/20' : 'bg-line';
   const ornamentColor = isDark ? 'text-gold/70' : 'text-brand/70';
@@ -62,7 +62,7 @@ export function PageHero({
             alt=""
             className={`h-full w-full object-cover object-center ${
               isDark
-                ? 'opacity-80'
+                ? 'opacity-30'  {/* ✦ was opacity-80 — pulled back so overlay can do its job */}
                 : 'opacity-100 brightness-[0.98] contrast-[1.08] saturate-[1.04]'
             }`}
           />
@@ -74,13 +74,23 @@ export function PageHero({
         <>
           {isDark ? (
             <>
+              {/* ✦ Multi-stop bottom-up gradient — heavy where text sits */}
               <div
                 aria-hidden
-                className="absolute inset-0 bg-gradient-to-b from-ink/82 via-ink/52 to-ink/90"
+                className="absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.85) 30%, rgba(10,8,6,0.55) 60%, rgba(10,8,6,0.20) 100%)',
+                }}
               />
+              {/* ✦ Top vignette so navbar area blends cleanly */}
               <div
                 aria-hidden
-                className="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-ink/40 via-ink/12 to-transparent md:w-[52%] md:bg-none md:bg-ink/20"
+                className="absolute inset-x-0 top-0 h-40"
+                style={{
+                  background:
+                    'linear-gradient(to bottom, rgba(10,8,6,0.60) 0%, transparent 100%)',
+                }}
               />
             </>
           ) : (
@@ -123,7 +133,6 @@ export function PageHero({
         className="absolute left-0 right-0 top-[72px] h-px bg-gradient-to-r from-transparent via-gold/55 to-transparent md:top-[110px]"
       />
 
-      
       {/* Vertical rail */}
       <div
         aria-hidden
@@ -169,7 +178,7 @@ export function PageHero({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05 }}
-              className={`eyebrow ${isDark ? 'text-gold-muted' : 'text-ink'}`}
+              className={`eyebrow ${isDark ? 'text-white/50' : 'text-ink'}`}  {/* ✦ was text-gold-muted which may not resolve */}
             >
               {eyebrow}
             </motion.p>
@@ -179,7 +188,7 @@ export function PageHero({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
               className={`display-1 mt-5 text-[2.9rem] leading-[0.92] sm:mt-6 sm:text-[4.1rem] md:text-8xl lg:text-[9.5rem] ${textColor} ${
-                isDark ? 'drop-shadow-[0_2px_10px_rgba(255,248,240,0.16)]' : ''
+                isDark ? 'drop-shadow-[0_2px_24px_rgba(10,8,6,0.8)]' : ''  // ✦ stronger text shadow for depth
               }`}
             >
               {headline}
