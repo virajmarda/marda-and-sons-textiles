@@ -40,7 +40,7 @@ export default function HeritagePage() {
     {
       y: '2026',
       t: 'We open to the world',
-      d: 'Today, we open our doors to the world — retail and wholesale, retail and wholesale, all in one place.',
+      d: 'Today, we open our doors to the world — retail and wholesale, all in one place.',
       img: editorial,
     },
   ];
@@ -57,16 +57,19 @@ export default function HeritagePage() {
             <br />
             A city.
             <br />
-            <span className="italic text-brand">A craft.</span>
+            {/* ✦ Changed text-brand → text-gold so it's visible on the dark bg */}
+            <span className="italic text-gold">A craft.</span>
           </>
         }
         lede={
           <>
-            The story of <span className="font-brand not-italic text-ink">मर्दा ॲन्ड सन्स</span> is, in many
-            ways, the story of how Solapur dressed the Indian household.
+            The story of{' '}
+            <span className="font-brand not-italic text-white/90">मर्दा ॲन्ड सन्स</span>{' '}
+            is, in many ways, the story of how Solapur dressed the Indian household.
           </>
         }
-                bgImage={macro} tone="dark"
+        bgImage={macro}
+        tone="dark"
         height="xl"
       />
 
@@ -81,14 +84,14 @@ export default function HeritagePage() {
           </p>
         </Reveal>
 
-        <p className="mt-8 text-base leading-relaxed text-ink-soft font-sub sm:mt-10 sm:text-lg">
+        <p className="mt-8 font-sub text-base leading-relaxed text-ink-soft sm:mt-10 sm:text-lg">
           Solapur, a sun-bleached town in southern Maharashtra, became famous in the 19th and 20th centuries
           for one quiet thing: its textile. Cotton from the deccan plateau, water from the Bhima, and the
           patience of hundreds of weaver families — together they produced the Solapuri handloom that you
           might still find folded in your grandparents&apos; cupboard.
         </p>
 
-        <p className="mt-5 text-base leading-relaxed text-ink-soft font-sub sm:mt-6 sm:text-lg">
+        <p className="mt-5 font-sub text-base leading-relaxed text-ink-soft sm:mt-6 sm:text-lg">
           In 1970, the Marda family added their single loom to that long tradition. Three generations later,
           we are still here — quieter than the brands of Bombay, but spoken of with deeper affection.
         </p>
@@ -124,7 +127,7 @@ export default function HeritagePage() {
                     <h3 className="mt-3 font-heading text-2xl text-ink sm:text-3xl md:mt-4 md:text-4xl">
                       {t.t}
                     </h3>
-                    <p className="mt-4 text-base leading-relaxed text-ink-soft font-sub sm:mt-5 sm:text-lg">
+                    <p className="mt-4 font-sub text-base leading-relaxed text-ink-soft sm:mt-5 sm:text-lg">
                       {t.d}
                     </p>
                   </div>
@@ -164,7 +167,7 @@ export default function HeritagePage() {
                   <h3 className="mt-4 font-heading text-2xl italic text-ink sm:text-[1.8rem] md:text-3xl">
                     {p.t}
                   </h3>
-                  <p className="mt-4 leading-relaxed text-ink-soft font-sub">{p.d}</p>
+                  <p className="mt-4 font-sub leading-relaxed text-ink-soft">{p.d}</p>
                 </div>
               </Reveal>
             ))}
