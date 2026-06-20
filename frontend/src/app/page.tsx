@@ -28,73 +28,139 @@ export default async function HomePage() {
 
   return (
     <div data-testid="home-page" className="bg-paper">
-      {/* HERO */}
+
+      {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
         data-testid="hero-section"
         className="relative flex min-h-[100svh] items-end overflow-hidden"
       >
+        {/* Background */}
         <img
           src={hero}
           alt="Solapur handloom textiles"
-          className="absolute inset-0 h-full w-full object-cover object-center scale-105 origin-center"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          style={{ transform: 'scale(1.04)', transformOrigin: 'center' }}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/55 to-ink/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/78 via-ink/28 to-transparent md:from-ink/70 md:via-ink/20" />
+        {/* Layered overlays for depth + legibility */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.80) 32%, rgba(10,8,6,0.42) 60%, rgba(10,8,6,0.18) 100%)',
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to right, rgba(10,8,6,0.82) 0%, rgba(10,8,6,0.30) 55%, transparent 100%)',
+          }}
+        />
+
+        {/* Top gold rule */}
         <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
+        {/* Vertical side label */}
         <div
           aria-hidden
-          className="absolute right-4 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-4 text-bg-primary/70 lg:flex"
-          style={{ writingMode: 'vertical-rl' }}
+          className="absolute right-5 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-4 lg:flex"
+          style={{ writingMode: 'vertical-rl', color: 'rgba(255,255,255,0.4)' }}
         >
-          <span className="eyebrow text-[10px]">Est. 1970</span>
-          <span className="h-20 w-px bg-gold/45" style={{ writingMode: 'horizontal-tb' }} />
-          <span className="eyebrow text-[10px]">Solapur · India</span>
+          <span className="font-sub text-[10px] uppercase tracking-[0.2em]">Est. 1970</span>
+          <span
+            className="h-16 w-px"
+            style={{ background: 'rgba(212,175,90,0.4)', writingMode: 'horizontal-tb' }}
+          />
+          <span className="font-sub text-[10px] uppercase tracking-[0.2em]">Solapur · India</span>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[1600px] px-4 pb-10 pt-24 sm:px-6 sm:pb-20 sm:pt-36 md:px-12 md:pb-28 md:pt-48 lg:px-24 lg:pb-32 lg:pt-56">
-          <div className="grid items-start gap-10 lg:grid-cols-12 lg:items-end lg:gap-12">
+        {/* Hero content */}
+        <div className="relative mx-auto w-full max-w-[1600px] px-4 pb-12 pt-28 sm:px-6 sm:pb-20 sm:pt-40 md:px-12 md:pb-28 md:pt-48 lg:px-24 lg:pb-32 lg:pt-56">
+          <div className="grid items-end gap-10 lg:grid-cols-12 lg:gap-12">
+
+            {/* Left: headline block */}
             <div className="lg:col-span-8">
+              {/* Chapter marker */}
               <Reveal delay={0.05}>
                 <div className="mb-6 flex items-center gap-3 sm:gap-4 md:mb-8">
-                  <span className="font-heading text-4xl italic leading-none text-gold sm:text-5xl md:text-6xl">
+                  <span
+                    className="font-heading text-4xl italic leading-none sm:text-5xl md:text-6xl"
+                    style={{ color: 'rgba(212,175,90,0.9)' }}
+                  >
                     01
                   </span>
-                  <span className="h-px w-10 bg-gold/70 sm:w-12" />
-                  <span className="eyebrow text-[10px] text-bg-primary/80">Chapter</span>
+                  <span
+                    className="h-px w-10 sm:w-14"
+                    style={{ background: 'rgba(212,175,90,0.6)' }}
+                  />
+                  <span
+                    className="font-sub text-[10px] uppercase tracking-[0.2em]"
+                    style={{ color: 'rgba(255,255,255,0.55)' }}
+                  >
+                    Chapter
+                  </span>
                 </div>
               </Reveal>
 
+              {/* Brand name in Devanagari */}
               <Reveal delay={0.12}>
-                <p className="eyebrow text-gold-muted">मर्दा ॲन्ड सन्स</p>
+                <p
+                  className="font-accent mb-4 text-base uppercase tracking-[0.18em] sm:text-lg md:mb-5"
+                  style={{ color: 'rgba(212,175,90,0.75)' }}
+                >
+                  मर्दा ॲन्ड सन्स
+                </p>
               </Reveal>
 
+              {/* Main headline */}
               <Reveal delay={0.18}>
-                <h1 className="display-1 mt-4 text-[2.2rem] leading-[0.92] text-bg-primary xs:text-[2.6rem] sm:mt-5 sm:text-[4.35rem] sm:leading-[0.9] md:mt-6 md:text-[10vw] lg:text-[8vw]">
+                <h1
+                  className="font-heading font-normal leading-[0.92] text-white"
+                  style={{ fontSize: 'clamp(2.4rem, 8.5vw, 7.5rem)' }}
+                >
                   All-in-one
                   <br />
-                  Textile
-                  <span className="font-heading italic not-italic text-gold">Destination.</span>
+                  Textile{' '}
+                  <em
+                    className="not-italic"
+                    style={{ color: 'rgba(212,175,90,1)' }}
+                  >
+                    Destination.
+                  </em>
                 </h1>
               </Reveal>
 
-              <Reveal delay={0.38}>
-                <p className="font-accent mt-6 text-base tracking-wide text-gold sm:text-lg md:mt-8 md:text-2xl">
+              {/* Marathi tagline */}
+              <Reveal delay={0.32}>
+                <p
+                  className="font-accent mt-5 text-base tracking-wide sm:mt-6 sm:text-lg md:text-xl"
+                  style={{ color: 'rgba(212,175,90,0.8)' }}
+                >
                   विश्वास की परंपरा, वर्षों का साथ
                 </p>
               </Reveal>
 
-              <Reveal delay={0.5}>
-                <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-bg-primary/90 sm:max-w-2xl sm:text-lg md:mt-6 md:text-xl">
+              {/* Lede */}
+              <Reveal delay={0.44}>
+                <p
+                  className="font-sub mt-5 max-w-xl text-base leading-relaxed sm:max-w-2xl sm:text-lg md:mt-6 md:text-xl"
+                  style={{ color: 'rgba(255,255,255,0.72)' }}
+                >
                   For fifty-five years, the looms of Solapur have woven for one family that listens.
-                  Today,
-                  <span className="font-brand not-italic text-gold-muted"> मर्दा ॲन्ड सन्स </span>
+                  Today,{' '}
+                  <span
+                    className="font-brand not-italic"
+                    style={{ color: 'rgba(212,175,90,0.9)' }}
+                  >
+                    मर्दा ॲन्ड सन्स
+                  </span>{' '}
                   brings that craft and care into your home — and into the world.
                 </p>
               </Reveal>
 
-              <Reveal delay={0.65}>
+              {/* CTAs */}
+              <Reveal delay={0.58}>
                 <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-4 md:mt-12">
                   <Link
                     href="/shop"
@@ -106,7 +172,17 @@ export default async function HomePage() {
                   <Link
                     href="/wholesale"
                     data-testid="hero-wholesale-cta"
-                    className="flex w-full items-center justify-center border border-bg-primary px-6 py-4 text-[11px] uppercase tracking-[0.22em] text-bg-primary transition-colors hover:bg-bg-primary hover:text-ink sm:w-auto sm:px-7"
+                    className="flex w-full items-center justify-center border px-6 py-4 text-[11px] uppercase tracking-[0.22em] transition-colors sm:w-auto sm:px-7"
+                    style={{
+                      borderColor: 'rgba(255,255,255,0.45)',
+                      color: 'rgba(255,255,255,0.85)',
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+                    }}
                   >
                     For Wholesale Partners
                   </Link>
@@ -114,20 +190,39 @@ export default async function HomePage() {
               </Reveal>
             </div>
 
-            <div className="mt-8 lg:col-span-4 sm:mt-10 lg:mt-0">
-              <Reveal delay={0.7}>
-                <div className="border border-gold/40 bg-ink/40 p-8 backdrop-blur-sm">
-                  <p className="eyebrow mb-4 text-gold">Visiting Solapur?</p>
-                  <p className="font-sub leading-relaxed text-bg-primary/90">
-                    Our Store <span className="italic">430, Chattigalli, Mangalwar Peth</span> has
-                    welcomed three generations of TRUST.
+            {/* Right: visiting card */}
+            <div className="lg:col-span-4">
+              <Reveal delay={0.68}>
+                <div
+                  className="p-7 sm:p-8 backdrop-blur-sm"
+                  style={{
+                    border: '1px solid rgba(212,175,90,0.35)',
+                    background: 'rgba(10,8,6,0.52)',
+                  }}
+                >
+                  <p
+                    className="font-sub mb-1 text-[10px] uppercase tracking-[0.22em]"
+                    style={{ color: 'rgba(212,175,90,0.7)' }}
+                  >
+                    Visiting Solapur?
+                  </p>
+                  <p
+                    className="font-sub mt-3 text-sm leading-relaxed sm:text-base"
+                    style={{ color: 'rgba(255,255,255,0.82)' }}
+                  >
+                    Our store at{' '}
+                    <em className="not-italic" style={{ color: 'rgba(255,255,255,0.95)' }}>
+                      430, Chattigalli, Mangalwar Peth
+                    </em>{' '}
+                    has welcomed three generations of trust.
                   </p>
                   <a
                     href={MAPS_DIRECTIONS}
                     target="_blank"
                     rel="noopener noreferrer"
                     data-testid="hero-directions"
-                    className="eyebrow link-underline mt-6 inline-flex items-center gap-2 text-gold"
+                    className="mt-6 inline-flex items-center gap-2 font-sub text-[11px] uppercase tracking-[0.18em] transition-opacity hover:opacity-70"
+                    style={{ color: 'rgba(212,175,90,0.9)' }}
                   >
                     Get Directions <ArrowRight size={12} />
                   </a>
@@ -136,25 +231,33 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="relative mt-12 sm:mt-14 md:mt-20" aria-hidden>
-            <div className="h-px bg-bg-primary/20" />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xs text-gold/70">
+          {/* Divider ornament */}
+          <div className="relative mt-14 sm:mt-16 md:mt-20" aria-hidden>
+            <div className="h-px" style={{ background: 'rgba(255,255,255,0.12)' }} />
+            <span
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xs"
+              style={{ color: 'rgba(212,175,90,0.6)' }}
+            >
               ◆
             </span>
           </div>
         </div>
 
-        <div className="scroll-cue hidden text-bg-primary/70 md:block">
+        {/* Scroll cue */}
+        <div
+          className="scroll-cue hidden md:block"
+          style={{ color: 'rgba(255,255,255,0.45)' }}
+        >
           <span>Scroll to explore</span>
         </div>
       </section>
 
-      {/* MARQUEE */}
+      {/* ── MARQUEE ──────────────────────────────────────────────────────── */}
       <section
         aria-hidden
         className="overflow-hidden border-y border-gold/20 bg-ink py-4 text-bg-primary sm:py-5 md:py-6"
       >
-        <div className="marquee-track whitespace-nowrap px-4 gap-8 sm:gap-10 md:gap-12">
+        <div className="marquee-track whitespace-nowrap gap-8 px-4 sm:gap-10 md:gap-12">
           {Array.from({ length: 2 }).map((_, i) => (
             <div
               key={`marquee-${i}`}
@@ -181,8 +284,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* THE HOUSE */}
-      <section className="py-10 sm:py-12 md:py-16">
+      {/* ── THE HOUSE ────────────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-20 md:py-24 lg:py-32">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-16">
             <div className="lg:col-span-5">
@@ -202,29 +305,26 @@ export default async function HomePage() {
               <Reveal delay={0.2}>
                 <p className="font-sub text-lg leading-relaxed text-ink sm:text-xl md:text-2xl">
                   In a city the world once turned to for its textile, our family began with one
-                  small shop and a single promise — that textile reaches household with happiness
-                  and trust.
+                  small shop and a single promise — that textile reaches every household with
+                  happiness and trust.
                 </p>
-                <p className="mt-6 leading-relaxed text-ink-soft md:mt-8">
+                <p className="mt-6 font-sub leading-relaxed text-ink-soft md:mt-8">
                   Five and a half decades later, that promise has clothed temples, homes, weddings,
                   and gifting houses across India. We are now opening our store to a generation
-                  that asks for honesty, where it comes from, and the craftsmanship of Indian
-                  textiles.
+                  that asks for honesty, provenance, and the craftsmanship of Indian textiles.
                 </p>
 
-                <div className="mt-8 grid grid-cols-2 gap-x-8 gap-y-6 sm:flex sm:flex-wrap sm:gap-x-12 md:mt-10">
-                  <div>
-                    <p className="font-heading text-4xl italic text-brand sm:text-5xl">55+</p>
-                    <p className="eyebrow mt-1">Years of Legacy</p>
-                  </div>
-                  <div>
-                    <p className="font-heading text-4xl italic text-brand sm:text-5xl">8</p>
-                    <p className="eyebrow mt-1">Textile Chapters</p>
-                  </div>
-                  <div>
-                    <p className="font-heading text-4xl italic text-brand sm:text-5xl">3</p>
-                    <p className="eyebrow mt-1">Generations of Trust</p>
-                  </div>
+                <div className="mt-8 grid grid-cols-3 gap-x-6 gap-y-6 md:mt-10">
+                  {[
+                    { n: '55+', l: 'Years of Legacy' },
+                    { n: '8',   l: 'Textile Chapters' },
+                    { n: '3',   l: 'Generations' },
+                  ].map((s) => (
+                    <div key={s.l}>
+                      <p className="font-heading text-4xl italic text-brand sm:text-5xl">{s.n}</p>
+                      <p className="eyebrow mt-1 text-[10px]">{s.l}</p>
+                    </div>
+                  ))}
                 </div>
               </Reveal>
             </div>
@@ -232,8 +332,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
-      <section data-testid="categories-section" className="bg-paper-2 py-10 sm:py-12 md:py-16">
+      {/* ── CATEGORIES ───────────────────────────────────────────────────── */}
+      <section data-testid="categories-section" className="bg-paper-2 py-16 sm:py-20 md:py-24 lg:py-32">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="mb-12 flex flex-col gap-6 md:mb-20 md:flex-row md:items-end md:justify-between md:gap-8">
             <div>
@@ -266,8 +366,12 @@ export default async function HomePage() {
                         : 'aspect-[4/5] md:aspect-square md:mt-12'
                     }`}
                   >
-                    <img src={c.image} alt={c.name} className="img-zoom h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
+                    <img
+                      src={c.image}
+                      alt={c.name}
+                      className="img-zoom h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
                       <p className="mb-1 font-accent text-sm text-gold-muted md:text-base">
                         {c.marathi}
@@ -285,8 +389,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* FEATURED PRODUCTS */}
-      <section data-testid="featured-section" className="py-10 sm:py-12 md:py-16">
+      {/* ── FEATURED PRODUCTS ────────────────────────────────────────────── */}
+      <section data-testid="featured-section" className="py-16 sm:py-20 md:py-24 lg:py-32">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="mb-12 flex flex-col gap-6 md:mb-20 md:flex-row md:items-end md:justify-between md:gap-8">
             <div>
@@ -315,24 +419,40 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* HERITAGE STORY CTA */}
+      {/* ── HERITAGE STORY CTA ───────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-ink text-bg-primary">
         <img
           src={macro}
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover opacity-25"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ opacity: 0.22 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-transparent" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to right, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.88) 45%, rgba(10,8,6,0.30) 100%)',
+          }}
+        />
         <div className="relative mx-auto grid max-w-[1600px] gap-10 px-4 py-16 sm:px-6 sm:py-20 md:px-12 md:py-32 lg:grid-cols-2 lg:gap-16 lg:px-24 lg:py-44">
           <div>
             <SectionLabel number="04" label="The Heritage" />
             <h2 className="display-2 mt-5 text-4xl sm:text-5xl md:mt-6 md:text-6xl lg:text-7xl">
-              Solapur weaves for <span className="italic text-gold">India.</span>
+              Solapur weaves for{' '}
+              <span className="italic" style={{ color: 'rgba(212,175,90,1)' }}>
+                India.
+              </span>
               <br />
-              We weave for <span className="italic text-gold">trust.</span>
+              We weave for{' '}
+              <span className="italic" style={{ color: 'rgba(212,175,90,1)' }}>
+                trust.
+              </span>
             </h2>
-            <p className="font-sub mt-6 max-w-xl text-base leading-relaxed text-bg-primary/80 sm:text-lg md:mt-10">
+            <p
+              className="font-sub mt-6 max-w-xl text-base leading-relaxed sm:text-lg md:mt-10"
+              style={{ color: 'rgba(255,255,255,0.68)' }}
+            >
               From a wholesale shop in Chattigalli, Solapur in 1970, to homes and gifting houses
               across the country — this is the longer story of a family, a city, and a craft that
               built its legacy.
@@ -340,9 +460,10 @@ export default async function HomePage() {
             <Link
               href="/heritage"
               data-testid="heritage-cta"
-              className="eyebrow link-underline mt-8 inline-flex items-center gap-3 text-gold md:mt-12"
+              className="mt-8 inline-flex items-center gap-3 font-sub text-[11px] uppercase tracking-[0.2em] transition-opacity hover:opacity-70 md:mt-12"
+              style={{ color: 'rgba(212,175,90,0.9)' }}
             >
-              Read the full story <ArrowRight size={14} />
+              Read the full story <ArrowRight size={13} />
             </Link>
           </div>
 
@@ -356,8 +477,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* VALUE PILLARS */}
-      <section className="bg-paper py-10 sm:py-12 md:py-16">
+      {/* ── VALUE PILLARS ────────────────────────────────────────────────── */}
+      <section className="bg-paper py-16 sm:py-20 md:py-24 lg:py-32">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <SectionLabel number="05" label="Why Marda" />
           <h2 className="display-2 mt-5 max-w-3xl text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
@@ -369,32 +490,30 @@ export default async function HomePage() {
           <div className="mt-12 grid gap-8 sm:mt-14 md:mt-20 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
             {[
               {
-                icon: Hand,
+                Icon: Hand,
                 label: 'Handloom-First',
                 text: 'Sourced from Solapuri master weavers — never machine-finished pretenders.',
               },
               {
-                icon: Leaf,
+                Icon: Leaf,
                 label: 'Pure Cotton',
                 text: 'Combed cotton, breathable, and softens with every wash like family.',
               },
               {
-                icon: Award,
+                Icon: Award,
                 label: 'Fair Pricing',
                 text: 'Wholesale roots mean retail prices that feel almost too fair.',
               },
               {
-                icon: Truck,
+                Icon: Truck,
                 label: 'Pan-India Delivery',
                 text: 'From a single bath towel to a thousand-piece retailer order.',
               },
             ].map((p, i) => (
               <Reveal key={p.label} delay={i * 0.08}>
                 <div className="border-t border-line pt-6 md:pt-8">
-                  <p.icon size={28} strokeWidth={1.2} className="text-brand" />
-                  <h3 className="mt-5 font-heading text-2xl italic text-ink md:mt-6">
-                    {p.label}
-                  </h3>
+                  <p.Icon size={26} strokeWidth={1.25} className="text-brand" />
+                  <h3 className="mt-5 font-heading text-2xl italic text-ink md:mt-6">{p.label}</h3>
                   <p className="mt-3 font-sub leading-relaxed text-ink-soft">{p.text}</p>
                 </div>
               </Reveal>
@@ -403,12 +522,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* TESTIMONIAL */}
+      {/* ── TESTIMONIAL ──────────────────────────────────────────────────── */}
       <section className="bg-paper-2 py-16 sm:py-20 md:py-32">
         <div className="mx-auto max-w-[1200px] px-4 text-center sm:px-6 md:px-12">
           <Sparkles className="mx-auto text-gold" size={22} />
           <p className="font-accent mt-8 text-2xl leading-snug text-brand sm:text-3xl md:mt-10 md:text-4xl">
-            “आजोबांच्या काळापासून आम्ही फक्त Marda कडूनच घेतो.”
+            "आजोबांच्या काळापासून आम्ही फक्त Marda कडूनच घेतो."
           </p>
           <p className="mt-5 font-heading text-2xl italic leading-snug text-ink sm:text-3xl md:mt-6 md:text-4xl">
             "We have bought our family's bedsheets only from Marda — since my grandfather's time."
@@ -417,11 +536,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* WHOLESALE / RETAIL SPLIT */}
+      {/* ── WHOLESALE / RETAIL SPLIT ─────────────────────────────────────── */}
       <section className="overflow-hidden bg-paper">
         <div className="grid items-stretch md:grid-cols-2">
+          {/* Wholesale */}
           <div className="relative overflow-hidden bg-brand px-4 py-16 text-bg-primary sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
-            <span className="pointer-events-none absolute -bottom-6 -right-4 font-accent text-[22vw] leading-none opacity-10 md:-bottom-10 md:-right-10 md:text-[10vw]">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -bottom-6 -right-4 font-accent leading-none opacity-10 md:-bottom-10 md:-right-10"
+              style={{ fontSize: 'clamp(6rem, 18vw, 14rem)' }}
+            >
               घाऊक
             </span>
             <SectionLabel number="06" label="Wholesale" />
@@ -442,8 +566,13 @@ export default async function HomePage() {
             </Link>
           </div>
 
+          {/* Retail */}
           <div className="relative overflow-hidden bg-paper-3 px-4 py-16 text-ink sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
-            <span className="pointer-events-none absolute -bottom-6 -right-4 font-accent text-[22vw] leading-none opacity-10 md:-bottom-10 md:-right-10 md:text-[10vw]">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -bottom-6 -right-4 font-accent leading-none opacity-10 md:-bottom-10 md:-right-10"
+              style={{ fontSize: 'clamp(6rem, 18vw, 14rem)' }}
+            >
               किरकोळ
             </span>
             <SectionLabel number="07" label="Retail" />
@@ -465,14 +594,15 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* VISIT US */}
-      <section className="bg-paper py-16 sm:py-20 md:py-24">
+      {/* ── VISIT US ─────────────────────────────────────────────────────── */}
+      <section className="bg-paper py-16 sm:py-20 md:py-24 lg:py-32">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-16">
             <div className="lg:flex lg:flex-col lg:justify-center">
               <SectionLabel number="08" label="Visit Us" />
               <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
-                The store in <span className="italic text-brand">Chattigalli.</span>
+                The store in{' '}
+                <span className="italic text-brand">Chattigalli.</span>
               </h2>
               <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg md:mt-6">
                 The kind of shop where time slows down — where weavers, brides, and innkeepers all
@@ -505,7 +635,9 @@ export default async function HomePage() {
                   Get Directions
                 </a>
                 <a
-                  href={whatsappLink('Hello मर्दा ॲन्ड सन्स, I would like to visit your store.')}
+                  href={whatsappLink(
+                    'Hello मर्दा ॲन्ड सन्स, I would like to visit your store.'
+                  )}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-testid="home-whatsapp"
@@ -516,7 +648,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="relative mt-12 aspect-[4/5] min-h-[320px] overflow-hidden rounded-2xl shadow-lg sm:mt-16 sm:aspect-[16/9] lg:mt-0 lg:h-full lg:aspect-auto">
+            <div className="relative mt-10 aspect-[4/5] min-h-[320px] overflow-hidden rounded-2xl shadow-lg sm:mt-14 sm:aspect-[16/9] lg:mt-0 lg:aspect-auto lg:h-full">
               <iframe
                 title="Marda & Sons map"
                 src="https://www.google.com/maps?q=Marda+%26+Sons+Chattigalli+Mangalwar+Peth+Solapur&output=embed"
