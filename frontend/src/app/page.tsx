@@ -3,6 +3,7 @@ import { ArrowRight, Award, Hand, Leaf, Sparkles, Truck } from 'lucide-react';
 import { Reveal, SectionLabel } from '@/components/reveal';
 import { ProductCard } from '@/components/product-card';
 import { MAPS_DIRECTIONS, ESTABLISHED, whatsappLink } from '@/lib/api';
+import type { Product } from '@/lib/api';
 
 export const revalidate = 0;
 
@@ -14,25 +15,25 @@ const editorial =
   'https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/6ee061934d03a5fc78962a067d6eb5b00c915d6aee9992d61cd1ff9b93f6da20.png';
 
 const STATIC_CATEGORIES = [
-  { slug: 'bedsheets',        name: 'Bedsheets',        marathi: 'चादरी',      tagline: 'The Solapuri chaddar — in homes since 1970.',  image: macro     },
-  { slug: 'towels',           name: 'Towels',           marathi: 'टॉवेल',      tagline: 'Terry loop, honest cotton, built to last.',    image: hero      },
-  { slug: 'phetas',           name: 'Phetas',           marathi: 'फेटे',       tagline: 'The ceremonial turban of Maharashtra.',        image: editorial },
-  { slug: 'blankets',         name: 'Blankets',         marathi: 'ब्लँकेट',    tagline: 'Wool and cotton, for Indian winters.',         image: macro     },
-  { slug: 'shawls',           name: 'Shawls',           marathi: 'शाल',        tagline: 'Lightweight drapes for every occasion.',      image: editorial },
-  { slug: 'gifting',          name: 'Gifting',          marathi: 'भेटवस्तू',   tagline: 'Curated sets for weddings & celebrations.',   image: hero      },
-  { slug: 'ceremonial',       name: 'Ceremonial',       marathi: 'पूजा वस्त्र', tagline: 'Temple and puja textiles from Solapur.',     image: macro     },
-  { slug: 'wholesale-bundles',name: 'Wholesale Bundles',marathi: 'घाऊक',       tagline: 'Bulk packs for retailers.',                   image: editorial },
+  { slug: 'bedsheets',         name: 'Bedsheets',         marathi: 'चादरी',       tagline: 'The Solapuri chaddar — in homes since 1970.',  image: macro     },
+  { slug: 'towels',            name: 'Towels',            marathi: 'टॉवेल',       tagline: 'Terry loop, honest cotton, built to last.',    image: hero      },
+  { slug: 'phetas',            name: 'Phetas',            marathi: 'फेटे',        tagline: 'The ceremonial turban of Maharashtra.',        image: editorial },
+  { slug: 'blankets',          name: 'Blankets',          marathi: 'ब्लँकेट',     tagline: 'Wool and cotton, for Indian winters.',         image: macro     },
+  { slug: 'shawls',            name: 'Shawls',            marathi: 'शाल',         tagline: 'Lightweight drapes for every occasion.',      image: editorial },
+  { slug: 'gifting',           name: 'Gifting',           marathi: 'भेटवस्तू',    tagline: 'Curated sets for weddings & celebrations.',   image: hero      },
+  { slug: 'ceremonial',        name: 'Ceremonial',        marathi: 'पूजा वस्त्र', tagline: 'Temple and puja textiles from Solapur.',      image: macro     },
+  { slug: 'wholesale-bundles', name: 'Wholesale Bundles', marathi: 'घाऊक',        tagline: 'Bulk packs for retailers.',                   image: editorial },
 ];
 
-const STATIC_PRODUCTS = [
-  { slug: 'solapuri-chaddar-classic-white',  name: 'Solapuri Chaddar — Classic White',  subtitle: 'The original Solapur weave',         price_retail: 899,  images: [macro, editorial], badges: ['Bestseller', 'Handloom'], category: 'bedsheets' },
-  { slug: 'solapuri-chaddar-royal-border',   name: 'Solapuri Chaddar — Royal Border',   subtitle: 'Heritage stripe border, double bed', price_retail: 1099, images: [editorial, macro], badges: ['Heritage', 'Handloom'],   category: 'bedsheets' },
-  { slug: 'solapuri-terry-towel-premium',    name: 'Solapuri Terry Towel — Premium',    subtitle: 'Thick loop, fast dry',               price_retail: 349,  images: [hero, macro],      badges: ['Bestseller'],             category: 'towels'    },
-  { slug: 'solapuri-pheta-traditional',      name: 'Solapuri Pheta — Traditional',      subtitle: 'Ceremonial turban cloth',            price_retail: 599,  images: [editorial, hero],  badges: ['Heritage', 'Ceremonial'], category: 'phetas'    },
-  { slug: 'solapuri-woolen-blanket-classic', name: 'Solapuri Woolen Blanket — Classic', subtitle: 'Winter staple since 1970',           price_retail: 1799, images: [macro, editorial], badges: ['Premium', 'Handloom'],    category: 'blankets'  },
-  { slug: 'solapuri-shawl-cotton-checks',    name: 'Solapuri Shawl — Cotton Checks',    subtitle: 'Everyday drape in classic check',    price_retail: 699,  images: [editorial, macro], badges: ['Heritage'],               category: 'shawls'    },
-  { slug: 'solapuri-chaddar-king-size',      name: 'Solapuri Chaddar — King Size',      subtitle: 'King & queen extra-wide weave',      price_retail: 1299, images: [hero, editorial],  badges: ['New'],                    category: 'bedsheets' },
-  { slug: 'solapuri-towel-set-gift',         name: 'Solapuri Towel Gift Set — 3 Piece', subtitle: 'Bath + hand + face towel set',       price_retail: 899,  images: [macro, hero],      badges: ['Gift', 'Bestseller'],     category: 'towels'    },
+const STATIC_PRODUCTS: Product[] = [
+  { slug: 'solapuri-chaddar-classic-white',  name: 'Solapuri Chaddar — Classic White',  subtitle: 'The original Solapur weave',         price_retail: 899,  price_wholesale: 699,  images: [macro, editorial], badges: ['Bestseller', 'Handloom'], category: 'bedsheets' },
+  { slug: 'solapuri-chaddar-royal-border',   name: 'Solapuri Chaddar — Royal Border',   subtitle: 'Heritage stripe border, double bed', price_retail: 1099, price_wholesale: 849,  images: [editorial, macro], badges: ['Heritage', 'Handloom'],   category: 'bedsheets' },
+  { slug: 'solapuri-terry-towel-premium',    name: 'Solapuri Terry Towel — Premium',    subtitle: 'Thick loop, fast dry',               price_retail: 349,  price_wholesale: 270,  images: [hero, macro],      badges: ['Bestseller'],             category: 'towels'    },
+  { slug: 'solapuri-pheta-traditional',      name: 'Solapuri Pheta — Traditional',      subtitle: 'Ceremonial turban cloth',            price_retail: 599,  price_wholesale: 449,  images: [editorial, hero],  badges: ['Heritage', 'Ceremonial'], category: 'phetas'    },
+  { slug: 'solapuri-woolen-blanket-classic', name: 'Solapuri Woolen Blanket — Classic', subtitle: 'Winter staple since 1970',           price_retail: 1799, price_wholesale: 1399, images: [macro, editorial], badges: ['Premium', 'Handloom'],    category: 'blankets'  },
+  { slug: 'solapuri-shawl-cotton-checks',    name: 'Solapuri Shawl — Cotton Checks',    subtitle: 'Everyday drape in classic check',    price_retail: 699,  price_wholesale: 549,  images: [editorial, macro], badges: ['Heritage'],               category: 'shawls'    },
+  { slug: 'solapuri-chaddar-king-size',      name: 'Solapuri Chaddar — King Size',      subtitle: 'King & queen extra-wide weave',      price_retail: 1299, price_wholesale: 999,  images: [hero, editorial],  badges: ['New'],                    category: 'bedsheets' },
+  { slug: 'solapuri-towel-set-gift',         name: 'Solapuri Towel Gift Set — 3 Piece', subtitle: 'Bath + hand + face towel set',       price_retail: 899,  price_wholesale: 699,  images: [macro, hero],      badges: ['Gift', 'Bestseller'],     category: 'towels'    },
 ];
 
 export default async function HomePage() {
@@ -50,8 +51,6 @@ export default async function HomePage() {
           className="absolute inset-0 h-full w-full object-cover object-center"
           style={{ transform: 'scale(1.04)', transformOrigin: 'center' }}
         />
-
-        {/* Bottom-heavy overlay */}
         <div
           className="absolute inset-0"
           style={{
@@ -59,7 +58,6 @@ export default async function HomePage() {
               'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.80) 32%, rgba(10,8,6,0.42) 60%, rgba(10,8,6,0.18) 100%)',
           }}
         />
-        {/* Left-heavy overlay */}
         <div
           className="absolute inset-0"
           style={{
@@ -294,9 +292,9 @@ export default async function HomePage() {
 
                 <div className="mt-8 grid grid-cols-3 gap-x-6 gap-y-6 md:mt-10">
                   {[
-                    { n: '55+', l: 'Years of Legacy'   },
-                    { n: '8',   l: 'Textile Chapters'  },
-                    { n: '3',   l: 'Generations'       },
+                    { n: '55+', l: 'Years of Legacy'  },
+                    { n: '8',   l: 'Textile Chapters' },
+                    { n: '3',   l: 'Generations'      },
                   ].map((s) => (
                     <div key={s.l}>
                       <p className="font-heading text-4xl italic text-brand sm:text-5xl">{s.n}</p>
@@ -458,10 +456,10 @@ export default async function HomePage() {
 
           <div className="mt-12 grid gap-8 sm:mt-14 md:mt-20 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
             {[
-              { Icon: Hand,  label: 'Handloom-First',    text: 'Sourced from Solapuri master weavers — never machine-finished pretenders.'    },
-              { Icon: Leaf,  label: 'Pure Cotton',        text: 'Combed cotton, breathable, and softens with every wash like family.'           },
-              { Icon: Award, label: 'Fair Pricing',       text: 'Wholesale roots mean retail prices that feel almost too fair.'                  },
-              { Icon: Truck, label: 'Pan-India Delivery', text: 'From a single bath towel to a thousand-piece retailer order — we deliver.'     },
+              { Icon: Hand,  label: 'Handloom-First',    text: 'Sourced from Solapuri master weavers — never machine-finished pretenders.'   },
+              { Icon: Leaf,  label: 'Pure Cotton',        text: 'Combed cotton, breathable, and softens with every wash like family.'          },
+              { Icon: Award, label: 'Fair Pricing',       text: 'Wholesale roots mean retail prices that feel almost too fair.'                 },
+              { Icon: Truck, label: 'Pan-India Delivery', text: 'From a single bath towel to a thousand-piece retailer order — we deliver.'    },
             ].map((p, i) => (
               <Reveal key={p.label} delay={i * 0.08}>
                 <div className="border-t border-line pt-6 md:pt-8">
@@ -563,7 +561,7 @@ export default async function HomePage() {
               <dl className="mt-8 space-y-4 font-sub text-sm text-ink-soft md:mt-10 md:text-base">
                 <div className="flex gap-4">
                   <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[10px]">Address</dt>
-                  <dd className="text-ink">{`430, Chattigalli, Mangalwar Peth, Solapur — 413 002`}</dd>
+                  <dd className="text-ink">430, Chattigalli, Mangalwar Peth, Solapur — 413 002</dd>
                 </div>
                 <div className="flex gap-4">
                   <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[10px]">Hours</dt>
