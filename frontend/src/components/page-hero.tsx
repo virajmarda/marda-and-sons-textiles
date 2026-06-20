@@ -62,7 +62,7 @@ export function PageHero({
             alt=""
             className={`h-full w-full object-cover object-center ${
               isDark
-                ? 'opacity-30'  {/* ✦ was opacity-80 — pulled back so overlay can do its job */}
+                ? 'opacity-30'
                 : 'opacity-100 brightness-[0.98] contrast-[1.08] saturate-[1.04]'
             }`}
           />
@@ -74,7 +74,6 @@ export function PageHero({
         <>
           {isDark ? (
             <>
-              {/* ✦ Multi-stop bottom-up gradient — heavy where text sits */}
               <div
                 aria-hidden
                 className="absolute inset-0"
@@ -83,7 +82,6 @@ export function PageHero({
                     'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.85) 30%, rgba(10,8,6,0.55) 60%, rgba(10,8,6,0.20) 100%)',
                 }}
               />
-              {/* ✦ Top vignette so navbar area blends cleanly */}
               <div
                 aria-hidden
                 className="absolute inset-x-0 top-0 h-40"
@@ -178,7 +176,7 @@ export function PageHero({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05 }}
-              className={`eyebrow ${isDark ? 'text-white/50' : 'text-ink'}`}  {/* ✦ was text-gold-muted which may not resolve */}
+              className={`eyebrow ${isDark ? 'text-white/50' : 'text-ink'}`}
             >
               {eyebrow}
             </motion.p>
@@ -188,7 +186,7 @@ export function PageHero({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
               className={`display-1 mt-5 text-[2.9rem] leading-[0.92] sm:mt-6 sm:text-[4.1rem] md:text-8xl lg:text-[9.5rem] ${textColor} ${
-                isDark ? 'drop-shadow-[0_2px_24px_rgba(10,8,6,0.8)]' : ''  // ✦ stronger text shadow for depth
+                isDark ? 'drop-shadow-[0_2px_24px_rgba(10,8,6,0.8)]' : ''
               }`}
             >
               {headline}
