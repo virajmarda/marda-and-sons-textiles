@@ -26,8 +26,8 @@ export type Product = {
   description: string;
   story?: string;
   price_retail: number;
-  price_wholesale: number;
-  moq_wholesale: number;
+  price_wholesale: number | null;  // null when no wholesale pricing exists
+  moq_wholesale: number | null;    // null when no wholesale pricing exists
   images: string[];
   materials?: string[];
   dimensions?: string;
