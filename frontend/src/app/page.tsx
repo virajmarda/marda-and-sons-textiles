@@ -149,24 +149,28 @@ export default async function HomePage() {
         data-testid="hero-section"
         className="relative flex min-h-[100svh] items-end overflow-hidden"
       >
+        {/* Background image */}
         <img
           src={hero}
           alt="Solapur handloom textiles"
           className="absolute inset-0 h-full w-full object-cover object-center"
           style={{ transform: 'scale(1.04)', transformOrigin: 'center' }}
         />
+
+        {/* Bottom-up gradient — very heavy at base so large text stays readable */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.80) 32%, rgba(10,8,6,0.42) 60%, rgba(10,8,6,0.18) 100%)',
+              'linear-gradient(to top, rgba(10,8,6,0.98) 0%, rgba(10,8,6,0.88) 28%, rgba(10,8,6,0.50) 55%, rgba(10,8,6,0.18) 100%)',
           }}
         />
+        {/* Left-side extra vignette */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(to right, rgba(10,8,6,0.82) 0%, rgba(10,8,6,0.30) 55%, transparent 100%)',
+              'linear-gradient(to right, rgba(10,8,6,0.75) 0%, rgba(10,8,6,0.20) 50%, transparent 100%)',
           }}
         />
 
@@ -193,60 +197,70 @@ export default async function HomePage() {
 
             {/* Left: headline */}
             <div className="lg:col-span-8">
+
+              {/* Chapter marker */}
               <Reveal delay={0.05}>
-                <div className="mb-6 flex items-center gap-3 sm:gap-4 md:mb-8">
+                <div className="mb-7 flex items-center gap-3 sm:gap-4 md:mb-9">
                   <span
-                    className="font-heading text-4xl italic leading-none sm:text-5xl md:text-6xl"
-                    style={{ color: 'rgba(212,175,90,0.9)' }}
+                    className="font-sub text-[10px] uppercase tracking-[0.26em]"
+                    style={{ color: 'rgba(212,175,90,0.65)' }}
                   >
                     01
                   </span>
-                  <span className="h-px w-10 sm:w-14" style={{ background: 'rgba(212,175,90,0.6)' }} />
                   <span
-                    className="font-sub text-[10px] uppercase tracking-[0.2em]"
-                    style={{ color: 'rgba(255,255,255,0.55)' }}
+                    className="h-px w-10 sm:w-14"
+                    style={{ background: 'rgba(212,175,90,0.45)' }}
+                  />
+                  <span
+                    className="font-sub text-[10px] uppercase tracking-[0.26em]"
+                    style={{ color: 'rgba(255,255,255,0.45)' }}
                   >
-                    Chapter
+                    मर्दा ॲन्ड सन्स · since {ESTABLISHED}
                   </span>
                 </div>
               </Reveal>
 
-              <Reveal delay={0.12}>
-                <p
-                  className="font-accent mb-4 text-base uppercase tracking-[0.18em] sm:text-lg md:mb-5"
-                  style={{ color: 'rgba(212,175,90,0.75)' }}
-                >
-                  मर्दा ॲन्ड सन्स
-                </p>
-              </Reveal>
-
-              <Reveal delay={0.18}>
+              {/* ── BIG EDITORIAL HEADLINE ── */}
+              <Reveal delay={0.14}>
                 <h1
-                  className="font-heading font-normal leading-[0.92] text-white"
-                  style={{ fontSize: 'clamp(2.4rem, 8.5vw, 7.5rem)' }}
+                  className="font-heading font-normal text-white"
+                  style={{
+                    fontSize: 'clamp(2.8rem, 9vw, 8.5rem)',
+                    lineHeight: '0.95',
+                    letterSpacing: '-0.01em',
+                  }}
                 >
                   All-in-one
                   <br />
                   Textile{' '}
-                  <em className="not-italic" style={{ color: 'rgba(212,175,90,1)' }}>
+                  <em
+                    className="italic"
+                    style={{ color: 'rgba(212,175,90,1)' }}
+                  >
                     Destination.
                   </em>
                 </h1>
               </Reveal>
 
-              <Reveal delay={0.32}>
+              {/* Marathi tagline — sits just below headline, same scale rhythm */}
+              <Reveal delay={0.28}>
                 <p
-                  className="font-accent mt-5 text-base tracking-wide sm:mt-6 sm:text-lg md:text-xl"
-                  style={{ color: 'rgba(212,175,90,0.8)' }}
+                  className="font-accent mt-5 sm:mt-6"
+                  style={{
+                    fontSize: 'clamp(1rem, 2vw, 1.5rem)',
+                    color: 'rgba(212,175,90,0.78)',
+                    letterSpacing: '0.04em',
+                  }}
                 >
                   विश्वास की परंपरा, वर्षों का साथ
                 </p>
               </Reveal>
 
-              <Reveal delay={0.44}>
+              {/* Lede */}
+              <Reveal delay={0.40}>
                 <p
-                  className="font-sub mt-5 max-w-xl text-base leading-relaxed sm:max-w-2xl sm:text-lg md:mt-6 md:text-xl"
-                  style={{ color: 'rgba(255,255,255,0.72)' }}
+                  className="font-sub mt-5 max-w-xl text-base leading-relaxed sm:max-w-2xl sm:text-lg md:mt-6"
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   For fifty-five years, the looms of Solapur have woven for one family that listens.
                   Today,{' '}
@@ -257,7 +271,8 @@ export default async function HomePage() {
                 </p>
               </Reveal>
 
-              <Reveal delay={0.58}>
+              {/* CTAs */}
+              <Reveal delay={0.54}>
                 <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-4 md:mt-12">
                   <Link
                     href="/shop"
@@ -270,7 +285,7 @@ export default async function HomePage() {
                     href="/wholesale"
                     data-testid="hero-wholesale-cta"
                     className="flex w-full items-center justify-center border px-6 py-4 text-[11px] uppercase tracking-[0.22em] transition-colors hover:bg-white/10 sm:w-auto sm:px-7"
-                    style={{ borderColor: 'rgba(255,255,255,0.45)', color: 'rgba(255,255,255,0.85)' }}
+                    style={{ borderColor: 'rgba(255,255,255,0.40)', color: 'rgba(255,255,255,0.80)' }}
                   >
                     For Wholesale Partners
                   </Link>
@@ -280,23 +295,23 @@ export default async function HomePage() {
 
             {/* Right: visiting card */}
             <div className="lg:col-span-4">
-              <Reveal delay={0.68}>
+              <Reveal delay={0.66}>
                 <div
                   className="p-7 backdrop-blur-sm sm:p-8"
                   style={{
-                    border: '1px solid rgba(212,175,90,0.35)',
-                    background: 'rgba(10,8,6,0.52)',
+                    border: '1px solid rgba(212,175,90,0.30)',
+                    background: 'rgba(10,8,6,0.55)',
                   }}
                 >
                   <p
                     className="font-sub mb-1 text-[10px] uppercase tracking-[0.22em]"
-                    style={{ color: 'rgba(212,175,90,0.7)' }}
+                    style={{ color: 'rgba(212,175,90,0.70)' }}
                   >
                     Visiting Solapur?
                   </p>
                   <p
                     className="font-sub mt-3 text-sm leading-relaxed sm:text-base"
-                    style={{ color: 'rgba(255,255,255,0.82)' }}
+                    style={{ color: 'rgba(255,255,255,0.80)' }}
                   >
                     Our store at{' '}
                     <em className="not-italic" style={{ color: 'rgba(255,255,255,0.95)' }}>
@@ -310,7 +325,7 @@ export default async function HomePage() {
                     rel="noopener noreferrer"
                     data-testid="hero-directions"
                     className="mt-6 inline-flex items-center gap-2 font-sub text-[11px] uppercase tracking-[0.18em] transition-opacity hover:opacity-70"
-                    style={{ color: 'rgba(212,175,90,0.9)' }}
+                    style={{ color: 'rgba(212,175,90,0.90)' }}
                   >
                     Get Directions <ArrowRight size={12} />
                   </a>
@@ -321,10 +336,10 @@ export default async function HomePage() {
 
           {/* Divider ornament */}
           <div className="relative mt-14 sm:mt-16 md:mt-20" aria-hidden>
-            <div className="h-px" style={{ background: 'rgba(255,255,255,0.12)' }} />
+            <div className="h-px" style={{ background: 'rgba(255,255,255,0.10)' }} />
             <span
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xs"
-              style={{ color: 'rgba(212,175,90,0.6)' }}
+              style={{ color: 'rgba(212,175,90,0.55)' }}
             >
               ◆
             </span>
