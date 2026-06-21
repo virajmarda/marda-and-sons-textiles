@@ -223,25 +223,21 @@ export default async function HomePage() {
               {/* ── BIG EDITORIAL HEADLINE ── */}
               <Reveal delay={0.14}>
                 <h1
-                  className="font-heading font-normal text-white"
+                  className="font-heading italic font-normal text-white"
                   style={{
-                    fontSize: 'clamp(2.8rem, 9vw, 8.5rem)',
-                    lineHeight: '0.95',
-                    letterSpacing: '-0.01em',
+                   fontSize: 'clamp(2.2rem, 6.5vw, 7rem)',
+                   lineHeight: '1.08',
+                   letterSpacing: '-0.01em',
                   }}
                 >
-                  All-in-one
-                  <br />
-                  Textile{' '}
-                  <em
-                    className="italic"
-                    style={{ color: 'rgba(212,175,90,1)' }}
-                  >
-                    Destination.
-                  </em>
-                </h1>
+                  All in One Textile
+               <br />
+                <em style={{ color: 'rgba(212,175,90,1)' }}>
+                  Destination.
+                </em>
+               </h1>
               </Reveal>
-
+              
               {/* Marathi tagline — sits just below headline, same scale rhythm */}
               <Reveal delay={0.28}>
                 <p
