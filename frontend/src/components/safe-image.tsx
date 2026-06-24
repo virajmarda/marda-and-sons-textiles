@@ -7,9 +7,12 @@ interface SafeImageProps {
   alt: string;
   fallbacks?: string[];
   className?: string;
+  /** Applied as a placeholder div when all image sources have failed */
+  fallbackClassName?: string;
   width?: number;
   height?: number;
   fill?: boolean;
+  style?: React.CSSProperties;
 }
 
 export function SafeImage({
@@ -17,13 +20,32 @@ export function SafeImage({
   alt,
   fallbacks = [],
   className,
+  fallbackClassName,
   width,
   height,
   fill,
+  style,
 }: SafeImageProps) {
   const [idx, setIdx] = useState(0);
+  const [errored, setErrored] = useState(false);
   const srcs = [src, ...fallbacks];
   const current = srcs[idx] ?? src;
+
+  function handleError() {
+    if (idx < srcs.length - 1) {
+      setIdx((i) => i + 1);
+    } else {
+      setErrored(true);
+    }
+  }
+
+  const fillStyle: React.CSSProperties = fill
+    ? { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }
+    : {};
+
+  if (errored && fallbackClassName) {
+    return <div className={fallbackClassName} style={fillStyle} aria-label={alt} />;
+  }
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -33,10 +55,8 @@ export function SafeImage({
       className={className}
       width={width}
       height={height}
-      style={fill ? { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' } : undefined}
-      onError={() => {
-        if (idx < srcs.length - 1) setIdx((i) => i + 1);
-      }}
+      style={{ ...fillStyle, ...style }}
+      onError={handleError}
     />
   );
 }
