@@ -4,6 +4,7 @@ import { Reveal, SectionLabel } from '@/components/reveal';
 import { ProductCard } from '@/components/product-card';
 import { MAPS_DIRECTIONS, ESTABLISHED, whatsappLink } from '@/lib/api';
 import type { Product } from '@/lib/api';
+import { SafeImage } from '@/components/safe-image';
 
 export const revalidate = 60;
 
@@ -17,16 +18,26 @@ const editorial =
 // ─────────────────────────────────────────────────────────────────────────────
 // Odoo config
 // ─────────────────────────────────────────────────────────────────────────────
-const ODOO_URL      = process.env.ODOO_URL      ?? '';
-const ODOO_DB       = process.env.ODOO_DB       ?? '';
+const ODOO_URL = (process.env.ODOO_URL ?? '').replace(/\/+$/, '');
+const ODOO_DB = process.env.ODOO_DB ?? '';
 const ODOO_USERNAME = process.env.ODOO_USERNAME ?? '';
 const ODOO_PASSWORD = process.env.ODOO_PASSWORD ?? '';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Odoo JSON-RPC helpers
 // ─────────────────────────────────────────────────────────────────────────────
+function getOdooJsonRpcUrl() {
+  if (!ODOO_URL) return null;
+  return `${ODOO_URL}/jsonrpc`;
+}
+
 async function odooCall(service: string, method: string, args: unknown[]) {
-  const res = await fetch(`${ODOO_URL}/jsonrpc`, {
+  const rpcUrl = getOdooJsonRpcUrl();
+  if (!rpcUrl) {
+    throw new Error('ODOO_URL is not configured');
+  }
+
+  const res = await fetch(rpcUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     next: { revalidate: 60 },
@@ -37,13 +48,23 @@ async function odooCall(service: string, method: string, args: unknown[]) {
       params: { service, method, args },
     }),
   });
+
   if (!res.ok) throw new Error(`Odoo HTTP error: ${res.status}`);
+
   const json = await res.json();
-  if (json.error) throw new Error(json.error?.data?.message ?? 'Odoo RPC error');
+
+  if (json.error) {
+    throw new Error(json.error?.data?.message ?? 'Odoo RPC error');
+  }
+
   return json.result;
 }
 
 async function odooUid(): Promise<number> {
+  if (!ODOO_URL || !ODOO_DB || !ODOO_USERNAME || !ODOO_PASSWORD) {
+    throw new Error('Missing Odoo environment variables');
+  }
+
   return odooCall('common', 'login', [ODOO_DB, ODOO_USERNAME, ODOO_PASSWORD]);
 }
 
@@ -55,19 +76,25 @@ async function searchRead(
   opts: { limit?: number; order?: string } = {},
 ): Promise<Record<string, unknown>[]> {
   return odooCall('object', 'execute_kw', [
-    ODOO_DB, uid, ODOO_PASSWORD,
-    model, 'search_read',
+    ODOO_DB,
+    uid,
+    ODOO_PASSWORD,
+    model,
+    'search_read',
     [domain],
     { fields, limit: opts.limit ?? 20, order: opts.order ?? 'id asc' },
   ]);
 }
 
 function odooImg(model: string, id: number, field = 'image_512') {
+  if (!ODOO_URL) return FALLBACK_IMAGES[0];
   return `${ODOO_URL}/web/image/${model}/${id}/${field}`;
 }
 
 function slugify(s: string) {
-  return s.toLowerCase().trim()
+  return s
+    .toLowerCase()
+    .trim()
     .replace(/&/g, 'and')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
@@ -88,13 +115,13 @@ type OdooCategory = {
 };
 
 const CATEGORY_TAGLINES: Record<string, string> = {
-  bedsheets:           'The Solapuri chaddar — in homes since 1970.',
-  towels:              'Terry loop, honest cotton, built to last.',
-  phetas:              'The ceremonial turban of Maharashtra.',
-  blankets:            'Wool and cotton, for Indian winters.',
-  shawls:              'Lightweight drapes for every occasion.',
-  gifting:             'Curated sets for weddings & celebrations.',
-  ceremonial:          'Temple and puja textiles from Solapur.',
+  bedsheets: 'The Solapuri chaddar — in homes since 1970.',
+  towels: 'Terry loop, honest cotton, built to last.',
+  phetas: 'The ceremonial turban of Maharashtra.',
+  blankets: 'Wool and cotton, for Indian winters.',
+  shawls: 'Lightweight drapes for every occasion.',
+  gifting: 'Curated sets for weddings & celebrations.',
+  ceremonial: 'Temple and puja textiles from Solapur.',
   'wholesale-bundles': 'Bulk packs for retailers.',
 };
 
@@ -108,28 +135,30 @@ async function fetchCategories(): Promise<OdooCategory[]> {
       ['id', 'name'],
       { limit: 8, order: 'id asc' },
     );
+
     return records.map((c) => {
       const slug = slugify(c.name as string);
+
       return {
-        id:      c.id as number,
+        id: c.id as number,
         slug,
-        name:    c.name as string,
+        name: c.name as string,
         marathi: c.name as string,
         tagline: CATEGORY_TAGLINES[slug] ?? 'Honest textile craft from Solapur.',
-        image:   odooImg('product.public.category', c.id as number, 'image_512'),
+        image: odooImg('product.public.category', c.id as number, 'image_512'),
       };
     });
   } catch (err) {
     console.error('[Odoo] fetchCategories failed:', err);
     return [
-      { id: 1, slug: 'bedsheets',         name: 'Bedsheets',         marathi: 'चादरी',       tagline: 'The Solapuri chaddar — in homes since 1970.',  image: macro     },
-      { id: 2, slug: 'towels',            name: 'Towels',            marathi: 'टॉवेल',       tagline: 'Terry loop, honest cotton, built to last.',    image: hero      },
-      { id: 3, slug: 'phetas',            name: 'Phetas',            marathi: 'फेटे',        tagline: 'The ceremonial turban of Maharashtra.',        image: editorial },
-      { id: 4, slug: 'blankets',          name: 'Blankets',          marathi: 'ब्लँकेट',     tagline: 'Wool and cotton, for Indian winters.',         image: macro     },
-      { id: 5, slug: 'shawls',            name: 'Shawls',            marathi: 'शाल',         tagline: 'Lightweight drapes for every occasion.',      image: editorial },
-      { id: 6, slug: 'gifting',           name: 'Gifting',           marathi: 'भेटवस्तू',    tagline: 'Curated sets for weddings & celebrations.',   image: hero      },
-      { id: 7, slug: 'ceremonial',        name: 'Ceremonial',        marathi: 'पूजा वस्त्र', tagline: 'Temple and puja textiles from Solapur.',      image: macro     },
-      { id: 8, slug: 'wholesale-bundles', name: 'Wholesale Bundles', marathi: 'घाऊक',        tagline: 'Bulk packs for retailers.',                   image: editorial },
+      { id: 1, slug: 'bedsheets', name: 'Bedsheets', marathi: 'चादरी', tagline: 'The Solapuri chaddar — in homes since 1970.', image: macro },
+      { id: 2, slug: 'towels', name: 'Towels', marathi: 'टॉवेल', tagline: 'Terry loop, honest cotton, built to last.', image: hero },
+      { id: 3, slug: 'phetas', name: 'Phetas', marathi: 'फेटे', tagline: 'The ceremonial turban of Maharashtra.', image: editorial },
+      { id: 4, slug: 'blankets', name: 'Blankets', marathi: 'ब्लँकेट', tagline: 'Wool and cotton, for Indian winters.', image: macro },
+      { id: 5, slug: 'shawls', name: 'Shawls', marathi: 'शाल', tagline: 'Lightweight drapes for every occasion.', image: editorial },
+      { id: 6, slug: 'gifting', name: 'Gifting', marathi: 'भेटवस्तू', tagline: 'Curated sets for weddings & celebrations.', image: hero },
+      { id: 7, slug: 'ceremonial', name: 'Ceremonial', marathi: 'पूजा वस्त्र', tagline: 'Temple and puja textiles from Solapur.', image: macro },
+      { id: 8, slug: 'wholesale-bundles', name: 'Wholesale Bundles', marathi: 'घाऊक', tagline: 'Bulk packs for retailers.', image: editorial },
     ];
   }
 }
@@ -145,6 +174,7 @@ async function getWholesalePricelistId(uid: number): Promise<number | null> {
     ['id', 'name'],
     { limit: 1 },
   );
+
   return records.length ? (records[0].id as number) : null;
 }
 
@@ -154,12 +184,15 @@ async function getWholesalePrices(
   variantIds: number[],
 ): Promise<Record<number, number>> {
   const result = await odooCall('object', 'execute_kw', [
-    ODOO_DB, uid, ODOO_PASSWORD,
+    ODOO_DB,
+    uid,
+    ODOO_PASSWORD,
     'product.pricelist',
     'get_products_price',
     [[pricelistId], variantIds, Array(variantIds.length).fill(1)],
     {},
   ]);
+
   return (result as Record<number, number>) ?? {};
 }
 
@@ -176,9 +209,13 @@ async function fetchProducts(): Promise<Product[]> {
           ['sale_ok', '=', true],
         ],
         [
-          'id', 'name', 'website_description',
-          'list_price', 'default_code',
-          'public_categ_ids', 'product_variant_ids',
+          'id',
+          'name',
+          'website_description',
+          'list_price',
+          'default_code',
+          'public_categ_ids',
+          'product_variant_ids',
         ],
         { limit: 8, order: 'id desc' },
       ),
@@ -194,29 +231,28 @@ async function fetchProducts(): Promise<Product[]> {
       wholesalePrices = await getWholesalePrices(uid, wholesalePricelistId, variantIds);
     }
 
-    return records.map((p) => {
-      const catIds      = p.public_categ_ids as number[];
-      const variantId   = (p.product_variant_ids as number[])?.[0];
+    return records.map((p, index) => {
+      const catIds = p.public_categ_ids as number[] | undefined;
+      const variantId = (p.product_variant_ids as number[] | undefined)?.[0];
       const retailPrice = Number(p.list_price ?? 0);
-      const rawWs       = variantId ? wholesalePrices[variantId] : undefined;
-      const wsPrice     = rawWs !== undefined && rawWs < retailPrice ? Number(rawWs) : null;
+      const rawWs = variantId ? wholesalePrices[variantId] : undefined;
+      const wsPrice = rawWs !== undefined && rawWs < retailPrice ? Number(rawWs) : null;
 
       return {
-        slug:            slugify(p.name as string),
-        name:            p.name as string,
-        subtitle:        (p.default_code as string) || 'Solapur textile',
+        slug: slugify(p.name as string),
+        name: p.name as string,
+        subtitle: (p.default_code as string) || 'Solapur textile',
         description:
-          ((p.website_description as string) ?? '')
-            .replace(/<[^>]*>/g, '').trim() ||
+          ((p.website_description as string) ?? '').replace(/<[^>]*>/g, '').trim() ||
           'Crafted textile from the looms of Solapur.',
-        category:        catIds?.length ? String(catIds[0]) : 'uncategorized',
-        price_retail:    retailPrice,
+        category: catIds?.length ? String(catIds[0]) : 'uncategorized',
+        price_retail: retailPrice,
         price_wholesale: wsPrice,
-        moq_wholesale:   wsPrice ? 12 : null,
-        images:          [odooImg('product.template', p.id as number, 'image_512')],
-        badges:          ['Handloom'],
-        in_stock:        true,
-        featured:        true,
+        moq_wholesale: wsPrice ? 12 : null,
+        images: [odooImg('product.template', p.id as number, 'image_512') || FALLBACK_IMAGES[index % 3]],
+        badges: ['Handloom'],
+        in_stock: true,
+        featured: true,
       } satisfies Product;
     });
   } catch (err) {
@@ -227,64 +263,112 @@ async function fetchProducts(): Promise<Product[]> {
         name: 'Solapuri Chaddar — Classic White',
         subtitle: 'The original Solapur weave',
         description: 'Pure cotton Solapuri handloom bedsheet, single/double bed.',
-        category: 'bedsheets', price_retail: 899, price_wholesale: 699, moq_wholesale: 12,
-        images: [macro, editorial], badges: ['Bestseller', 'Handloom'], in_stock: true, featured: true,
+        category: 'bedsheets',
+        price_retail: 899,
+        price_wholesale: 699,
+        moq_wholesale: 12,
+        images: [macro, editorial],
+        badges: ['Bestseller', 'Handloom'],
+        in_stock: true,
+        featured: true,
       },
       {
         slug: 'solapuri-chaddar-royal-border',
         name: 'Solapuri Chaddar — Royal Border',
         subtitle: 'Heritage stripe border, double bed',
         description: 'Double-bed Solapuri chaddar with traditional woven border.',
-        category: 'bedsheets', price_retail: 1099, price_wholesale: 849, moq_wholesale: 12,
-        images: [editorial, macro], badges: ['Heritage', 'Handloom'], in_stock: true, featured: true,
+        category: 'bedsheets',
+        price_retail: 1099,
+        price_wholesale: 849,
+        moq_wholesale: 12,
+        images: [editorial, macro],
+        badges: ['Heritage', 'Handloom'],
+        in_stock: true,
+        featured: true,
       },
       {
         slug: 'solapuri-terry-towel-premium',
         name: 'Solapuri Terry Towel — Premium',
         subtitle: 'Thick loop, fast dry',
         description: 'Premium terry towel from Solapur — 100% combed cotton.',
-        category: 'towels', price_retail: 349, price_wholesale: 270, moq_wholesale: 24,
-        images: [hero, macro], badges: ['Bestseller'], in_stock: true, featured: true,
+        category: 'towels',
+        price_retail: 349,
+        price_wholesale: 270,
+        moq_wholesale: 24,
+        images: [hero, macro],
+        badges: ['Bestseller'],
+        in_stock: true,
+        featured: true,
       },
       {
         slug: 'solapuri-pheta-traditional',
         name: 'Solapuri Pheta — Traditional',
         subtitle: 'Ceremonial turban cloth',
         description: 'The traditional Solapuri pheta — worn at weddings across Maharashtra.',
-        category: 'phetas', price_retail: 599, price_wholesale: 449, moq_wholesale: 10,
-        images: [editorial, hero], badges: ['Heritage', 'Ceremonial'], in_stock: true, featured: true,
+        category: 'phetas',
+        price_retail: 599,
+        price_wholesale: 449,
+        moq_wholesale: 10,
+        images: [editorial, hero],
+        badges: ['Heritage', 'Ceremonial'],
+        in_stock: true,
+        featured: true,
       },
       {
         slug: 'solapuri-woolen-blanket-classic',
         name: 'Solapuri Woolen Blanket — Classic',
         subtitle: 'Winter staple since 1970',
         description: 'Warm wool-blend blanket from the looms of Solapur.',
-        category: 'blankets', price_retail: 1799, price_wholesale: 1399, moq_wholesale: 6,
-        images: [macro, editorial], badges: ['Premium', 'Handloom'], in_stock: true, featured: true,
+        category: 'blankets',
+        price_retail: 1799,
+        price_wholesale: 1399,
+        moq_wholesale: 6,
+        images: [macro, editorial],
+        badges: ['Premium', 'Handloom'],
+        in_stock: true,
+        featured: true,
       },
       {
         slug: 'solapuri-shawl-cotton-checks',
         name: 'Solapuri Shawl — Cotton Checks',
         subtitle: 'Everyday drape in classic check',
         description: 'Lightweight cotton shawl in the classic Solapuri check.',
-        category: 'shawls', price_retail: 699, price_wholesale: 549, moq_wholesale: 12,
-        images: [editorial, macro], badges: ['Heritage'], in_stock: true, featured: false,
+        category: 'shawls',
+        price_retail: 699,
+        price_wholesale: 549,
+        moq_wholesale: 12,
+        images: [editorial, macro],
+        badges: ['Heritage'],
+        in_stock: true,
+        featured: false,
       },
       {
         slug: 'solapuri-chaddar-king-size',
         name: 'Solapuri Chaddar — King Size',
         subtitle: 'King & queen extra-wide weave',
         description: 'Extra-wide king-size Solapuri chaddar for larger beds.',
-        category: 'bedsheets', price_retail: 1299, price_wholesale: 999, moq_wholesale: 10,
-        images: [hero, editorial], badges: ['New'], in_stock: true, featured: false,
+        category: 'bedsheets',
+        price_retail: 1299,
+        price_wholesale: 999,
+        moq_wholesale: 10,
+        images: [hero, editorial],
+        badges: ['New'],
+        in_stock: true,
+        featured: false,
       },
       {
         slug: 'solapuri-towel-set-gift',
         name: 'Solapuri Towel Gift Set — 3 Piece',
         subtitle: 'Bath + hand + face towel set',
         description: 'A curated 3-piece towel gift set in matched cotton terry.',
-        category: 'towels', price_retail: 899, price_wholesale: 699, moq_wholesale: 6,
-        images: [macro, hero], badges: ['Gift', 'Bestseller'], in_stock: true, featured: false,
+        category: 'towels',
+        price_retail: 899,
+        price_wholesale: 699,
+        moq_wholesale: 6,
+        images: [macro, hero],
+        badges: ['Gift', 'Bestseller'],
+        in_stock: true,
+        featured: false,
       },
     ];
   }
@@ -301,16 +385,16 @@ export default async function HomePage() {
 
   return (
     <div data-testid="home-page" className="bg-paper">
-
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
         data-testid="hero-section"
         className="relative flex min-h-[100svh] items-end overflow-hidden"
       >
-        <img
+        <SafeImage
           src={hero}
           alt="Solapur handloom textiles"
           className="absolute inset-0 h-full w-full object-cover object-center"
+          fallbackClassName="absolute inset-0 bg-ink"
           style={{ transform: 'scale(1.04)', transformOrigin: 'center' }}
         />
         <div
@@ -344,7 +428,6 @@ export default async function HomePage() {
 
         <div className="relative mx-auto w-full max-w-[1600px] px-4 pb-12 pt-28 sm:px-6 sm:pb-20 sm:pt-40 md:px-12 md:pb-28 md:pt-48 lg:px-24 lg:pb-32 lg:pt-56">
           <div className="grid items-end gap-10 lg:grid-cols-12 lg:gap-12">
-
             <div className="lg:col-span-8">
               <Reveal delay={0.05}>
                 <div className="mb-7 flex items-center gap-3 sm:gap-4 md:mb-9">
@@ -528,9 +611,9 @@ export default async function HomePage() {
 
                 <div className="mt-8 grid grid-cols-3 gap-x-6 gap-y-6 md:mt-10">
                   {[
-                    { n: '55+', l: 'Years of Legacy'  },
-                    { n: '8',   l: 'Textile Chapters' },
-                    { n: '3',   l: 'Generations'      },
+                    { n: '55+', l: 'Years of Legacy' },
+                    { n: '8', l: 'Textile Chapters' },
+                    { n: '3', l: 'Generations' },
                   ].map((s) => (
                     <div key={s.l}>
                       <p className="font-heading text-4xl italic text-brand sm:text-5xl">{s.n}</p>
@@ -574,13 +657,11 @@ export default async function HomePage() {
                         : 'aspect-[4/5] md:aspect-square md:mt-12'
                     }`}
                   >
-                    <img
+                    <SafeImage
                       src={c.image}
                       alt={c.name}
                       className="img-zoom h-full w-full object-cover"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGES[i % 3];
-                      }}
+                      fallbackClassName="h-full w-full bg-bg-tertiary"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
@@ -624,10 +705,10 @@ export default async function HomePage() {
 
       {/* ── HERITAGE CTA ─────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-ink text-bg-primary">
-        <img
+        <SafeImage
           src={macro}
           alt=""
-          aria-hidden
+          fallbackClassName="absolute inset-0 bg-ink"
           className="absolute inset-0 h-full w-full object-cover"
           style={{ opacity: 0.22 }}
         />
@@ -666,10 +747,11 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="hidden lg:block">
-            <img
+            <SafeImage
               src={editorial}
               alt="Heritage textiles flat lay"
               className="h-full w-full object-cover"
+              fallbackClassName="h-full w-full bg-bg-tertiary"
             />
           </div>
         </div>
@@ -687,10 +769,10 @@ export default async function HomePage() {
 
           <div className="mt-12 grid gap-8 sm:mt-14 md:mt-20 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
             {[
-              { Icon: Hand,  label: 'Handloom-First',    text: 'Sourced from Solapuri master weavers — never machine-finished pretenders.'  },
-              { Icon: Leaf,  label: 'Pure Cotton',        text: 'Combed cotton, breathable, and softens with every wash like family.'         },
-              { Icon: Award, label: 'Fair Pricing',       text: 'Wholesale roots mean retail prices that feel almost too fair.'                },
-              { Icon: Truck, label: 'Pan-India Delivery', text: 'From a single bath towel to a thousand-piece retailer order — we deliver.'   },
+              { Icon: Hand, label: 'Handloom-First', text: 'Sourced from Solapuri master weavers — never machine-finished pretenders.' },
+              { Icon: Leaf, label: 'Pure Cotton', text: 'Combed cotton, breathable, and softens with every wash like family.' },
+              { Icon: Award, label: 'Fair Pricing', text: 'Wholesale roots mean retail prices that feel almost too fair.' },
+              { Icon: Truck, label: 'Pan-India Delivery', text: 'From a single bath towel to a thousand-piece retailer order — we deliver.' },
             ].map((p, i) => (
               <Reveal key={p.label} delay={i * 0.08}>
                 <div className="border-t border-line pt-6 md:pt-8">
@@ -781,8 +863,7 @@ export default async function HomePage() {
             <div>
               <SectionLabel number="08" label="Visit Us" />
               <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
-                The store in{' '}
-                <span className="italic text-brand">Chattigalli.</span>
+                The store in <span className="italic text-brand">Chattigalli.</span>
               </h2>
               <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg md:mt-6">
                 The kind of shop where time slows down — where weavers, brides, and innkeepers all
@@ -825,16 +906,16 @@ export default async function HomePage() {
             </div>
 
             <div className="relative aspect-[4/3] overflow-hidden bg-bg-tertiary">
-              <img
+              <SafeImage
                 src={editorial}
                 alt="Marda & Sons store, Solapur"
                 className="h-full w-full object-cover"
+                fallbackClassName="h-full w-full bg-bg-tertiary"
               />
             </div>
           </div>
         </div>
       </section>
-
     </div>
   );
 }
