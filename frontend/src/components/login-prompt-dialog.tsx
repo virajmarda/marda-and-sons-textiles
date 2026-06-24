@@ -77,10 +77,11 @@ export function LoginPromptDialog({
     <AnimatePresence>
       {open && (
         <>
-          {/* ── Backdrop ───────────────────────────────────────────── */}
+          {/* ── Backdrop — starts BELOW navbar ─────────────────────── */}
           <motion.div
             key="backdrop"
-            className="fixed inset-0 z-[110] bg-ink/55 backdrop-blur-[6px]"
+            className="fixed inset-x-0 bottom-0 z-[110] bg-ink/55 backdrop-blur-[6px]"
+            style={{ top: 'var(--navbar-h, 110px)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -89,19 +90,16 @@ export function LoginPromptDialog({
             onClick={onClose}
           />
 
-          {/* ── Dialog shell ───────────────────────────────────────── */}
+          {/* ── Dialog shell — constrained to below-navbar area ─────── */}
           <div
-            className="fixed inset-0 z-[111] flex items-end justify-center sm:items-center sm:p-6"
+            className="fixed inset-x-0 bottom-0 z-[111] flex items-end justify-center sm:items-center sm:p-6"
+            style={{ top: 'var(--navbar-h, 110px)' }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="lp-title"
           >
             <motion.div
               key="dialog"
-              /*
-               * Mobile: slide up from bottom (sheet)
-               * Desktop: scale + fade from centre
-               */
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
@@ -114,13 +112,12 @@ export function LoginPromptDialog({
                 'sm:[animation:none]',
               ].join(' ')}
               style={{
-                /* Use dvh so address-bar changes don't cause overflow */
-                maxHeight: 'calc(100dvh - 4rem)',
+                /* Remaining height after navbar, minus breathing room */
+                maxHeight: 'calc(100dvh - var(--navbar-h, 110px) - 2rem)',
                 overflowY: 'auto',
               }}
             >
               {/* ── Desktop animation override ───────────────────── */}
-              {/* framer-motion variant for sm+ */}
               <motion.div
                 className="hidden sm:contents"
                 initial={{ opacity: 0, scale: 0.97, y: 12 }}
