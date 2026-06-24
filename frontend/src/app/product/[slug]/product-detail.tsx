@@ -15,13 +15,18 @@ export function ProductDetail({ product }: { product: Product }) {
   const [mode, setMode] = useState<'retail' | 'wholesale'>('retail');
   const [qty, setQty] = useState<number>(1);
   const [active, setActive] = useState(0);
-  const [color, setColor] = useState(product.colors?.[0] || '');
+  const [color, setColor] = useState(product.colors?.[0] ?? '');
   const [dialog, setDialog] = useState<LoginPromptTrigger | null>(null);
 
-  const price = mode === 'retail' ? product.price_retail : product.price_wholesale;
-  const minQty = mode === 'wholesale' ? (product.moq_wholesale ?? 1) : 1;
-  const safeQty = qty ?? 1;
-  const actualQty = mode === 'wholesale' ? Math.max(safeQty, minQty) : safeQty;
+  // Null-safe price: fall back to 0 if the product field is null
+  const price: number =
+    mode === 'retail'
+      ? (product.price_retail ?? 0)
+      : (product.price_wholesale ?? 0);
+
+  const minQty: number = mode === 'wholesale' ? (product.moq_wholesale ?? 1) : 1;
+  const safeQty: number = qty ?? 1;
+  const actualQty: number = mode === 'wholesale' ? Math.max(safeQty, minQty) : safeQty;
   const wished = isWished(product.slug);
 
   function handleAdd() {
@@ -30,8 +35,8 @@ export function ProductDetail({ product }: { product: Product }) {
       slug: product.slug,
       name: product.name,
       image: product.images[0],
-      price,
-      qty: actualQty,
+      price,           // guaranteed number now
+      qty: actualQty,  // guaranteed number now
       mode,
     });
     toast.success(`${product.name} · added to bag`);
@@ -124,7 +129,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 mode === 'wholesale' ? 'border-ink bg-ink text-bg-primary' : 'border-line text-ink'
               }`}
             >
-              Wholesale (MOQ {product.moq_wholesale})
+              Wholesale (MOQ {product.moq_wholesale ?? 1})
             </button>
           </div>
 
@@ -132,7 +137,7 @@ export function ProductDetail({ product }: { product: Product }) {
             <p className="font-heading text-3xl text-ink">{inr(price)}</p>
             <p className="mt-1 text-xs text-ink-soft">
               {mode === 'wholesale'
-                ? `Per piece · minimum ${product.moq_wholesale} units`
+                ? `Per piece · minimum ${product.moq_wholesale ?? 1} units`
                 : 'Inclusive of all taxes · Free shipping above ₹999'}
             </p>
           </div>
