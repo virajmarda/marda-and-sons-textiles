@@ -236,6 +236,13 @@ export async function markLeadContacted(
   );
 }
 
-export function inr(n: number) {
-  return `₹${n.toLocaleString('en-IN')}`;
+// lib/api.ts (or wherever this lives)
+
+export function inr(value: number | null | undefined): string {
+  const n = value ?? 0; // default to 0 if null/undefined
+  return n.toLocaleString('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  });
 }
