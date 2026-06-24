@@ -44,6 +44,8 @@ const benefits = [
   },
 ];
 
+const NAVBAR_OFFSET = 132;
+
 export function LoginPromptDialog({
   open,
   trigger,
@@ -79,7 +81,7 @@ export function LoginPromptDialog({
     <AnimatePresence>
       {open && (
         <div
-          className="fixed inset-0 z-[120] overflow-y-auto"
+          className="fixed inset-0 z-[120]"
           aria-labelledby="login-prompt-title"
           aria-modal="true"
           role="dialog"
@@ -89,114 +91,125 @@ export function LoginPromptDialog({
             type="button"
             aria-label="Close dialog"
             onClick={onClose}
-            className="fixed inset-0 h-full w-full bg-ink/55 backdrop-blur-[6px]"
+            className="absolute inset-0 h-full w-full bg-ink/50 backdrop-blur-[5px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           />
 
-          {/* Shell */}
-          <div className="relative flex min-h-[100svh] items-start justify-center px-3 py-4 sm:px-5 sm:py-8 md:items-center md:px-6 md:py-10">
-            <motion.div
-              initial={{ opacity: 0, y: 28, scale: 0.965 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 18, scale: 0.98 }}
-              transition={{
-                duration: 0.34,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="relative w-full max-w-[92vw] sm:max-w-[560px] md:max-w-[620px]"
-            >
-              <div className="overflow-hidden border border-line bg-paper shadow-[0_24px_80px_rgba(0,0,0,0.22)]">
-                {/* Close */}
-                <button
-                  type="button"
-                  onClick={onClose}
-                  aria-label="Close dialog"
-                  className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-line/80 bg-paper/92 text-ink-soft backdrop-blur transition-all duration-200 hover:border-ink hover:text-ink sm:right-4 sm:top-4"
+          {/* Frame: exclude navbar space */}
+          <div
+            className="absolute inset-x-0 bottom-0 px-3 sm:px-5 md:px-6"
+            style={{ top: `${NAVBAR_OFFSET}px` }}
+          >
+            <div className="flex h-full items-center justify-center pb-4 sm:pb-5 md:pb-6">
+              <motion.div
+                initial={{ opacity: 0, y: 22, scale: 0.975 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 14, scale: 0.985 }}
+                transition={{
+                  duration: 0.3,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="relative w-full max-w-[min(720px,calc(100vw-2rem))] sm:max-w-[680px] md:max-w-[700px]"
+              >
+                <div
+                  className="overflow-hidden border border-line bg-paper shadow-[0_22px_70px_rgba(0,0,0,0.20)]"
+                  style={{
+                    maxHeight: `calc(100dvh - ${NAVBAR_OFFSET}px - 24px)`,
+                  }}
                 >
-                  <X size={16} />
-                </button>
-
-                {/* Top */}
-                <div className="relative border-b border-line px-5 pb-6 pt-7 sm:px-7 sm:pb-7 sm:pt-8 md:px-8 md:pb-8 md:pt-9">
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center bg-brand text-bg-primary shadow-sm sm:h-12 sm:w-12">
-                    <Icon size={18} />
-                  </div>
-
-                  <h2
-                    id="login-prompt-title"
-                    className="max-w-[26rem] font-heading text-[2rem] leading-[1.02] text-ink sm:text-[2.35rem] md:text-[2.7rem]"
+                  {/* Close */}
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    aria-label="Close dialog"
+                    className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-line/80 bg-paper/94 text-ink-soft backdrop-blur transition-all duration-200 hover:border-ink hover:text-ink sm:right-4 sm:top-4"
                   >
-                    {content.title}
-                  </h2>
+                    <X size={15} />
+                  </button>
 
-                  <p className="mt-3 max-w-[32rem] font-sub text-sm leading-relaxed text-ink-soft sm:text-[15px] md:text-base">
-                    {content.subtitle}
-                  </p>
-                </div>
+                  {/* Header */}
+                  <div className="border-b border-line px-6 pb-5 pt-6 sm:px-8 sm:pb-6 sm:pt-7 md:px-10 md:pb-6 md:pt-8">
+                    <div className="mb-3 inline-flex h-10 w-10 items-center justify-center bg-brand text-bg-primary shadow-sm sm:h-11 sm:w-11">
+                      <Icon size={17} />
+                    </div>
 
-                {/* Body */}
-                <div className="max-h-[calc(100svh-10rem)] overflow-y-auto px-5 py-5 sm:max-h-[calc(100svh-12rem)] sm:px-7 sm:py-6 md:px-8 md:py-7">
-                  <div className="space-y-5 sm:space-y-6">
-                    {benefits.map((item, i) => {
-                      const BenefitIcon = item.icon;
-                      return (
-                        <motion.div
-                          key={item.title}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: 0.28,
-                            delay: 0.08 + i * 0.06,
-                            ease: [0.16, 1, 0.3, 1],
-                          }}
-                          className="flex gap-3 sm:gap-4"
+                    <h2
+                      id="login-prompt-title"
+                      className="max-w-[26rem] font-heading text-[2.15rem] leading-[0.95] text-ink sm:text-[2.65rem] md:max-w-[29rem] md:text-[3rem]"
+                    >
+                      {content.title}
+                    </h2>
+
+                    <p className="mt-2 max-w-[30rem] font-sub text-[15px] leading-relaxed text-ink-soft md:text-base">
+                      {content.subtitle}
+                    </p>
+                  </div>
+
+                  {/* Content */}
+                  <div className="px-6 py-5 sm:px-8 sm:py-6 md:px-10 md:py-6">
+                    <div className="space-y-5 md:space-y-6">
+                      {benefits.map((item, i) => {
+                        const BenefitIcon = item.icon;
+                        return (
+                          <motion.div
+                            key={item.title}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              duration: 0.24,
+                              delay: 0.06 + i * 0.05,
+                              ease: [0.16, 1, 0.3, 1],
+                            }}
+                            className="flex gap-3.5 md:gap-4"
+                          >
+                            <div className="mt-0.5 shrink-0 text-gold-dark">
+                              <BenefitIcon size={15} strokeWidth={1.55} />
+                            </div>
+                            <div>
+                              <p className="font-sub text-[15px] font-medium leading-snug text-ink md:text-base">
+                                {item.title}
+                              </p>
+                              <p className="mt-1 max-w-[31rem] font-sub text-[15px] leading-relaxed text-ink-soft">
+                                {item.text}
+                              </p>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-6 border-t border-line pt-5 sm:mt-7 sm:pt-5">
+                      <div className="space-y-3">
+                        <Link
+                          href="/login"
+                          className="flex h-[52px] w-full items-center justify-center bg-brand px-6 text-[11px] uppercase tracking-[0.24em] text-bg-primary transition-all duration-300 hover:brightness-95 active:scale-[0.995]"
                         >
-                          <div className="mt-0.5 shrink-0 text-gold-dark">
-                            <BenefitIcon size={15} strokeWidth={1.6} />
-                          </div>
-                          <div>
-                            <p className="font-sub text-[15px] font-medium leading-snug text-ink sm:text-base">
-                              {item.title}
-                            </p>
-                            <p className="mt-1.5 max-w-[30rem] font-sub text-sm leading-relaxed text-ink-soft sm:text-[15px]">
-                              {item.text}
-                            </p>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
+                          Sign in
+                        </Link>
 
-                  {/* Actions */}
-                  <div className="mt-7 space-y-3 border-t border-line pt-5 sm:mt-8 sm:pt-6">
-                    <Link
-                      href="/login"
-                      className="flex h-12 w-full items-center justify-center bg-brand px-6 text-[11px] uppercase tracking-[0.24em] text-bg-primary transition-all duration-300 hover:brightness-95 active:scale-[0.995] sm:h-[54px]"
-                    >
-                      Sign in
-                    </Link>
+                        <Link
+                          href="/register"
+                          className="flex h-[52px] w-full items-center justify-center border border-ink/30 bg-transparent px-6 text-[11px] uppercase tracking-[0.24em] text-ink transition-all duration-300 hover:border-ink hover:bg-ink hover:text-bg-primary active:scale-[0.995]"
+                        >
+                          Create an account
+                        </Link>
 
-                    <Link
-                      href="/register"
-                      className="flex h-12 w-full items-center justify-center border border-ink/30 bg-transparent px-6 text-[11px] uppercase tracking-[0.24em] text-ink transition-all duration-300 hover:border-ink hover:bg-ink hover:text-bg-primary active:scale-[0.995] sm:h-[54px]"
-                    >
-                      Create an account
-                    </Link>
-
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="mx-auto flex min-h-[44px] items-center justify-center px-3 pt-1 text-sm text-ink-soft transition-colors duration-200 hover:text-ink"
-                    >
-                      Continue browsing
-                    </button>
+                        <button
+                          type="button"
+                          onClick={onClose}
+                          className="mx-auto flex min-h-[40px] items-center justify-center px-3 pt-1 text-sm text-ink-soft transition-colors duration-200 hover:text-ink"
+                        >
+                          Continue browsing
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         </div>
       )}
