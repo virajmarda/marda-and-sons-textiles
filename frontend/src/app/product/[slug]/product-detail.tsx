@@ -13,14 +13,15 @@ export function ProductDetail({ product }: { product: Product }) {
   const { add, toggleWishlist, isWished } = useCart();
   const isLoggedIn = useIsLoggedIn();
   const [mode, setMode] = useState<'retail' | 'wholesale'>('retail');
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState<number>(1);
   const [active, setActive] = useState(0);
   const [color, setColor] = useState(product.colors?.[0] || '');
   const [dialog, setDialog] = useState<LoginPromptTrigger | null>(null);
 
   const price = mode === 'retail' ? product.price_retail : product.price_wholesale;
-  const minQty = mode === 'wholesale' ? product.moq_wholesale : 1;
-  const actualQty = mode === 'wholesale' ? Math.max(qty, minQty) : qty;
+  const minQty = mode === 'wholesale' ? (product.moq_wholesale ?? 1) : 1;
+  const safeQty = qty ?? 1;
+  const actualQty = mode === 'wholesale' ? Math.max(safeQty, minQty) : safeQty;
   const wished = isWished(product.slug);
 
   function handleAdd() {
@@ -109,7 +110,7 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="mt-8 flex gap-0">
             <button
               type="button"
-              onClick={() => setMode('retail')}
+              onClick={() => { setMode('retail'); setQty(1); }}
               className={`eyebrow px-4 py-2 border ${
                 mode === 'retail' ? 'border-ink bg-ink text-bg-primary' : 'border-line text-ink'
               }`}
@@ -118,7 +119,7 @@ export function ProductDetail({ product }: { product: Product }) {
             </button>
             <button
               type="button"
-              onClick={() => setMode('wholesale')}
+              onClick={() => { setMode('wholesale'); setQty(product.moq_wholesale ?? 1); }}
               className={`eyebrow px-4 py-2 border ${
                 mode === 'wholesale' ? 'border-ink bg-ink text-bg-primary' : 'border-line text-ink'
               }`}
@@ -171,7 +172,7 @@ export function ProductDetail({ product }: { product: Product }) {
             <div className="inline-flex items-center border border-line">
               <button
                 type="button"
-                onClick={() => setQty((q) => Math.max(mode === 'wholesale' ? minQty : 1, q - 1))}
+                onClick={() => setQty((q) => Math.max(minQty, q - 1))}
                 className="flex h-11 w-11 items-center justify-center hover:bg-bg-secondary"
               >
                 <Minus size={14} />
@@ -179,10 +180,13 @@ export function ProductDetail({ product }: { product: Product }) {
               <input
                 type="number"
                 inputMode="numeric"
-                min={mode === 'wholesale' ? minQty : 1}
+                min={minQty}
                 data-testid="qty-input"
                 value={actualQty}
-                onChange={(e) => setQty(Math.max(1, parseInt(e.target.value || '1', 10)))}
+                onChange={(e) => {
+                  const parsed = parseInt(e.target.value, 10);
+                  setQty(isNaN(parsed) ? minQty : Math.max(minQty, parsed));
+                }}
                 className="h-11 w-16 border-x border-line bg-transparent text-center outline-none font-sub"
               />
               <button
@@ -193,6 +197,11 @@ export function ProductDetail({ product }: { product: Product }) {
                 <Plus size={14} />
               </button>
             </div>
+            {mode === 'wholesale' && (
+              <p className="mt-2 text-[11px] text-ink-soft">
+                Minimum order: {minQty} units
+              </p>
+            )}
           </div>
 
           {/* CTAs */}
