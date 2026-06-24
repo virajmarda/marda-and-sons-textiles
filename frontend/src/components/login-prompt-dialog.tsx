@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Bookmark, Heart, Shield, ShoppingBag, X } from 'lucide-react';
 
@@ -50,26 +50,24 @@ export function LoginPromptDialog({
   onClose,
 }: LoginPromptDialogProps) {
   const [mounted, setMounted] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const content = COPY[trigger];
   const Icon = content.icon;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
+  // lock body scroll + focus close on open
   useEffect(() => {
     if (!open) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-
-    document.addEventListener('keydown', onKeyDown);
+    const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    const t = setTimeout(() => closeRef.current?.focus(), 60);
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = '';
+      document.body.style.overflow = prev;
+      document.removeEventListener('keydown', onKey);
+      clearTimeout(t);
     };
   }, [open, onClose]);
 
@@ -78,126 +76,156 @@ export function LoginPromptDialog({
   return (
     <AnimatePresence>
       {open && (
-        <div
-          className="fixed inset-0 z-[120]"
-          aria-labelledby="login-prompt-title"
-          aria-modal="true"
-          role="dialog"
-        >
-          <motion.button
-            type="button"
-            aria-label="Close dialog"
-            onClick={onClose}
-            className="absolute inset-0 h-full w-full bg-ink/50 backdrop-blur-[5px]"
+        <>
+          {/* ── Backdrop ───────────────────────────────────────────── */}
+          <motion.div
+            key="backdrop"
+            className="fixed inset-0 z-[110] bg-ink/55 backdrop-blur-[6px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            aria-hidden="true"
+            onClick={onClose}
           />
 
-          <div className="absolute inset-x-0 top-[118px] bottom-[22px] px-4 py-4 sm:top-[124px] sm:bottom-[24px] sm:px-5 sm:py-5 md:top-[130px] md:bottom-[28px] md:px-6 md:py-6">
-            <div className="flex h-full items-center justify-center">
+          {/* ── Dialog shell ───────────────────────────────────────── */}
+          <div
+            className="fixed inset-0 z-[111] flex items-end justify-center sm:items-center sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="lp-title"
+          >
+            <motion.div
+              key="dialog"
+              /*
+               * Mobile: slide up from bottom (sheet)
+               * Desktop: scale + fade from centre
+               */
+              initial={{ opacity: 0, y: '100%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: '100%' }}
+              transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+              className={[
+                /* Mobile: full-width bottom sheet */
+                'relative w-full bg-paper border-t border-line shadow-[0_-8px_60px_rgba(0,0,0,0.16)]',
+                /* Desktop: centred card */
+                'sm:w-full sm:max-w-[540px] sm:border sm:shadow-[0_28px_80px_rgba(0,0,0,0.20)]',
+                'sm:[animation:none]',
+              ].join(' ')}
+              style={{
+                /* Use dvh so address-bar changes don't cause overflow */
+                maxHeight: 'calc(100dvh - 4rem)',
+                overflowY: 'auto',
+              }}
+            >
+              {/* ── Desktop animation override ───────────────────── */}
+              {/* framer-motion variant for sm+ */}
               <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.975 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 14, scale: 0.985 }}
+                className="hidden sm:contents"
+                initial={{ opacity: 0, scale: 0.97, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.97, y: 8 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="relative w-full max-w-[640px]"
+              />
+
+              {/* Close */}
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-line/70 bg-paper text-ink-soft transition hover:border-ink/50 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60"
               >
-                <div
-                  className="overflow-hidden border border-line bg-paper shadow-[0_22px_70px_rgba(0,0,0,0.18)]"
-                  style={{ maxHeight: '100%' }}
+                <X size={15} />
+              </button>
+
+              {/* ── Header ─────────────────────────────────────────── */}
+              <div className="border-b border-line px-6 pb-5 pt-6 sm:px-8 sm:pt-8 sm:pb-6">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center bg-brand text-bg-primary shadow-sm">
+                  <Icon size={16} />
+                </div>
+
+                <h2
+                  id="lp-title"
+                  className="font-heading text-[2rem] leading-[0.95] tracking-[-0.02em] text-ink sm:text-[2.4rem]"
                 >
+                  {content.title}
+                </h2>
+
+                <p className="mt-2.5 font-sub text-[15px] leading-relaxed text-ink-soft">
+                  {content.subtitle}
+                </p>
+              </div>
+
+              {/* ── Body ───────────────────────────────────────────── */}
+              <div className="px-6 pt-5 pb-6 sm:px-8 sm:pt-6 sm:pb-8">
+                <ul className="space-y-5" role="list">
+                  {benefits.map((item, i) => {
+                    const BIcon = item.icon;
+                    return (
+                      <motion.li
+                        key={item.title}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: 0.22,
+                          delay: 0.06 + i * 0.055,
+                          ease: [0.16, 1, 0.3, 1],
+                        }}
+                        className="flex gap-3.5"
+                      >
+                        <BIcon
+                          size={14}
+                          strokeWidth={1.6}
+                          className="mt-1 shrink-0 text-gold-dark"
+                        />
+                        <div>
+                          <p className="font-sub text-[15px] font-semibold leading-snug text-ink">
+                            {item.title}
+                          </p>
+                          <p className="mt-1 font-sub text-[14px] leading-relaxed text-ink-soft">
+                            {item.text}
+                          </p>
+                        </div>
+                      </motion.li>
+                    );
+                  })}
+                </ul>
+
+                {/* Actions */}
+                <div className="mt-7 space-y-3 border-t border-line pt-6">
+                  <Link
+                    href="/login"
+                    onClick={onClose}
+                    className="flex h-12 w-full items-center justify-center bg-brand text-[11px] uppercase tracking-[0.22em] text-bg-primary transition-all duration-200 hover:brightness-90 active:scale-[0.997] sm:h-[52px]"
+                  >
+                    Sign in
+                  </Link>
+
+                  <Link
+                    href="/register"
+                    onClick={onClose}
+                    className="flex h-12 w-full items-center justify-center border border-ink/25 text-[11px] uppercase tracking-[0.22em] text-ink transition-all duration-200 hover:border-ink hover:bg-ink hover:text-bg-primary active:scale-[0.997] sm:h-[52px]"
+                  >
+                    Create an account
+                  </Link>
+
                   <button
                     type="button"
                     onClick={onClose}
-                    aria-label="Close dialog"
-                    className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-line/80 bg-paper/92 text-ink-soft backdrop-blur transition-all duration-200 hover:border-ink hover:text-ink"
+                    className="mx-auto flex h-10 w-full items-center justify-center text-[13px] text-ink-soft transition-colors hover:text-ink"
                   >
-                    <X size={15} />
+                    Continue browsing
                   </button>
-
-                  <div className="border-b border-line px-6 pb-4 pt-6 sm:px-8 sm:pb-5 sm:pt-7">
-                    <div className="mb-3 inline-flex h-10 w-10 items-center justify-center bg-brand text-bg-primary shadow-sm">
-                      <Icon size={16} />
-                    </div>
-
-                    <h2
-                      id="login-prompt-title"
-                      className="max-w-[19rem] font-heading text-[2.85rem] leading-[0.92] tracking-[-0.03em] text-ink sm:max-w-[21rem] sm:text-[3.05rem]"
-                    >
-                      {content.title}
-                    </h2>
-
-                    <p className="mt-2 font-sub text-[15px] leading-relaxed text-ink-soft">
-                      {content.subtitle}
-                    </p>
-                  </div>
-
-                  <div className="px-6 py-5 sm:px-8 sm:py-6">
-                    <div className="space-y-4">
-                      {benefits.map((item, i) => {
-                        const BenefitIcon = item.icon;
-                        return (
-                          <motion.div
-                            key={item.title}
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              duration: 0.24,
-                              delay: 0.05 + i * 0.05,
-                              ease: [0.16, 1, 0.3, 1],
-                            }}
-                            className="flex gap-3"
-                          >
-                            <div className="mt-1 shrink-0 text-gold-dark">
-                              <BenefitIcon size={14} strokeWidth={1.55} />
-                            </div>
-
-                            <div>
-                              <p className="font-sub text-[15px] font-medium leading-snug text-ink">
-                                {item.title}
-                              </p>
-                              <p className="mt-1 text-[15px] leading-relaxed text-ink-soft">
-                                {item.text}
-                              </p>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-
-                    <div className="mt-6 border-t border-line pt-5">
-                      <div className="space-y-3">
-                        <Link
-                          href="/login"
-                          className="flex h-[50px] w-full items-center justify-center bg-brand px-6 text-[11px] uppercase tracking-[0.24em] text-bg-primary transition-all duration-300 hover:brightness-95 active:scale-[0.995]"
-                        >
-                          Sign in
-                        </Link>
-
-                        <Link
-                          href="/register"
-                          className="flex h-[50px] w-full items-center justify-center border border-ink/30 bg-transparent px-6 text-[11px] uppercase tracking-[0.24em] text-ink transition-all duration-300 hover:border-ink hover:bg-ink hover:text-bg-primary active:scale-[0.995]"
-                        >
-                          Create an account
-                        </Link>
-
-                        <button
-                          type="button"
-                          onClick={onClose}
-                          className="mx-auto flex h-9 items-center justify-center px-3 text-sm text-ink-soft transition-colors duration-200 hover:text-ink"
-                        >
-                          Continue browsing
-                        </button>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              </motion.div>
-            </div>
+
+                {/* Safe area pad for mobile home bar */}
+                <div className="pb-[env(safe-area-inset-bottom)] sm:pb-0" />
+              </div>
+            </motion.div>
           </div>
-        </div>
+        </>
       )}
     </AnimatePresence>
   );
