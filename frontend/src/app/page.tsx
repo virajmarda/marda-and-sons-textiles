@@ -800,61 +800,79 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── WHOLESALE / RETAIL SPLIT ─────────────────────────────────────── */}
-      <section className="overflow-hidden bg-paper">
-        <div className="grid items-stretch md:grid-cols-2">
-          <div className="relative overflow-hidden bg-brand px-4 py-16 text-bg-primary sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -bottom-6 -right-4 font-accent leading-none opacity-10 md:-bottom-10 md:-right-10"
-              style={{ fontSize: 'clamp(6rem, 18vw, 14rem)' }}
-            >
-              घाऊक
-            </span>
-            <SectionLabel number="06" label="Wholesale" />
-            <h3 className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl">
-              For bulk buyers and trade orders.
-            </h3>
-            <p className="font-sub mt-5 max-w-md leading-relaxed text-bg-primary/85 md:mt-6">
-              Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has
-              fulfilled orders from a hundred pieces to a hundred thousand, with the same
-              loom-level honesty.
-            </p>
-            <Link
-              href="/wholesale"
-              data-testid="wholesale-cta-home"
-              className="eyebrow link-underline mt-8 inline-flex items-center gap-3 md:mt-12"
-            >
-              Be our wholesale partner <ArrowRight size={14} />
-            </Link>
-          </div>
+     {/* ── WHOLESALE / RETAIL SPLIT ─────────────────────────────────────── */}
+<section className="overflow-hidden bg-paper">
+  <div className="grid items-stretch md:grid-cols-2">
 
-          <div className="relative overflow-hidden bg-paper-3 px-4 py-16 text-ink sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -bottom-6 -right-4 font-accent leading-none opacity-10 md:-bottom-10 md:-right-10"
-              style={{ fontSize: 'clamp(6rem, 18vw, 14rem)' }}
-            >
-              किरकोळ
-            </span>
-            <SectionLabel number="07" label="Retail" />
-            <h3 className="display-2 mt-6 text-4xl italic text-brand sm:text-5xl md:mt-8 md:text-6xl">
-              For homes and families.
-            </h3>
-            <p className="font-sub mt-5 max-w-md leading-relaxed text-ink-soft md:mt-6">
-              From your first bath towel to your daughter&apos;s wedding trousseau — shop the same
-              heritage our wholesale partners receive, now beautifully retailed.
-            </p>
-            <Link
-              href="/shop"
-              data-testid="retail-cta-home"
-              className="eyebrow link-underline mt-8 inline-flex items-center gap-3 text-brand md:mt-12"
-            >
-              Shop the collection <ArrowRight size={14} />
-            </Link>
-          </div>
-        </div>
-      </section>
+    {/* Wholesale panel */}
+    <div className="relative overflow-hidden bg-brand px-4 py-16 text-bg-primary sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
+      {/* Watermark — pinned to bottom-right of its own panel, never overflows */}
+      <span
+        aria-hidden
+        className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82] text-white/[0.07]"
+        style={{
+          fontSize: 'clamp(5rem, 12vw, 10rem)',
+          letterSpacing: '-0.03em',
+          /* push baseline flush to bottom edge, right edge */
+          lineHeight: '0.82',
+          paddingBottom: '0',
+        }}
+      >
+        घाऊक
+      </span>
+
+      <SectionLabel number="06" label="Wholesale" />
+      <h3 className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl">
+        For bulk buyers and trade orders.
+      </h3>
+      <p className="font-sub mt-5 max-w-md leading-relaxed text-bg-primary/85 md:mt-6">
+        Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has
+        fulfilled orders from a hundred pieces to a hundred thousand, with the same
+        loom-level honesty.
+      </p>
+      <Link
+        href="/wholesale"
+        data-testid="wholesale-cta-home"
+        className="eyebrow link-underline mt-8 inline-flex items-center gap-3 md:mt-12"
+      >
+        Be our wholesale partner <ArrowRight size={14} />
+      </Link>
+    </div>
+
+    {/* Retail panel */}
+    <div className="relative overflow-hidden bg-paper-3 px-4 py-16 text-ink sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
+      {/* Watermark — same treatment, scoped to panel */}
+      <span
+        aria-hidden
+        className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82] text-brand/[0.08]"
+        style={{
+          fontSize: 'clamp(5rem, 12vw, 10rem)',
+          letterSpacing: '-0.03em',
+          lineHeight: '0.82',
+        }}
+      >
+        किरकोळ
+      </span>
+
+      <SectionLabel number="07" label="Retail" />
+      <h3 className="display-2 mt-6 text-4xl italic text-brand sm:text-5xl md:mt-8 md:text-6xl">
+        For homes and families.
+      </h3>
+      <p className="font-sub mt-5 max-w-md leading-relaxed text-ink-soft md:mt-6">
+        From your first bath towel to your daughter&apos;s wedding trousseau — shop the same
+        heritage our wholesale partners receive, now beautifully retailed.
+      </p>
+      <Link
+        href="/shop"
+        data-testid="retail-cta-home"
+        className="eyebrow link-underline mt-8 inline-flex items-center gap-3 text-brand md:mt-12"
+      >
+        Shop the collection <ArrowRight size={14} />
+      </Link>
+    </div>
+
+  </div>
+</section>
 
       {/* ── VISIT US ─────────────────────────────────────────────────────── */}
       <section className="bg-paper py-16 sm:py-20 md:py-24 lg:py-32">
