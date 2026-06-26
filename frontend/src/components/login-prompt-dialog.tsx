@@ -89,7 +89,7 @@ export function LoginPromptDialog({
             onClick={onClose}
           />
 
-          {/* ── Positioner — fills space below navbar ────────────────── */}
+          {/* ── Positioner ───────────────────────────────────────────── */}
           <div
             className="fixed inset-x-0 bottom-0 z-[111] flex items-end justify-center sm:items-center sm:px-4"
             style={{ top: 'var(--navbar-h, 110px)' }}
@@ -100,17 +100,14 @@ export function LoginPromptDialog({
             {/* ── Card ─────────────────────────────────────────────────── */}
             <motion.div
               key="dialog"
-              /* Mobile: slide up from bottom */
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 24 }}
+              exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               className="relative w-full bg-paper sm:max-w-[420px] sm:rounded-sm"
               style={{
-                /* Never taller than the space below the navbar */
                 maxHeight: 'calc(100dvh - var(--navbar-h, 110px) - 1.5rem)',
                 overflowY: 'auto',
-                /* Subtle border on desktop */
                 boxShadow: '0 24px 64px rgba(0,0,0,0.22), 0 1px 0 rgba(0,0,0,0.06)',
               }}
             >
@@ -126,27 +123,28 @@ export function LoginPromptDialog({
               </button>
 
               {/* ── Header ─────────────────────────────────────────────── */}
-              <div className="border-b border-line px-5 pb-4 pt-5 sm:px-6 sm:pb-4 sm:pt-6">
-                {/* Icon badge */}
-                <div className="mb-3 flex h-8 w-8 items-center justify-center bg-brand text-bg-primary">
-                  <Icon size={14} />
+              <div className="border-b border-line px-5 pb-4 pt-5 sm:px-6 sm:pb-5 sm:pt-6">
+                <div className="mb-3 flex h-9 w-9 items-center justify-center bg-brand text-bg-primary">
+                  <Icon size={15} />
                 </div>
 
+                {/* Title — larger, heavier, full ink colour */}
                 <h2
                   id="lp-title"
-                  className="font-heading text-[1.45rem] leading-[1.05] tracking-[-0.02em] text-ink sm:text-[1.65rem]"
+                  className="font-heading text-[1.55rem] font-normal leading-[1.1] tracking-[-0.02em] text-ink sm:text-[1.7rem]"
                 >
                   {content.title}
                 </h2>
 
-                <p className="mt-1.5 font-sub text-[13px] leading-relaxed text-ink-soft">
+                {/* Subtitle — uses text-ink not text-ink-soft for legibility */}
+                <p className="mt-2 font-sub text-[14px] leading-relaxed text-ink">
                   {content.subtitle}
                 </p>
               </div>
 
               {/* ── Benefits ───────────────────────────────────────────── */}
-              <div className="px-5 pb-0 pt-4 sm:px-6 sm:pt-5">
-                <ul className="space-y-3.5" role="list">
+              <div className="px-5 pt-4 pb-2 sm:px-6 sm:pt-5">
+                <ul className="space-y-4" role="list">
                   {benefits.map((item, i) => {
                     const BIcon = item.icon;
                     return (
@@ -161,16 +159,19 @@ export function LoginPromptDialog({
                         }}
                         className="flex gap-3"
                       >
+                        {/* Icon — slightly larger, stronger colour */}
                         <BIcon
-                          size={13}
-                          strokeWidth={1.6}
-                          className="mt-0.5 shrink-0 text-gold-dark"
+                          size={15}
+                          strokeWidth={1.7}
+                          className="mt-0.5 shrink-0 text-brand"
                         />
                         <div>
-                          <p className="font-sub text-[13px] font-semibold leading-snug text-ink">
+                          {/* Benefit title — semibold + full ink */}
+                          <p className="font-sub text-[14px] font-semibold leading-snug text-ink">
                             {item.title}
                           </p>
-                          <p className="mt-0.5 font-sub text-[12px] leading-relaxed text-ink-soft">
+                          {/* Benefit body — 13px but text-ink not text-ink-soft */}
+                          <p className="mt-1 font-sub text-[13px] leading-relaxed text-ink/75">
                             {item.text}
                           </p>
                         </div>
@@ -181,12 +182,12 @@ export function LoginPromptDialog({
               </div>
 
               {/* ── Actions ────────────────────────────────────────────── */}
-              <div className="px-5 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
+              <div className="px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
                 <div className="space-y-2 border-t border-line pt-4">
                   <Link
                     href="/login"
                     onClick={onClose}
-                    className="flex h-11 w-full items-center justify-center bg-brand text-[10.5px] uppercase tracking-[0.22em] text-bg-primary transition-all duration-200 hover:brightness-90 active:scale-[0.998]"
+                    className="flex h-11 w-full items-center justify-center bg-brand text-[11px] font-medium uppercase tracking-[0.22em] text-bg-primary transition-all duration-200 hover:brightness-90 active:scale-[0.998]"
                   >
                     Sign in
                   </Link>
@@ -194,7 +195,7 @@ export function LoginPromptDialog({
                   <Link
                     href="/register"
                     onClick={onClose}
-                    className="flex h-11 w-full items-center justify-center border border-ink/20 text-[10.5px] uppercase tracking-[0.22em] text-ink transition-all duration-200 hover:border-ink hover:bg-ink hover:text-bg-primary active:scale-[0.998]"
+                    className="flex h-11 w-full items-center justify-center border border-ink/30 text-[11px] font-medium uppercase tracking-[0.22em] text-ink transition-all duration-200 hover:border-ink hover:bg-ink hover:text-bg-primary active:scale-[0.998]"
                   >
                     Create an account
                   </Link>
@@ -202,7 +203,7 @@ export function LoginPromptDialog({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="flex h-9 w-full items-center justify-center text-[12px] text-ink-soft transition-colors hover:text-ink"
+                    className="flex h-9 w-full items-center justify-center font-sub text-[13px] font-medium text-ink/60 transition-colors hover:text-ink"
                   >
                     Continue browsing
                   </button>
