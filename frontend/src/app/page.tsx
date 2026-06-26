@@ -804,70 +804,132 @@ export default async function HomePage() {
 <section className="overflow-hidden bg-paper">
   <div className="grid items-stretch md:grid-cols-2">
 
-    {/* Wholesale panel */}
-    <div className="relative overflow-hidden bg-brand px-4 py-16 text-bg-primary sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
-      {/* Watermark — pinned to bottom-right of its own panel, never overflows */}
+    {/* Wholesale panel — deep maroon bg, warm parchment text */}
+    <div
+      className="relative overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32"
+      style={{ backgroundColor: '#6B1A2A' }}   /* richer, truer maroon than bg-brand */
+    >
+      {/* Watermark */}
       <span
         aria-hidden
-        className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82] text-white/[0.07]"
+        className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82]"
         style={{
           fontSize: 'clamp(5rem, 12vw, 10rem)',
           letterSpacing: '-0.03em',
-          /* push baseline flush to bottom edge, right edge */
           lineHeight: '0.82',
-          paddingBottom: '0',
+          color: 'rgba(255,245,230,0.06)',   /* warm white, not cool white */
         }}
       >
         घाऊक
       </span>
 
-      <SectionLabel number="06" label="Wholesale" />
-      <h3 className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl">
+      {/* Section label — override eyebrow color explicitly */}
+      <div className="mb-6 flex items-center gap-3">
+        <span
+          className="font-sub text-[10px] uppercase tracking-[0.26em]"
+          style={{ color: 'rgba(255,235,195,0.55)' }}
+        >
+          06
+        </span>
+        <span
+          className="h-px w-8"
+          style={{ background: 'rgba(255,235,195,0.30)' }}
+        />
+        <span
+          className="font-sub text-[10px] uppercase tracking-[0.26em]"
+          style={{ color: 'rgba(255,235,195,0.55)' }}
+        >
+          Wholesale
+        </span>
+      </div>
+
+      <h3
+        className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl"
+        style={{ color: '#FFF5E6' }}   /* warm parchment — not stark white, not grey */
+      >
         For bulk buyers and trade orders.
       </h3>
-      <p className="font-sub mt-5 max-w-md leading-relaxed text-bg-primary/85 md:mt-6">
+
+      <p
+        className="font-sub mt-5 max-w-md leading-relaxed md:mt-6"
+        style={{ color: 'rgba(255,235,195,0.72)' }}   /* warm cream at reduced opacity */
+      >
         Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has
         fulfilled orders from a hundred pieces to a hundred thousand, with the same
         loom-level honesty.
       </p>
+
       <Link
         href="/wholesale"
         data-testid="wholesale-cta-home"
-        className="eyebrow link-underline mt-8 inline-flex items-center gap-3 md:mt-12"
+        className="mt-8 inline-flex items-center gap-3 font-sub text-[11px] uppercase tracking-[0.22em] transition-opacity hover:opacity-70 md:mt-12"
+        style={{ color: '#FFF5E6' }}   /* same warm parchment as headline — crisp & readable */
       >
-        Be our wholesale partner <ArrowRight size={14} />
+        Be our wholesale partner <ArrowRight size={13} />
       </Link>
     </div>
 
-    {/* Retail panel */}
-    <div className="relative overflow-hidden bg-paper-3 px-4 py-16 text-ink sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32">
-      {/* Watermark — same treatment, scoped to panel */}
+    {/* Retail panel — warm parchment bg, deep maroon text */}
+    <div
+      className="relative overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32"
+      style={{ backgroundColor: '#F5EFE4' }}   /* warm parchment — matches the off-white on maroon side */
+    >
+      {/* Watermark */}
       <span
         aria-hidden
-        className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82] text-brand/[0.08]"
+        className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82]"
         style={{
           fontSize: 'clamp(5rem, 12vw, 10rem)',
           letterSpacing: '-0.03em',
           lineHeight: '0.82',
+          color: 'rgba(107,26,42,0.07)',   /* matching maroon at low opacity — not generic brand/08 */
         }}
       >
         किरकोळ
       </span>
 
-      <SectionLabel number="07" label="Retail" />
-      <h3 className="display-2 mt-6 text-4xl italic text-brand sm:text-5xl md:mt-8 md:text-6xl">
+      {/* Section label — explicit maroon */}
+      <div className="mb-6 flex items-center gap-3">
+        <span
+          className="font-sub text-[10px] uppercase tracking-[0.26em]"
+          style={{ color: 'rgba(107,26,42,0.45)' }}
+        >
+          07
+        </span>
+        <span
+          className="h-px w-8"
+          style={{ background: 'rgba(107,26,42,0.25)' }}
+        />
+        <span
+          className="font-sub text-[10px] uppercase tracking-[0.26em]"
+          style={{ color: 'rgba(107,26,42,0.45)' }}
+        >
+          Retail
+        </span>
+      </div>
+
+      <h3
+        className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl"
+        style={{ color: '#6B1A2A' }}   /* same rich maroon as the left panel's bg — perfect mirror */
+      >
         For homes and families.
       </h3>
-      <p className="font-sub mt-5 max-w-md leading-relaxed text-ink-soft md:mt-6">
+
+      <p
+        className="font-sub mt-5 max-w-md leading-relaxed md:mt-6"
+        style={{ color: 'rgba(107,26,42,0.62)' }}   /* maroon at reduced opacity for body — warm and readable */
+      >
         From your first bath towel to your daughter&apos;s wedding trousseau — shop the same
         heritage our wholesale partners receive, now beautifully retailed.
       </p>
+
       <Link
         href="/shop"
         data-testid="retail-cta-home"
-        className="eyebrow link-underline mt-8 inline-flex items-center gap-3 text-brand md:mt-12"
+        className="mt-8 inline-flex items-center gap-3 font-sub text-[11px] uppercase tracking-[0.22em] transition-opacity hover:opacity-70 md:mt-12"
+        style={{ color: '#6B1A2A' }}   /* crisp full-strength maroon for CTA — mirrors parchment on left */
       >
-        Shop the collection <ArrowRight size={14} />
+        Shop the collection <ArrowRight size={13} />
       </Link>
     </div>
 
