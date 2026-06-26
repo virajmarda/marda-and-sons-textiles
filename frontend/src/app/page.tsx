@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, Award, Hand, Leaf, Sparkles, Truck } from 'lucide-react';
 import { Reveal, SectionLabel } from '@/components/reveal';
 import { ProductCard } from '@/components/product-card';
-import { MAPS_DIRECTIONS, ESTABLISHED, whatsappLink } from '@/lib/api';
+import { MAPS_DIRECTIONS, STORE_HOURS, STORE_ADDRESS, ESTABLISHED, whatsappLink } from '@/lib/api';
 import type { Product } from '@/lib/api';
 import { SafeImage } from '@/components/safe-image';
 
@@ -874,61 +874,67 @@ export default async function HomePage() {
   </div>
 </section>
 
-      {/* ── VISIT US ─────────────────────────────────────────────────────── */}
-      <section className="bg-paper py-16 sm:py-20 md:py-24 lg:py-32">
-        <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-            <div>
-              <SectionLabel number="08" label="Visit Us" />
-              <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
-                The store in <span className="italic text-brand">Chattigalli.</span>
-              </h2>
-              <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg md:mt-6">
-                The kind of shop where time slows down — where weavers, brides, and innkeepers all
-                know our name. Come visit us in Mangalwar Peth, Solapur.
-              </p>
+    {/* VISIT US */}
+<section className="bg-paper py-16 sm:py-20 md:py-24">
+  <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
+    <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-16">
+      <div className="lg:flex lg:flex-col lg:justify-center">
+        <SectionLabel number="08" label="Visit Us" />
+        <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
+          The store in <span className="italic text-brand">Chattigalli.</span>
+        </h2>
+        <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg md:mt-6">
+          The kind of shop where time slows down — where weavers, brides, and innkeepers all sit on
+          the same takhat with chai.
+        </p>
 
-              <dl className="mt-8 space-y-4 font-sub text-sm text-ink-soft md:mt-10 md:text-base">
-                <div className="flex gap-4">
-                  <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[10px]">Address</dt>
-                  <dd className="text-ink">430, Chattigalli, Mangalwar Peth, Solapur — 413 002</dd>
-                </div>
-                <div className="flex gap-4">
-                  <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[10px]">Hours</dt>
-                  <dd className="text-ink">Mon – Sat, 9 am – 8 pm</dd>
-                </div>
-                <div className="flex gap-4">
-                  <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[10px]">WhatsApp</dt>
-                  <dd>
-                    <a
-                      href={whatsappLink('Hello, I would like to know more about your products.')}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-brand hover:underline"
-                    >
-                      Chat with us →
-                    </a>
-                  </dd>
-                </div>
-              </dl>
+        <ul className="mt-8 space-y-4 text-ink font-sub md:mt-10">
+          <li className="flex gap-3">
+            <span className="num-block w-8 shrink-0">01</span>
+            {STORE_ADDRESS}
+          </li>
+          <li className="flex gap-3">
+            <span className="num-block w-8 shrink-0">02</span>
+            {STORE_HOURS}
+          </li>
+          <li className="flex gap-3">
+            <span className="num-block w-8 shrink-0">03</span>
+            +91 94224 60420 · WhatsApp friendly
+          </li>
+        </ul>
 
-              <a
-                href={MAPS_DIRECTIONS}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-testid="footer-directions"
-                className="mt-8 inline-flex items-center gap-3 font-sub text-[11px] uppercase tracking-[0.2em] text-brand transition-opacity hover:opacity-70 md:mt-10"
-              >
-                Open in Google Maps <ArrowRight size={13} />
-              </a>
-            </div>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:mt-12 md:gap-4">
+          <a
+            href={MAPS_DIRECTIONS}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="home-directions"
+            className="btn-primary w-full justify-center sm:w-auto"
+          >
+            Get Directions
+          </a>
+          <a
+            href={whatsappLink('Hello मर्दा ॲन्ड सन्स, I would like to visit your store.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="home-whatsapp"
+            className="btn-ghost w-full justify-center sm:w-auto"
+          >
+            Chat on WhatsApp
+          </a>
+        </div>
+      </div>
 
-            <div className="relative aspect-[4/3] overflow-hidden bg-bg-tertiary">
-              <SafeImage
-                src={editorial}
-                alt="Marda & Sons store, Solapur"
-                className="h-full w-full object-cover"
-                fallbackClassName="h-full w-full bg-bg-tertiary"
+            <div className="relative mt-12 sm:mt-16 lg:mt-0 aspect-[4/5] sm:aspect-[16/9] lg:aspect-auto lg:h-full min-h-[320px] overflow-hidden rounded-2xl shadow-lg">
+              <iframe
+          title="Marda & Sons map"
+          src="https://www.google.com/maps?q=Marda+%26+Sons+Chattigalli+Mangalwar+Peth+Solapur&output=embed"
+          width="100%"
+          height="100%"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          style={{ border: 0 }}
+          data-testid="home-map-embed"
               />
             </div>
           </div>
