@@ -16,7 +16,7 @@ const editorial =
   'https://static.prod-images.emergentagent.com/jobs/bc89c642-8773-4d1c-aaf6-c53217394bb7/images/6ee061934d03a5fc78962a067d6eb5b00c915d6aee9992d61cd1ff9b93f6da20.png';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Odoo config
+// Odoo config — absolute URL guard
 // ─────────────────────────────────────────────────────────────────────────────
 const ODOO_URL = (process.env.ODOO_URL ?? '').replace(/\/+$/, '');
 const ODOO_DB = process.env.ODOO_DB ?? '';
@@ -26,16 +26,14 @@ const ODOO_PASSWORD = process.env.ODOO_PASSWORD ?? '';
 // ─────────────────────────────────────────────────────────────────────────────
 // Odoo JSON-RPC helpers
 // ─────────────────────────────────────────────────────────────────────────────
-function getOdooJsonRpcUrl() {
+function getOdooJsonRpcUrl(): string | null {
   if (!ODOO_URL) return null;
   return `${ODOO_URL}/jsonrpc`;
 }
 
 async function odooCall(service: string, method: string, args: unknown[]) {
   const rpcUrl = getOdooJsonRpcUrl();
-  if (!rpcUrl) {
-    throw new Error('ODOO_URL is not configured');
-  }
+  if (!rpcUrl) throw new Error('ODOO_URL is not configured');
 
   const res = await fetch(rpcUrl, {
     method: 'POST',
@@ -52,18 +50,14 @@ async function odooCall(service: string, method: string, args: unknown[]) {
   if (!res.ok) throw new Error(`Odoo HTTP error: ${res.status}`);
 
   const json = await res.json();
-
-  if (json.error) {
-    throw new Error(json.error?.data?.message ?? 'Odoo RPC error');
-  }
+  if (json.error) throw new Error(json.error?.data?.message ?? 'Odoo RPC error');
 
   return json.result;
 }
 
 async function odooUid(): Promise<number> {
-  if (!ODOO_URL || !ODOO_DB || !ODOO_USERNAME || !ODOO_PASSWORD) {
+  if (!ODOO_URL || !ODOO_DB || !ODOO_USERNAME || !ODOO_PASSWORD)
     throw new Error('Missing Odoo environment variables');
-  }
 
   return odooCall('common', 'login', [ODOO_DB, ODOO_USERNAME, ODOO_PASSWORD]);
 }
@@ -125,6 +119,17 @@ const CATEGORY_TAGLINES: Record<string, string> = {
   'wholesale-bundles': 'Bulk packs for retailers.',
 };
 
+const FALLBACK_CATEGORIES: OdooCategory[] = [
+  { id: 1, slug: 'bedsheets',         name: 'Bedsheets',         marathi: 'चादरी',       tagline: 'The Solapuri chaddar — in homes since 1970.',     image: macro     },
+  { id: 2, slug: 'towels',            name: 'Towels',            marathi: 'टॉवेल',       tagline: 'Terry loop, honest cotton, built to last.',       image: hero      },
+  { id: 3, slug: 'phetas',            name: 'Phetas',            marathi: 'फेटे',         tagline: 'The ceremonial turban of Maharashtra.',            image: editorial },
+  { id: 4, slug: 'blankets',          name: 'Blankets',          marathi: 'ब्लँकेट',     tagline: 'Wool and cotton, for Indian winters.',            image: macro     },
+  { id: 5, slug: 'shawls',            name: 'Shawls',            marathi: 'शाल',          tagline: 'Lightweight drapes for every occasion.',          image: editorial },
+  { id: 6, slug: 'gifting',           name: 'Gifting',           marathi: 'भेटवस्तू',    tagline: 'Curated sets for weddings & celebrations.',       image: hero      },
+  { id: 7, slug: 'ceremonial',        name: 'Ceremonial',        marathi: 'पूजा वस्त्र', tagline: 'Temple and puja textiles from Solapur.',          image: macro     },
+  { id: 8, slug: 'wholesale-bundles', name: 'Wholesale Bundles', marathi: 'घाऊक',        tagline: 'Bulk packs for retailers.',                       image: editorial },
+];
+
 async function fetchCategories(): Promise<OdooCategory[]> {
   try {
     const uid = await odooUid();
@@ -138,7 +143,6 @@ async function fetchCategories(): Promise<OdooCategory[]> {
 
     return records.map((c) => {
       const slug = slugify(c.name as string);
-
       return {
         id: c.id as number,
         slug,
@@ -150,16 +154,7 @@ async function fetchCategories(): Promise<OdooCategory[]> {
     });
   } catch (err) {
     console.error('[Odoo] fetchCategories failed:', err);
-    return [
-      { id: 1, slug: 'bedsheets', name: 'Bedsheets', marathi: 'चादरी', tagline: 'The Solapuri chaddar — in homes since 1970.', image: macro },
-      { id: 2, slug: 'towels', name: 'Towels', marathi: 'टॉवेल', tagline: 'Terry loop, honest cotton, built to last.', image: hero },
-      { id: 3, slug: 'phetas', name: 'Phetas', marathi: 'फेटे', tagline: 'The ceremonial turban of Maharashtra.', image: editorial },
-      { id: 4, slug: 'blankets', name: 'Blankets', marathi: 'ब्लँकेट', tagline: 'Wool and cotton, for Indian winters.', image: macro },
-      { id: 5, slug: 'shawls', name: 'Shawls', marathi: 'शाल', tagline: 'Lightweight drapes for every occasion.', image: editorial },
-      { id: 6, slug: 'gifting', name: 'Gifting', marathi: 'भेटवस्तू', tagline: 'Curated sets for weddings & celebrations.', image: hero },
-      { id: 7, slug: 'ceremonial', name: 'Ceremonial', marathi: 'पूजा वस्त्र', tagline: 'Temple and puja textiles from Solapur.', image: macro },
-      { id: 8, slug: 'wholesale-bundles', name: 'Wholesale Bundles', marathi: 'घाऊक', tagline: 'Bulk packs for retailers.', image: editorial },
-    ];
+    return FALLBACK_CATEGORIES;
   }
 }
 
@@ -174,7 +169,6 @@ async function getWholesalePricelistId(uid: number): Promise<number | null> {
     ['id', 'name'],
     { limit: 1 },
   );
-
   return records.length ? (records[0].id as number) : null;
 }
 
@@ -192,9 +186,123 @@ async function getWholesalePrices(
     [[pricelistId], variantIds, Array(variantIds.length).fill(1)],
     {},
   ]);
-
   return (result as Record<number, number>) ?? {};
 }
+
+const FALLBACK_PRODUCTS: Product[] = [
+  {
+    slug: 'solapuri-chaddar-classic-white',
+    name: 'Solapuri Chaddar — Classic White',
+    subtitle: 'The original Solapur weave',
+    description: 'Pure cotton Solapuri handloom bedsheet, single/double bed.',
+    category: 'bedsheets',
+    price_retail: 899,
+    price_wholesale: 699,
+    moq_wholesale: 12,
+    images: [macro, editorial],
+    badges: ['Bestseller', 'Handloom'],
+    in_stock: true,
+    featured: true,
+  },
+  {
+    slug: 'solapuri-chaddar-royal-border',
+    name: 'Solapuri Chaddar — Royal Border',
+    subtitle: 'Heritage stripe border, double bed',
+    description: 'Double-bed Solapuri chaddar with traditional woven border.',
+    category: 'bedsheets',
+    price_retail: 1099,
+    price_wholesale: 849,
+    moq_wholesale: 12,
+    images: [editorial, macro],
+    badges: ['Heritage', 'Handloom'],
+    in_stock: true,
+    featured: true,
+  },
+  {
+    slug: 'solapuri-terry-towel-premium',
+    name: 'Solapuri Terry Towel — Premium',
+    subtitle: 'Thick loop, fast dry',
+    description: 'Premium terry towel from Solapur — 100% combed cotton.',
+    category: 'towels',
+    price_retail: 349,
+    price_wholesale: 270,
+    moq_wholesale: 24,
+    images: [hero, macro],
+    badges: ['Bestseller'],
+    in_stock: true,
+    featured: true,
+  },
+  {
+    slug: 'solapuri-pheta-traditional',
+    name: 'Solapuri Pheta — Traditional',
+    subtitle: 'Ceremonial turban cloth',
+    description: 'The traditional Solapuri pheta — worn at weddings across Maharashtra.',
+    category: 'phetas',
+    price_retail: 599,
+    price_wholesale: 449,
+    moq_wholesale: 10,
+    images: [editorial, hero],
+    badges: ['Heritage', 'Ceremonial'],
+    in_stock: true,
+    featured: true,
+  },
+  {
+    slug: 'solapuri-woolen-blanket-classic',
+    name: 'Solapuri Woolen Blanket — Classic',
+    subtitle: 'Winter staple since 1970',
+    description: 'Warm wool-blend blanket from the looms of Solapur.',
+    category: 'blankets',
+    price_retail: 1799,
+    price_wholesale: 1399,
+    moq_wholesale: 6,
+    images: [macro, editorial],
+    badges: ['Premium', 'Handloom'],
+    in_stock: true,
+    featured: true,
+  },
+  {
+    slug: 'solapuri-shawl-cotton-checks',
+    name: 'Solapuri Shawl — Cotton Checks',
+    subtitle: 'Everyday drape in classic check',
+    description: 'Lightweight cotton shawl in the classic Solapuri check.',
+    category: 'shawls',
+    price_retail: 699,
+    price_wholesale: 549,
+    moq_wholesale: 12,
+    images: [editorial, macro],
+    badges: ['Heritage'],
+    in_stock: true,
+    featured: false,
+  },
+  {
+    slug: 'solapuri-chaddar-king-size',
+    name: 'Solapuri Chaddar — King Size',
+    subtitle: 'King & queen extra-wide weave',
+    description: 'Extra-wide king-size Solapuri chaddar for larger beds.',
+    category: 'bedsheets',
+    price_retail: 1299,
+    price_wholesale: 999,
+    moq_wholesale: 10,
+    images: [hero, editorial],
+    badges: ['New'],
+    in_stock: true,
+    featured: false,
+  },
+  {
+    slug: 'solapuri-towel-set-gift',
+    name: 'Solapuri Towel Gift Set — 3 Piece',
+    subtitle: 'Bath + hand + face towel set',
+    description: 'A curated 3-piece towel gift set in matched cotton terry.',
+    category: 'towels',
+    price_retail: 899,
+    price_wholesale: 699,
+    moq_wholesale: 6,
+    images: [macro, hero],
+    badges: ['Gift', 'Bestseller'],
+    in_stock: true,
+    featured: false,
+  },
+];
 
 async function fetchProducts(): Promise<Product[]> {
   try {
@@ -257,120 +365,7 @@ async function fetchProducts(): Promise<Product[]> {
     });
   } catch (err) {
     console.error('[Odoo] fetchProducts failed:', err);
-    return [
-      {
-        slug: 'solapuri-chaddar-classic-white',
-        name: 'Solapuri Chaddar — Classic White',
-        subtitle: 'The original Solapur weave',
-        description: 'Pure cotton Solapuri handloom bedsheet, single/double bed.',
-        category: 'bedsheets',
-        price_retail: 899,
-        price_wholesale: 699,
-        moq_wholesale: 12,
-        images: [macro, editorial],
-        badges: ['Bestseller', 'Handloom'],
-        in_stock: true,
-        featured: true,
-      },
-      {
-        slug: 'solapuri-chaddar-royal-border',
-        name: 'Solapuri Chaddar — Royal Border',
-        subtitle: 'Heritage stripe border, double bed',
-        description: 'Double-bed Solapuri chaddar with traditional woven border.',
-        category: 'bedsheets',
-        price_retail: 1099,
-        price_wholesale: 849,
-        moq_wholesale: 12,
-        images: [editorial, macro],
-        badges: ['Heritage', 'Handloom'],
-        in_stock: true,
-        featured: true,
-      },
-      {
-        slug: 'solapuri-terry-towel-premium',
-        name: 'Solapuri Terry Towel — Premium',
-        subtitle: 'Thick loop, fast dry',
-        description: 'Premium terry towel from Solapur — 100% combed cotton.',
-        category: 'towels',
-        price_retail: 349,
-        price_wholesale: 270,
-        moq_wholesale: 24,
-        images: [hero, macro],
-        badges: ['Bestseller'],
-        in_stock: true,
-        featured: true,
-      },
-      {
-        slug: 'solapuri-pheta-traditional',
-        name: 'Solapuri Pheta — Traditional',
-        subtitle: 'Ceremonial turban cloth',
-        description: 'The traditional Solapuri pheta — worn at weddings across Maharashtra.',
-        category: 'phetas',
-        price_retail: 599,
-        price_wholesale: 449,
-        moq_wholesale: 10,
-        images: [editorial, hero],
-        badges: ['Heritage', 'Ceremonial'],
-        in_stock: true,
-        featured: true,
-      },
-      {
-        slug: 'solapuri-woolen-blanket-classic',
-        name: 'Solapuri Woolen Blanket — Classic',
-        subtitle: 'Winter staple since 1970',
-        description: 'Warm wool-blend blanket from the looms of Solapur.',
-        category: 'blankets',
-        price_retail: 1799,
-        price_wholesale: 1399,
-        moq_wholesale: 6,
-        images: [macro, editorial],
-        badges: ['Premium', 'Handloom'],
-        in_stock: true,
-        featured: true,
-      },
-      {
-        slug: 'solapuri-shawl-cotton-checks',
-        name: 'Solapuri Shawl — Cotton Checks',
-        subtitle: 'Everyday drape in classic check',
-        description: 'Lightweight cotton shawl in the classic Solapuri check.',
-        category: 'shawls',
-        price_retail: 699,
-        price_wholesale: 549,
-        moq_wholesale: 12,
-        images: [editorial, macro],
-        badges: ['Heritage'],
-        in_stock: true,
-        featured: false,
-      },
-      {
-        slug: 'solapuri-chaddar-king-size',
-        name: 'Solapuri Chaddar — King Size',
-        subtitle: 'King & queen extra-wide weave',
-        description: 'Extra-wide king-size Solapuri chaddar for larger beds.',
-        category: 'bedsheets',
-        price_retail: 1299,
-        price_wholesale: 999,
-        moq_wholesale: 10,
-        images: [hero, editorial],
-        badges: ['New'],
-        in_stock: true,
-        featured: false,
-      },
-      {
-        slug: 'solapuri-towel-set-gift',
-        name: 'Solapuri Towel Gift Set — 3 Piece',
-        subtitle: 'Bath + hand + face towel set',
-        description: 'A curated 3-piece towel gift set in matched cotton terry.',
-        category: 'towels',
-        price_retail: 899,
-        price_wholesale: 699,
-        moq_wholesale: 6,
-        images: [macro, hero],
-        badges: ['Gift', 'Bestseller'],
-        in_stock: true,
-        featured: false,
-      },
-    ];
+    return FALLBACK_PRODUCTS;
   }
 }
 
@@ -385,6 +380,7 @@ export default async function HomePage() {
 
   return (
     <div data-testid="home-page" className="bg-paper">
+
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
         data-testid="hero-section"
@@ -612,8 +608,8 @@ export default async function HomePage() {
                 <div className="mt-8 grid grid-cols-3 gap-x-6 gap-y-6 md:mt-10">
                   {[
                     { n: '55+', l: 'Years of Legacy' },
-                    { n: '8', l: 'Textile Chapters' },
-                    { n: '3', l: 'Generations' },
+                    { n: '8',   l: 'Textile Chapters' },
+                    { n: '3',   l: 'Generations' },
                   ].map((s) => (
                     <div key={s.l}>
                       <p className="font-heading text-4xl italic text-brand sm:text-5xl">{s.n}</p>
@@ -769,9 +765,9 @@ export default async function HomePage() {
 
           <div className="mt-12 grid gap-8 sm:mt-14 md:mt-20 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
             {[
-              { Icon: Hand, label: 'Handloom-First', text: 'Sourced from Solapuri master weavers — never machine-finished pretenders.' },
-              { Icon: Leaf, label: 'Pure Cotton', text: 'Combed cotton, breathable, and softens with every wash like family.' },
-              { Icon: Award, label: 'Fair Pricing', text: 'Wholesale roots mean retail prices that feel almost too fair.' },
+              { Icon: Hand,  label: 'Handloom-First', text: 'Sourced from Solapuri master weavers — never machine-finished pretenders.' },
+              { Icon: Leaf,  label: 'Pure Cotton',    text: 'Combed cotton, breathable, and softens with every wash like family.' },
+              { Icon: Award, label: 'Fair Pricing',   text: 'Wholesale roots mean retail prices that feel almost too fair.' },
               { Icon: Truck, label: 'Pan-India Delivery', text: 'From a single bath towel to a thousand-piece retailer order — we deliver.' },
             ].map((p, i) => (
               <Reveal key={p.label} delay={i * 0.08}>
@@ -800,208 +796,179 @@ export default async function HomePage() {
         </div>
       </section>
 
-     {/* ── WHOLESALE / RETAIL SPLIT ─────────────────────────────────────── */}
-<section className="overflow-hidden bg-paper">
-  <div className="grid items-stretch md:grid-cols-2">
+      {/* ── WHOLESALE / RETAIL SPLIT ─────────────────────────────────────── */}
+      <section className="overflow-hidden bg-paper">
+        <div className="grid items-stretch md:grid-cols-2">
 
-    {/* Wholesale panel — deep maroon bg, warm parchment text */}
-    <div
-      className="relative overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32"
-      style={{ backgroundColor: '#6B1A2A' }}   /* richer, truer maroon than bg-brand */
-    >
-      {/* Watermark */}
-      <span
-        aria-hidden
-        className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82]"
-        style={{
-          fontSize: 'clamp(5rem, 12vw, 10rem)',
-          letterSpacing: '-0.03em',
-          lineHeight: '0.82',
-          color: 'rgba(255,245,230,0.06)',   /* warm white, not cool white */
-        }}
-      >
-        घाऊक
-      </span>
-
-      {/* Section label — override eyebrow color explicitly */}
-      <div className="mb-6 flex items-center gap-3">
-        <span
-          className="font-sub text-[10px] uppercase tracking-[0.26em]"
-          style={{ color: 'rgba(255,235,195,0.55)' }}
-        >
-          06
-        </span>
-        <span
-          className="h-px w-8"
-          style={{ background: 'rgba(255,235,195,0.30)' }}
-        />
-        <span
-          className="font-sub text-[10px] uppercase tracking-[0.26em]"
-          style={{ color: 'rgba(255,235,195,0.55)' }}
-        >
-          Wholesale
-        </span>
-      </div>
-
-      <h3
-        className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl"
-        style={{ color: '#FFF5E6' }}   /* warm parchment — not stark white, not grey */
-      >
-        For bulk buyers and trade orders.
-      </h3>
-
-      <p
-        className="font-sub mt-5 max-w-md leading-relaxed md:mt-6"
-        style={{ color: 'rgba(255,235,195,0.72)' }}   /* warm cream at reduced opacity */
-      >
-        Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has
-        fulfilled orders from a hundred pieces to a hundred thousand, with the same
-        loom-level honesty.
-      </p>
-
-      <Link
-        href="/wholesale"
-        data-testid="wholesale-cta-home"
-        className="mt-8 inline-flex items-center gap-3 font-sub text-[11px] uppercase tracking-[0.22em] transition-opacity hover:opacity-70 md:mt-12"
-        style={{ color: '#FFF5E6' }}   /* same warm parchment as headline — crisp & readable */
-      >
-        Be our wholesale partner <ArrowRight size={13} />
-      </Link>
-    </div>
-
-    {/* Retail panel — warm parchment bg, deep maroon text */}
-    <div
-      className="relative overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32"
-      style={{ backgroundColor: '#F5EFE4' }}   /* warm parchment — matches the off-white on maroon side */
-    >
-      {/* Watermark */}
-      <span
-        aria-hidden
-        className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82]"
-        style={{
-          fontSize: 'clamp(5rem, 12vw, 10rem)',
-          letterSpacing: '-0.03em',
-          lineHeight: '0.82',
-          color: 'rgba(107,26,42,0.07)',   /* matching maroon at low opacity — not generic brand/08 */
-        }}
-      >
-        किरकोळ
-      </span>
-
-      {/* Section label — explicit maroon */}
-      <div className="mb-6 flex items-center gap-3">
-        <span
-          className="font-sub text-[10px] uppercase tracking-[0.26em]"
-          style={{ color: 'rgba(107,26,42,0.45)' }}
-        >
-          07
-        </span>
-        <span
-          className="h-px w-8"
-          style={{ background: 'rgba(107,26,42,0.25)' }}
-        />
-        <span
-          className="font-sub text-[10px] uppercase tracking-[0.26em]"
-          style={{ color: 'rgba(107,26,42,0.45)' }}
-        >
-          Retail
-        </span>
-      </div>
-
-      <h3
-        className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl"
-        style={{ color: '#6B1A2A' }}   /* same rich maroon as the left panel's bg — perfect mirror */
-      >
-        For homes and families.
-      </h3>
-
-      <p
-        className="font-sub mt-5 max-w-md leading-relaxed md:mt-6"
-        style={{ color: 'rgba(107,26,42,0.62)' }}   /* maroon at reduced opacity for body — warm and readable */
-      >
-        From your first bath towel to your daughter&apos;s wedding trousseau — shop the same
-        heritage our wholesale partners receive, now beautifully retailed.
-      </p>
-
-      <Link
-        href="/shop"
-        data-testid="retail-cta-home"
-        className="mt-8 inline-flex items-center gap-3 font-sub text-[11px] uppercase tracking-[0.22em] transition-opacity hover:opacity-70 md:mt-12"
-        style={{ color: '#6B1A2A' }}   /* crisp full-strength maroon for CTA — mirrors parchment on left */
-      >
-        Shop the collection <ArrowRight size={13} />
-      </Link>
-    </div>
-
-  </div>
-</section>
-
-    {/* VISIT US */}
-<section className="bg-paper py-16 sm:py-20 md:py-24">
-  <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
-    <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-16">
-      <div className="lg:flex lg:flex-col lg:justify-center">
-        <SectionLabel number="08" label="Visit Us" />
-        <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
-          The store in <span className="italic text-brand">Chattigalli.</span>
-        </h2>
-        <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg md:mt-6">
-          The kind of shop where time slows down — where weavers, brides, and innkeepers all sit on
-          the same takhat with chai.
-        </p>
-
-        <ul className="mt-8 space-y-4 text-ink font-sub md:mt-10">
-          <li className="flex gap-3">
-            <span className="num-block w-8 shrink-0">01</span>
-            {STORE_ADDRESS}
-          </li>
-          <li className="flex gap-3">
-            <span className="num-block w-8 shrink-0">02</span>
-            {STORE_HOURS}
-          </li>
-          <li className="flex gap-3">
-            <span className="num-block w-8 shrink-0">03</span>
-            +91 94224 60420 · WhatsApp friendly
-          </li>
-        </ul>
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:mt-12 md:gap-4">
-          <a
-            href={MAPS_DIRECTIONS}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="home-directions"
-            className="btn-primary w-full justify-center sm:w-auto"
+          {/* Wholesale panel */}
+          <div
+            className="relative overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32"
+            style={{ backgroundColor: '#6B1A2A' }}
           >
-            Get Directions
-          </a>
-          <a
-            href={whatsappLink('Hello मर्दा ॲन्ड सन्स, I would like to visit your store.')}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="home-whatsapp"
-            className="btn-ghost w-full justify-center sm:w-auto"
+            <span
+              aria-hidden
+              className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82]"
+              style={{
+                fontSize: 'clamp(5rem, 12vw, 10rem)',
+                letterSpacing: '-0.03em',
+                lineHeight: '0.82',
+                color: 'rgba(255,245,230,0.06)',
+              }}
+            >
+              घाऊक
+            </span>
+
+            <div className="mb-6 flex items-center gap-3">
+              <span className="font-sub text-[10px] uppercase tracking-[0.26em]" style={{ color: 'rgba(255,235,195,0.55)' }}>06</span>
+              <span className="h-px w-8" style={{ background: 'rgba(255,235,195,0.30)' }} />
+              <span className="font-sub text-[10px] uppercase tracking-[0.26em]" style={{ color: 'rgba(255,235,195,0.55)' }}>Wholesale</span>
+            </div>
+
+            <h3
+              className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl"
+              style={{ color: '#FFF5E6' }}
+            >
+              For bulk buyers and trade orders.
+            </h3>
+
+            <p
+              className="font-sub mt-5 max-w-md leading-relaxed md:mt-6"
+              style={{ color: 'rgba(255,235,195,0.72)' }}
+            >
+              Retailers, gifting houses, wedding planners, and exporters — our wholesale arm has
+              fulfilled orders from a hundred pieces to a hundred thousand, with the same
+              loom-level honesty.
+            </p>
+
+            <Link
+              href="/wholesale"
+              data-testid="wholesale-cta-home"
+              className="mt-8 inline-flex items-center gap-3 font-sub text-[11px] uppercase tracking-[0.22em] transition-opacity hover:opacity-70 md:mt-12"
+              style={{ color: '#FFF5E6' }}
+            >
+              Be our wholesale partner <ArrowRight size={13} />
+            </Link>
+          </div>
+
+          {/* Retail panel */}
+          <div
+            className="relative overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24 lg:px-16 lg:py-32"
+            style={{ backgroundColor: '#F5EFE4' }}
           >
-            Chat on WhatsApp
-          </a>
+            <span
+              aria-hidden
+              className="pointer-events-none select-none absolute bottom-0 right-0 font-accent leading-[0.82]"
+              style={{
+                fontSize: 'clamp(5rem, 12vw, 10rem)',
+                letterSpacing: '-0.03em',
+                lineHeight: '0.82',
+                color: 'rgba(107,26,42,0.07)',
+              }}
+            >
+              किरकोळ
+            </span>
+
+            <div className="mb-6 flex items-center gap-3">
+              <span className="font-sub text-[10px] uppercase tracking-[0.26em]" style={{ color: 'rgba(107,26,42,0.45)' }}>07</span>
+              <span className="h-px w-8" style={{ background: 'rgba(107,26,42,0.25)' }} />
+              <span className="font-sub text-[10px] uppercase tracking-[0.26em]" style={{ color: 'rgba(107,26,42,0.45)' }}>Retail</span>
+            </div>
+
+            <h3
+              className="display-2 mt-6 text-4xl italic sm:text-5xl md:mt-8 md:text-6xl"
+              style={{ color: '#6B1A2A' }}
+            >
+              For homes and families.
+            </h3>
+
+            <p
+              className="font-sub mt-5 max-w-md leading-relaxed md:mt-6"
+              style={{ color: 'rgba(107,26,42,0.62)' }}
+            >
+              From your first bath towel to your daughter&apos;s wedding trousseau — shop the same
+              heritage our wholesale partners receive, now beautifully retailed.
+            </p>
+
+            <Link
+              href="/shop"
+              data-testid="retail-cta-home"
+              className="mt-8 inline-flex items-center gap-3 font-sub text-[11px] uppercase tracking-[0.22em] transition-opacity hover:opacity-70 md:mt-12"
+              style={{ color: '#6B1A2A' }}
+            >
+              Shop the collection <ArrowRight size={13} />
+            </Link>
+          </div>
+
         </div>
-      </div>
+      </section>
+
+      {/* ── VISIT US ─────────────────────────────────────────────────────── */}
+      <section className="bg-paper py-16 sm:py-20 md:py-24">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-16">
+            <div className="lg:flex lg:flex-col lg:justify-center">
+              <SectionLabel number="08" label="Visit Us" />
+              <h2 className="display-2 mt-5 text-4xl text-ink sm:text-5xl md:mt-6 md:text-6xl">
+                The store in <span className="italic text-brand">Chattigalli.</span>
+              </h2>
+              <p className="font-sub mt-5 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg md:mt-6">
+                The kind of shop where time slows down — where weavers, brides, and innkeepers all sit on
+                the same takhat with chai.
+              </p>
+
+              <ul className="mt-8 space-y-4 font-sub text-ink md:mt-10">
+                <li className="flex gap-3">
+                  <span className="num-block w-8 shrink-0">01</span>
+                  {STORE_ADDRESS}
+                </li>
+                <li className="flex gap-3">
+                  <span className="num-block w-8 shrink-0">02</span>
+                  {STORE_HOURS}
+                </li>
+                <li className="flex gap-3">
+                  <span className="num-block w-8 shrink-0">03</span>
+                  +91 94224 60420 · WhatsApp friendly
+                </li>
+              </ul>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:mt-12 md:gap-4">
+                <a
+                  href={MAPS_DIRECTIONS}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="home-directions"
+                  className="btn-primary w-full justify-center sm:w-auto"
+                >
+                  Get Directions
+                </a>
+                <a
+                  href={whatsappLink('Hello मर्दा ॲन्ड सन्स, I would like to visit your store.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="home-whatsapp"
+                  className="btn-ghost w-full justify-center sm:w-auto"
+                >
+                  Chat on WhatsApp
+                </a>
+              </div>
+            </div>
 
             <div className="relative mt-12 sm:mt-16 lg:mt-0 aspect-[4/5] sm:aspect-[16/9] lg:aspect-auto lg:h-full min-h-[320px] overflow-hidden rounded-2xl shadow-lg">
               <iframe
-          title="Marda & Sons map"
-          src="https://www.google.com/maps?q=Marda+%26+Sons+Chattigalli+Mangalwar+Peth+Solapur&output=embed"
-          width="100%"
-          height="100%"
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          style={{ border: 0 }}
-          data-testid="home-map-embed"
+                title="Marda & Sons map"
+                src="https://www.google.com/maps?q=Marda+%26+Sons+Chattigalli+Mangalwar+Peth+Solapur&output=embed"
+                width="100%"
+                height="100%"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{ border: 0 }}
+                data-testid="home-map-embed"
               />
             </div>
           </div>
         </div>
       </section>
+
     </div>
   );
 }
