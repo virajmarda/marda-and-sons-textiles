@@ -62,7 +62,7 @@ export function PageHero({
             alt=""
             className={`h-full w-full object-cover object-center ${
               isDark
-                ? 'opacity-30'
+                ? 'opacity-[0.18]'  /* ← was 0.30; pulled back so bg text/pattern doesn't bleed */
                 : 'opacity-100 brightness-[0.98] contrast-[1.08] saturate-[1.04]'
             }`}
           />
@@ -74,20 +74,28 @@ export function PageHero({
         <>
           {isDark ? (
             <>
+              {/* Primary bottom-up gradient — heavy at the bottom where headline lives */}
               <div
                 aria-hidden
                 className="absolute inset-0"
                 style={{
                   background:
-                    'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.85) 30%, rgba(10,8,6,0.55) 60%, rgba(10,8,6,0.20) 100%)',
+                    'linear-gradient(to top, rgba(10,8,6,0.99) 0%, rgba(10,8,6,0.95) 25%, rgba(10,8,6,0.80) 50%, rgba(10,8,6,0.55) 72%, rgba(10,8,6,0.30) 100%)',
                 }}
               />
+              {/* Secondary full-surface darkening so any residual image detail is hidden */}
+              <div
+                aria-hidden
+                className="absolute inset-0"
+                style={{ background: 'rgba(10,8,6,0.55)' }}
+              />
+              {/* Top nav bleed */}
               <div
                 aria-hidden
                 className="absolute inset-x-0 top-0 h-40"
                 style={{
                   background:
-                    'linear-gradient(to bottom, rgba(10,8,6,0.60) 0%, transparent 100%)',
+                    'linear-gradient(to bottom, rgba(10,8,6,0.70) 0%, transparent 100%)',
                 }}
               />
             </>
