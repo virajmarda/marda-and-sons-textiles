@@ -812,7 +812,7 @@ export default async function HomePage() {
                 fontSize: 'clamp(5rem, 12vw, 10rem)',
                 letterSpacing: '-0.03em',
                 lineHeight: '0.82',
-                color: 'rgba(255,245,230,0.06)',
+                color: 'rgba(255,245,230,0.22)',
               }}
             >
               घाऊक
@@ -862,7 +862,7 @@ export default async function HomePage() {
                 fontSize: 'clamp(5rem, 12vw, 10rem)',
                 letterSpacing: '-0.03em',
                 lineHeight: '0.82',
-                color: 'rgba(107,26,42,0.07)',
+                color: 'rgba(107,26,42,0.18)',
               }}
             >
               किरकोळ
