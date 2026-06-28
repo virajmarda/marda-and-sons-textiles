@@ -62,7 +62,7 @@ export function PageHero({
             alt=""
             className={`h-full w-full object-cover object-center ${
               isDark
-                ? 'opacity-[0.18]'  /* ← was 0.30; pulled back so bg text/pattern doesn't bleed */
+                ? 'opacity-40'   /* raised from 0.18 → 0.40 so texture shows */
                 : 'opacity-100 brightness-[0.98] contrast-[1.08] saturate-[1.04]'
             }`}
           />
@@ -74,20 +74,14 @@ export function PageHero({
         <>
           {isDark ? (
             <>
-              {/* Primary bottom-up gradient — heavy at the bottom where headline lives */}
+              {/* Strong bottom-up gradient — keeps headline zone near-black */}
               <div
                 aria-hidden
                 className="absolute inset-0"
                 style={{
                   background:
-                    'linear-gradient(to top, rgba(10,8,6,0.99) 0%, rgba(10,8,6,0.95) 25%, rgba(10,8,6,0.80) 50%, rgba(10,8,6,0.55) 72%, rgba(10,8,6,0.30) 100%)',
+                    'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.88) 30%, rgba(10,8,6,0.60) 55%, rgba(10,8,6,0.28) 80%, rgba(10,8,6,0.12) 100%)',
                 }}
-              />
-              {/* Secondary full-surface darkening so any residual image detail is hidden */}
-              <div
-                aria-hidden
-                className="absolute inset-0"
-                style={{ background: 'rgba(10,8,6,0.55)' }}
               />
               {/* Top nav bleed */}
               <div
@@ -95,7 +89,7 @@ export function PageHero({
                 className="absolute inset-x-0 top-0 h-40"
                 style={{
                   background:
-                    'linear-gradient(to bottom, rgba(10,8,6,0.70) 0%, transparent 100%)',
+                    'linear-gradient(to bottom, rgba(10,8,6,0.65) 0%, transparent 100%)',
                 }}
               />
             </>
