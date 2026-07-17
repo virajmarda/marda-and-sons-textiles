@@ -1,16 +1,65 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { getCategories, getProducts } from '@/lib/api';
+import { type Category, getProducts } from '@/lib/api';
 import { Reveal, SectionLabel } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
 
 export const revalidate = 0;
 
+// Local catalog — replaced by Odoo data post-integration
+const CATEGORY_CATALOG: Category[] = [
+  {
+    slug: 'bedsheets',
+    name: 'Bedsheets',
+    marathi: 'चादर',
+    tagline: 'Solapuri weave. Every thread, a decade of practice.',
+    image: null,
+  },
+  {
+    slug: 'towels',
+    name: 'Towels',
+    marathi: 'टॉवेल',
+    tagline: 'High-absorbency terry cotton, zero chemical finish.',
+    image: null,
+  },
+  {
+    slug: 'phetas',
+    name: 'Phetas',
+    marathi: 'फेटा',
+    tagline: 'Ceremonial turbans for weddings and festivals.',
+    image: null,
+  },
+  {
+    slug: 'blankets',
+    name: 'Blankets',
+    marathi: 'घोंगडी',
+    tagline: 'Classic winter warmth. Wool-cotton Solapuri blend.',
+    image: null,
+  },
+  {
+    slug: 'shawls',
+    name: 'Shawls',
+    marathi: 'शाल',
+    tagline: 'Lightweight cotton checks. All-season drape.',
+    image: null,
+  },
+  {
+    slug: 'gifting',
+    name: 'Gifting',
+    marathi: 'भेटवस्तू',
+    tagline: 'Curated textile sets for corporate and weddings.',
+    image: null,
+  },
+];
+
 export default async function CategoriesPage() {
-  const cats = await getCategories().catch(() => []);
   const productsAll = await getProducts({}).catch(() => []);
 
-  const countFor = (slug: string) => productsAll.filter((p) => p.category === slug).length;
+  // Use catalog — Odoo will override this via revalidation once connected
+  const cats: Category[] = CATEGORY_CATALOG;
+
+  const countFor = (slug: string) =>
+    productsAll.filter((p) => p.category.toLowerCase() === slug).length;
 
   return (
     <div data-testid="categories-page" className="bg-paper">
@@ -49,7 +98,20 @@ export default async function CategoriesPage() {
                 >
                   <div className="md:col-span-7 [direction:ltr]">
                     <div className="relative aspect-[16/11] overflow-hidden bg-bg-secondary sm:aspect-[16/10]">
-                      <img src={c.image} alt={c.name} className="img-zoom h-full w-full object-cover" />
+                      {c.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={c.image}
+                          alt={c.name}
+                          className="img-zoom h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-stone-100">
+                          <span className="font-accent text-4xl text-stone-300">
+                            {c.marathi ?? c.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
                       <div className="eyebrow absolute left-4 top-4 bg-bg-primary/90 px-3 py-1 text-ink backdrop-blur sm:left-5 sm:top-5">
                         {String(i + 1).padStart(2, '0')} / {String(cats.length).padStart(2, '0')}
                       </div>
@@ -57,8 +119,10 @@ export default async function CategoriesPage() {
                   </div>
 
                   <div className="md:col-span-5 [direction:ltr]">
-                    <p className="font-accent text-xl text-brand sm:text-2xl md:text-3xl">{c.marathi}</p>
-                    <h2 className="display-2 mt-2 text-4xl text-ink sm:text-5xl md:text-6xl">{c.name}</h2>
+                    <p className="font-accent text-xl text-brand sm:text-2xl md:text-3xl">
+                      {c.marathi}
+                    </p>
+                    <h2 className="display-2 mt-2 text-4xl text-ink md:text-6xl">{c.name}</h2>
                     <p className="mt-3 text-base italic text-ink-soft font-sub sm:mt-4 sm:text-lg">
                       {c.tagline}
                     </p>
@@ -75,27 +139,6 @@ export default async function CategoriesPage() {
               </Reveal>
             );
           })}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-ink px-4 py-16 text-center text-bg-primary sm:px-6 sm:py-20 md:py-24">
-        <div className="mx-auto max-w-[1100px]">
-          <SectionLabel number="09" label="Atelier Service" />
-          <h2 className="display-2 mt-5 text-3xl sm:text-4xl md:mt-6 md:text-6xl">
-            Can&apos;t find what you&apos;re imagining?
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-bg-primary/80 font-sub sm:mt-6 sm:text-lg">
-            We custom-loom bedsheet sets, woolen blanket bundles, wedding curations, and corporate gifting
-            at scale. Tell us your dream, and we&apos;ll weave it.
-          </p>
-          <Link
-            href="/wholesale"
-            data-testid="categories-cta"
-            className="eyebrow mt-8 inline-flex items-center gap-3 border-b border-gold pb-1 text-gold sm:mt-10"
-          >
-            Begin a custom enquiry <ArrowRight size={14} />
-          </Link>
         </div>
       </section>
     </div>
