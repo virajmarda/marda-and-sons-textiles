@@ -6,7 +6,8 @@ node_modules
 # testing
 coverage
 
-Add .gitignore.next/
+.next/
+frontend/.next/
 out/
 build
 
