@@ -7,12 +7,16 @@ from datetime import datetime, timezone
 from typing import List, Optional, Annotated
 from contextlib import asynccontextmanager
 
+import bleach
 from bson import ObjectId
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Header, HTTPException, Query
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, BeforeValidator, ConfigDict, EmailStr, Field
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 load_dotenv()
 
@@ -20,6 +24,9 @@ MONGO_URL = os.environ["MONGO_URL"]
 DB_NAME = os.environ["DB_NAME"]
 CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*").split(",")
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
+
+# ---------- Rate Limiter ----------
+limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 
 # ---------- MongoDB helpers ----------
 PyObjectId = Annotated[str, BeforeValidator(str)]
@@ -48,87 +55,110 @@ class BaseDocument(BaseModel):
 class Product(BaseDocument):
     slug: str
     name: str
-    category: str          # towels | bedsheets | shawls | phetas | topis | lungi | blankets | chatais
-    subtitle: Optional[str] = None
-    description: str
-    story: Optional[str] = None
-    price_retail: int       # INR
-    price_wholesale: int    # per piece in bulk
-    moq_wholesale: int = 12
-    images: List[str] = []
-    materials: List[str] = []
-    dimensions: Optional[str] = None
-    care: Optional[str] = None
-    colors: List[str] = []
-    badges: List[str] = []  # "Bestseller", "Heritage", "New", "Wedding"
-    in_stock: bool = True
+    category: str
+    subcategory: Optional[str] = None
+    photos: List[str] = []
+    tags: List[str] = []
+    price: Optional[float] = None
+    unit: Optional[str] = None
+    description: Optional[str] = None
     featured: bool = False
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    in_stock: bool = True
 
 
 class Lead(BaseDocument):
-    type: str               # contact | wholesale | newsletter | cart_enquiry
+    type: str  # contact | wholesale | newsletter | cart
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
+    message: Optional[str] = None
     company: Optional[str] = None
     city: Optional[str] = None
-    message: Optional[str] = None
-    interested_in: Optional[List[str]] = None
-    quantity_estimate: Optional[str] = None
-    # Cart enquiry fields
-    order_ref: Optional[str] = None
-    subtotal: Optional[int] = None
-    items: Optional[List[dict]] = None
-    contacted_at: Optional[datetime] = None
+    cart: Optional[list] = None
+    contacted: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ---------- Request schemas ----------
-class ContactIn(BaseModel):
+class ContactRequest(BaseModel):
     name: str
     email: EmailStr
     phone: Optional[str] = None
     message: str
 
 
-class WholesaleIn(BaseModel):
+class WholesaleRequest(BaseModel):
     name: str
-    company: Optional[str] = None
     email: EmailStr
     phone: str
+    company: Optional[str] = None
     city: Optional[str] = None
-    interested_in: List[str] = []
-    quantity_estimate: Optional[str] = None
     message: Optional[str] = None
 
 
-class NewsletterIn(BaseModel):
+class NewsletterRequest(BaseModel):
     email: EmailStr
 
 
-class CartEnquiryItemIn(BaseModel):
-    slug: str
+class CartEnquiryRequest(BaseModel):
     name: str
-    mode: str          # retail | wholesale
-    qty: int
-    price: int         # per piece, INR
-
-
-class CartEnquiryIn(BaseModel):
-    name: str
+    email: EmailStr
     phone: str
-    order_ref: str
-    subtotal: int
-    items: List[CartEnquiryItemIn]
-    note: Optional[str] = None
+    cart: list
 
 
-# ---------- App ----------
-client: AsyncIOMotorClient = None  # type: ignore
+# ---------- Sanitisation helper ----------
+ALLOWED_TAGS: list = []
+
+
+def sanitize(value: Optional[str]) -> Optional[str]:
+    """Strip all HTML tags and dangerous characters from user input."""
+    if value is None:
+        return None
+    return bleach.clean(value, tags=ALLOWED_TAGS, strip=True).strip()
+
+
+# ---------- Seed data ----------
+SEED_PRODUCTS = [
+    {
+        "slug": "solapuri-chaddar-classic",
+        "name": "Solapuri Chaddar Classic",
+        "category": "bedsheets",
+        "photos": [],
+        "tags": ["solapuri", "cotton", "chaddar"],
+        "price": 899,
+        "unit": "piece",
+        "description": "Handwoven Solapuri cotton chaddar, breathable and durable.",
+        "featured": True,
+        "in_stock": True,
+    },
+    {
+        "slug": "terry-towel-premium",
+        "name": "Premium Terry Towel",
+        "category": "towels",
+        "photos": [],
+        "tags": ["towel", "terry", "cotton"],
+        "price": 349,
+        "unit": "piece",
+        "description": "Super-absorbent premium terry towel.",
+        "featured": True,
+        "in_stock": True,
+    },
+]
+
+
+async def seed_products(db):
+    count = await db.products.count_documents({})
+    if count == 0:
+        await db.products.insert_many(SEED_PRODUCTS)
+
+
+# ---------- DB globals ----------
+client = None
 db = None
 
 
+# ---------- Lifespan ----------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global client, db
@@ -139,7 +169,10 @@ async def lifespan(app: FastAPI):
     client.close()
 
 
+# ---------- App ----------
 app = FastAPI(title="Marda & Sons API", version="1.0.0", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -150,438 +183,167 @@ app.add_middleware(
 )
 
 
+# ---------- Auth helper ----------
+def verify_admin(x_admin_token: str = Header(...)):
+    if not ADMIN_TOKEN or x_admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
 # ---------- Routes ----------
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "service": "marda-sons-api"}
+    """Liveness + DB ping."""
+    try:
+        await client.admin.command("ping")
+        db_status = "connected"
+    except Exception:
+        db_status = "unreachable"
+    return {
+        "status": "ok",
+        "service": "marda-sons-api",
+        "db": db_status,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @app.get("/api/products")
+@limiter.limit("30/minute")
 async def list_products(
+    request: Request,
     category: Optional[str] = None,
     featured: Optional[bool] = None,
-    q: Optional[str] = None,
-    limit: int = Query(100, le=200),
+    q: Optional[str] = Query(default=None),
+    limit: int = Query(default=50, le=200),
 ):
     query: dict = {}
-    if category and category != "all":
+    if category:
         query["category"] = category
     if featured is not None:
         query["featured"] = featured
     if q:
-        query["$or"] = [
-            {"name": {"$regex": q, "$options": "i"}},
-            {"description": {"$regex": q, "$options": "i"}},
-        ]
+        query["$text"] = {"$search": sanitize(q)}
+
     cursor = db.products.find(query).limit(limit)
-    items = [Product.from_mongo(doc).model_dump(by_alias=False) async for doc in cursor]
-    return {"products": items, "count": len(items)}
+    products = []
+    async for doc in cursor:
+        doc["_id"] = str(doc["_id"])
+        products.append(doc)
+    return {"products": products, "count": len(products)}
 
 
 @app.get("/api/products/{slug}")
-async def get_product(slug: str):
+@limiter.limit("60/minute")
+async def get_product(request: Request, slug: str):
     doc = await db.products.find_one({"slug": slug})
     if not doc:
         raise HTTPException(status_code=404, detail="Product not found")
-    return Product.from_mongo(doc).model_dump(by_alias=False)
+    doc["_id"] = str(doc["_id"])
+    return doc
 
 
 @app.get("/api/categories")
-async def list_categories():
-    return {"categories": CATEGORIES}
+@limiter.limit("30/minute")
+async def list_categories(request: Request):
+    categories = await db.products.distinct("category")
+    return {"categories": sorted(categories)}
 
 
-@app.post("/api/contact")
-async def post_contact(payload: ContactIn):
-    lead = Lead(type="contact", **payload.model_dump())
-    res = await db.leads.insert_one(lead.to_mongo())
-    return {"ok": True, "id": str(res.inserted_id)}
-
-
-@app.post("/api/wholesale")
-async def post_wholesale(payload: WholesaleIn):
-    lead = Lead(type="wholesale", **payload.model_dump())
-    res = await db.leads.insert_one(lead.to_mongo())
-    return {"ok": True, "id": str(res.inserted_id)}
-
-
-@app.post("/api/newsletter")
-async def post_newsletter(payload: NewsletterIn):
-    existing = await db.leads.find_one({"type": "newsletter", "email": payload.email})
-    if existing:
-        return {"ok": True, "duplicate": True}
-    lead = Lead(type="newsletter", email=payload.email)
-    res = await db.leads.insert_one(lead.to_mongo())
-    return {"ok": True, "id": str(res.inserted_id)}
-
-
-@app.post("/api/cart-enquiry")
-async def post_cart_enquiry(payload: CartEnquiryIn):
-    """Captures customer details + cart snapshot when they hand off to WhatsApp."""
-    summary_lines = [
-        f"{i.qty} × {i.name} ({i.mode}) — ₹{i.price * i.qty:,}"
-        for i in payload.items
-    ]
-    message = (
-        f"Cart enquiry · {payload.order_ref}\n"
-        f"Items:\n" + "\n".join(summary_lines) +
-        f"\nSubtotal: ₹{payload.subtotal:,}"
-    )
+@app.post("/api/contact", status_code=201)
+@limiter.limit("5/minute")
+async def contact(request: Request, body: ContactRequest):
     lead = Lead(
-        type="cart_enquiry",
-        name=payload.name,
-        phone=payload.phone,
-        message=message,
-        order_ref=payload.order_ref,
-        subtotal=payload.subtotal,
-        items=[i.model_dump() for i in payload.items],
+        type="contact",
+        name=sanitize(body.name),
+        email=body.email,
+        phone=sanitize(body.phone),
+        message=sanitize(body.message),
     )
-    res = await db.leads.insert_one(lead.to_mongo())
-    return {"ok": True, "id": str(res.inserted_id), "order_ref": payload.order_ref}
+    await db.leads.insert_one(lead.to_mongo())
+    return {"message": "Thank you. We will be in touch shortly."}
 
 
-# ---------- Admin (token-gated) ----------
-def require_admin(x_admin_token: Optional[str] = Header(default=None)):
-    if not ADMIN_TOKEN:
-        raise HTTPException(status_code=503, detail="Admin disabled: ADMIN_TOKEN not configured on server")
-    if x_admin_token != ADMIN_TOKEN:
-        raise HTTPException(status_code=401, detail="Invalid admin token")
-    return True
+@app.post("/api/wholesale", status_code=201)
+@limiter.limit("5/minute")
+async def wholesale(request: Request, body: WholesaleRequest):
+    lead = Lead(
+        type="wholesale",
+        name=sanitize(body.name),
+        email=body.email,
+        phone=sanitize(body.phone),
+        company=sanitize(body.company),
+        city=sanitize(body.city),
+        message=sanitize(body.message),
+    )
+    await db.leads.insert_one(lead.to_mongo())
+    return {"message": "Wholesale enquiry received. Our team will contact you within 24 hours."}
+
+
+@app.post("/api/newsletter", status_code=201)
+@limiter.limit("3/minute")
+async def newsletter(request: Request, body: NewsletterRequest):
+    existing = await db.leads.find_one({"type": "newsletter", "email": body.email})
+    if existing:
+        return {"message": "You are already subscribed."}
+    lead = Lead(type="newsletter", email=body.email)
+    await db.leads.insert_one(lead.to_mongo())
+    return {"message": "Subscribed successfully. Welcome to the Marda & Sons circle."}
+
+
+@app.post("/api/cart-enquiry", status_code=201)
+@limiter.limit("5/minute")
+async def cart_enquiry(request: Request, body: CartEnquiryRequest):
+    lead = Lead(
+        type="cart",
+        name=sanitize(body.name),
+        email=body.email,
+        phone=sanitize(body.phone),
+        cart=body.cart,
+    )
+    await db.leads.insert_one(lead.to_mongo())
+    return {"message": "Order enquiry received. We will confirm via WhatsApp shortly."}
 
 
 @app.get("/api/admin/leads")
-async def list_leads(
-    _: bool = Depends(require_admin),
-    type: Optional[str] = Query(default=None, description="Filter: contact | wholesale | newsletter | cart_enquiry"),
-    contacted: Optional[bool] = Query(default=None, description="Filter by contacted state"),
-    limit: int = Query(default=200, ge=1, le=1000),
+@limiter.limit("20/minute")
+async def admin_leads(
+    request: Request,
+    lead_type: Optional[str] = None,
+    contacted: Optional[bool] = None,
+    _: str = Depends(verify_admin),
 ):
-    q: dict = {}
-    if type:
-        q["type"] = type
-    if contacted is True:
-        q["contacted_at"] = {"$ne": None}
-    elif contacted is False:
-        q["contacted_at"] = None
-    cursor = db.leads.find(q).sort("created_at", -1).limit(limit)
-    leads = [Lead.from_mongo(doc).model_dump(by_alias=False) for doc in await cursor.to_list(limit)]
-    # convert datetime to ISO
-    for lead in leads:
-        for k in ("created_at", "contacted_at"):
-            if lead.get(k) and not isinstance(lead[k], str):
-                lead[k] = lead[k].isoformat()
-    counts = {
-        "all": await db.leads.count_documents({}),
-        "contact": await db.leads.count_documents({"type": "contact"}),
-        "wholesale": await db.leads.count_documents({"type": "wholesale"}),
-        "newsletter": await db.leads.count_documents({"type": "newsletter"}),
-        "cart_enquiry": await db.leads.count_documents({"type": "cart_enquiry"}),
-        "uncontacted": await db.leads.count_documents({"contacted_at": None, "type": {"$ne": "newsletter"}}),
+    query: dict = {}
+    if lead_type:
+        query["type"] = lead_type
+    if contacted is not None:
+        query["contacted"] = contacted
+
+    cursor = db.leads.find(query).sort("created_at", -1).limit(500)
+    leads = []
+    async for doc in cursor:
+        doc["_id"] = str(doc["_id"])
+        leads.append(doc)
+
+    total = await db.leads.count_documents({})
+    uncontacted = await db.leads.count_documents({"contacted": False})
+
+    return {
+        "leads": leads,
+        "stats": {"total": total, "uncontacted": uncontacted},
     }
-    return {"ok": True, "leads": leads, "counts": counts}
 
 
 @app.patch("/api/admin/leads/{lead_id}")
+@limiter.limit("20/minute")
 async def update_lead(
+    request: Request,
     lead_id: str,
-    payload: dict,
-    _: bool = Depends(require_admin),
+    contacted: bool,
+    _: str = Depends(verify_admin),
 ):
-    """Allowed body: { contacted: true|false }"""
-    try:
-        oid = ObjectId(lead_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid lead id")
-    update: dict = {}
-    if "contacted" in payload:
-        update["contacted_at"] = datetime.now(timezone.utc) if payload["contacted"] else None
-    if not update:
-        raise HTTPException(status_code=400, detail="Nothing to update")
-    result = await db.leads.update_one({"_id": oid}, {"$set": update})
+    result = await db.leads.update_one(
+        {"_id": ObjectId(lead_id)},
+        {"$set": {"contacted": contacted}},
+    )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
-    return {"ok": True, "contacted_at": update.get("contacted_at").isoformat() if update.get("contacted_at") else None}
-
-
-# ---------- Categories meta ----------
-CATEGORIES = [
-    {"slug": "towels", "name": "Towels", "marathi": "टॉवेल",
-     "tagline": "The Original Solapuri Soft-Touch",
-     "image": "https://images.unsplash.com/photo-1521587765099-8835e7201186?auto=format&fit=crop&w=1400&q=80"},
-    {"slug": "bedsheets", "name": "Bedsheets", "marathi": "चादर",
-     "tagline": "Handloom comfort, woven for generations",
-     "image": "https://images.unsplash.com/photo-1631049552240-59c37f38802b?auto=format&fit=crop&w=1400&q=80"},
-    {"slug": "shawls", "name": "Shawls", "marathi": "शाल",
-     "tagline": "Warmth wrapped in heritage",
-     "image": "https://images.unsplash.com/photo-1616756351484-798f37bdffa0?auto=format&fit=crop&w=1400&q=80"},
-    {"slug": "phetas", "name": "Phetas", "marathi": "फेटा",
-     "tagline": "The crown of Maharashtrian pride",
-     "image": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1400&q=80"},
-    {"slug": "topis", "name": "Topis", "marathi": "टोपी",
-     "tagline": "Tradition that sits gracefully",
-     "image": "https://images.unsplash.com/photo-1611516491426-03025e6043c8?auto=format&fit=crop&w=1400&q=80"},
-    {"slug": "lungi", "name": "Lungi", "marathi": "लुंगी",
-     "tagline": "Everyday comfort, timeless weave",
-     "image": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80"},
-    {"slug": "blankets", "name": "Blankets", "marathi": "घोंगडी",
-     "tagline": "Pure woolen warmth, woven for winters",
-     "image": "https://images.unsplash.com/photo-1592229505726-ca121723b8ef?auto=format&fit=crop&w=1400&q=80"},
-    {"slug": "chatais", "name": "Chatais", "marathi": "चटई",
-     "tagline": "Handwoven mats for floors that welcome",
-     "image": "https://images.unsplash.com/photo-1582582494705-f8ce0b0c24f0?auto=format&fit=crop&w=1400&q=80"},
-]
-
-
-# ---------- Seed ----------
-async def seed_products(database):
-    """Idempotent seeding of catalog with a version flag."""
-    SEED_VERSION = 6
-    meta = await database.meta.find_one({"_id": "seed"})
-    if meta and meta.get("version") == SEED_VERSION:
-        return
-
-    await database.products.delete_many({})
-    catalog = build_catalog()
-    if catalog:
-        await database.products.insert_many([p.to_mongo() for p in catalog])
-    await database.meta.update_one(
-        {"_id": "seed"}, {"$set": {"version": SEED_VERSION}}, upsert=True,
-    )
-
-
-def build_catalog() -> List[Product]:
-    """Curated catalog: 4-6 products per category."""
-    img = {
-        "towels": [
-            "https://images.unsplash.com/photo-1521587765099-8835e7201186?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1583845112203-29329902332e?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-        ],
-        "bedsheets": [
-            "https://images.unsplash.com/photo-1631049552240-59c37f38802b?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-        ],
-        "shawls": [
-            "https://images.unsplash.com/photo-1616756351484-798f37bdffa0?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1583846783214-7229a91b20ed?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1614632537190-23e4146777db?auto=format&fit=crop&w=1200&q=80",
-        ],
-        "phetas": [
-            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1611516491426-03025e6043c8?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=80",
-        ],
-        "topis": [
-            "https://images.unsplash.com/photo-1611516491426-03025e6043c8?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80",
-        ],
-        "lungi": [
-            "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1604147495798-57beb5d6af73?auto=format&fit=crop&w=1200&q=80",
-        ],
-        "blankets": [
-            "https://images.unsplash.com/photo-1592229505726-ca121723b8ef?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1567016432779-094069958ea5?auto=format&fit=crop&w=1200&q=80",
-        ],
-        "chatais": [
-            "https://images.unsplash.com/photo-1582582494705-f8ce0b0c24f0?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1614632537190-23e4146777db?auto=format&fit=crop&w=1200&q=80",
-        ],
-    }
-
-    items: List[Product] = []
-
-    # Towels
-    items += [
-        Product(slug="solapuri-classic-bath-towel",
-                name="Solapuri Classic Bath Towel",
-                category="towels", subtitle="Heritage Soft-Touch Cotton",
-                description="Our flagship 100% cotton bath towel, woven on traditional Solapuri looms. Absorbent, fast-drying, and softens with every wash.",
-                story="The original towel that built the Marda name in the 1970s.",
-                price_retail=649, price_wholesale=380, moq_wholesale=24,
-                images=img["towels"][:2], materials=["100% Combed Cotton"],
-                dimensions="70 × 140 cm", care="Machine wash cold",
-                colors=["Ivory", "Maroon", "Indigo"], badges=["Bestseller", "Heritage"], featured=True),
-        Product(slug="royal-velour-spa-towel",
-                name="Royal Velour Spa Towel",
-                category="towels", subtitle="Luxury Velvet Finish",
-                description="Premium velour-finish towel, double-ply cotton. The kind of towel five-star resorts request by name.",
-                price_retail=1299, price_wholesale=750, moq_wholesale=12,
-                images=img["towels"][1:3], materials=["100% Egyptian-blend Cotton"],
-                dimensions="80 × 160 cm", colors=["Ivory", "Sand"], badges=["Premium"]),
-        Product(slug="handloom-face-towel-set",
-                name="Handloom Face Towel — Set of 6",
-                category="towels", subtitle="Daily Essentials",
-                description="A set of six classic face towels for the everyday Indian household — soft, durable, family-tested.",
-                price_retail=549, price_wholesale=290, moq_wholesale=24,
-                images=img["towels"][:1], dimensions="30 × 30 cm × 6", colors=["Assorted"], badges=["Family Pack"]),
-        Product(slug="wedding-gift-towel-trousseau",
-                name="Wedding Trousseau Towel Set",
-                category="towels", subtitle="The Bridal Bundle",
-                description="A beautifully packaged set of bath, hand, and face towels in maroon and ivory — a Solapuri gifting tradition.",
-                price_retail=2499, price_wholesale=1499, moq_wholesale=10,
-                images=img["towels"][2:3], badges=["Wedding", "Gift Ready"], featured=True),
-    ]
-
-    # Bedsheets
-    items += [
-        Product(slug="solapuri-double-bedsheet-handloom",
-                name="Solapuri Handloom Double Bedsheet",
-                category="bedsheets", subtitle="King Size · Pure Cotton",
-                description="Pure cotton handloom bedsheet with two pillow covers. Iconic Solapuri double-weave that gets softer with time.",
-                price_retail=1599, price_wholesale=950, moq_wholesale=12,
-                images=img["bedsheets"][:2], materials=["100% Cotton, 180 TC"],
-                dimensions="240 × 270 cm + 2 pillow covers",
-                colors=["Maroon Border", "Indigo Border", "Antique Gold"], badges=["Bestseller"], featured=True),
-        Product(slug="ivory-gold-luxury-bedsheet",
-                name="Ivory & Gold Luxury Bedsheet",
-                category="bedsheets", subtitle="The Marda Heirloom",
-                description="An editorial heirloom — ivory base with hand-loomed antique-gold borders. Limited weave batches each season.",
-                price_retail=2899, price_wholesale=1850, moq_wholesale=8,
-                images=img["bedsheets"][1:], badges=["Heritage", "Limited"], featured=True),
-        Product(slug="solapuri-single-bedsheet",
-                name="Solapuri Single Bedsheet",
-                category="bedsheets",
-                description="Single cotton sheet with pillow cover — perfect for guest rooms, students, and family homes.",
-                price_retail=799, price_wholesale=470, moq_wholesale=24,
-                images=img["bedsheets"][:1], dimensions="150 × 230 cm + 1 pillow cover", badges=["Family"]),
-        Product(slug="bulk-cotton-bedsheet-resellers",
-                name="Bulk Cotton Bedsheet — Retailer Pack",
-                category="bedsheets", subtitle="For Stockists & Resellers",
-                description="High-thread-count Solapuri cotton sheet built for retail volume. Consistent weave and stable supply.",
-                price_retail=1199, price_wholesale=720, moq_wholesale=50,
-                images=img["bedsheets"][2:3], badges=["B2B", "Wholesale"]),
-    ]
-
-    # Shawls
-    items += [
-        Product(slug="maroon-gold-handloom-shawl",
-                name="Maroon & Gold Handloom Shawl",
-                category="shawls", subtitle="The Marda Signature",
-                description="A regal maroon shawl with antique-gold zari borders. Hand-finished by master weavers of Solapur.",
-                price_retail=1899, price_wholesale=1150, moq_wholesale=10,
-                images=img["shawls"][:2], colors=["Maroon-Gold"], badges=["Heritage", "Wedding"], featured=True),
-        Product(slug="ivory-wool-winter-shawl",
-                name="Ivory Wool Winter Shawl",
-                category="shawls", subtitle="Soft. Warm. Editorial.",
-                description="Lightweight wool-blend ivory shawl with subtle weave — pairs beautifully with both saree and silhouette.",
-                price_retail=2499, price_wholesale=1500, moq_wholesale=8,
-                images=img["shawls"][1:], colors=["Ivory"], badges=["Premium"]),
-        Product(slug="gent-classic-shawl-cream",
-                name="Gent's Classic Shawl — Cream",
-                category="shawls",
-                description="The cream pheta-paired shawl worn by Maharashtrian gentlemen at weddings and ceremonies for generations.",
-                price_retail=1399, price_wholesale=820, moq_wholesale=12,
-                images=img["shawls"][:1], badges=["Wedding"]),
-    ]
-
-    # Phetas
-    items += [
-        Product(slug="royal-maroon-pheta",
-                name="Royal Maroon Pheta",
-                category="phetas", subtitle="Pre-Tied · Wedding Edition",
-                description="A pre-tied royal maroon pheta with gold zari — the crown of every Maharashtrian groom and dignitary.",
-                price_retail=899, price_wholesale=520, moq_wholesale=12,
-                images=img["phetas"][:2], colors=["Maroon-Gold"], badges=["Wedding", "Bestseller"], featured=True),
-        Product(slug="saffron-pheta-traditional",
-                name="Saffron Traditional Pheta",
-                category="phetas",
-                description="The classic saffron pheta — worn on Gudi Padwa, Shivjayanti, and festive processions.",
-                price_retail=649, price_wholesale=380, moq_wholesale=24,
-                images=img["phetas"][1:], colors=["Saffron"], badges=["Festival"]),
-        Product(slug="ivory-pheta-wedding-guest",
-                name="Ivory Wedding-Guest Pheta",
-                category="phetas",
-                description="Soft ivory with gold border — the refined choice for wedding guests and groomsmen.",
-                price_retail=749, price_wholesale=440, moq_wholesale=12,
-                images=img["phetas"][:1], colors=["Ivory-Gold"]),
-    ]
-
-    # Topis
-    items += [
-        Product(slug="gandhi-topi-handspun",
-                name="Gandhi Topi — Handspun Khadi",
-                category="topis",
-                description="The iconic white khadi cap, hand-spun and gently starched. A symbol carried with pride.",
-                price_retail=249, price_wholesale=140, moq_wholesale=24,
-                images=img["topis"][:1], colors=["Ivory"], badges=["Heritage"]),
-        Product(slug="maharashtrian-black-topi",
-                name="Maharashtrian Black Topi",
-                category="topis", subtitle="Traditional Velvet",
-                description="The dignified black velvet topi — paired with kurta-pyjama for ceremonies and weddings.",
-                price_retail=349, price_wholesale=200, moq_wholesale=24,
-                images=img["topis"][1:], colors=["Black"]),
-    ]
-
-    # Lungi
-    items += [
-        Product(slug="solapuri-cotton-lungi-classic",
-                name="Solapuri Cotton Lungi — Classic Checks",
-                category="lungi",
-                description="Pure cotton, breathable, and unmistakably Solapuri. The everyday comfort wear of South & West India.",
-                price_retail=399, price_wholesale=220, moq_wholesale=24,
-                images=img["lungi"][:1], colors=["Assorted Checks"], badges=["Bestseller"]),
-        Product(slug="premium-lungi-gift-pack",
-                name="Premium Lungi Gift Pack (Set of 3)",
-                category="lungi", subtitle="Gift-Ready",
-                description="Three premium lungis in a maroon gift box — a thoughtful gift for elders and guests.",
-                price_retail=1199, price_wholesale=720, moq_wholesale=12,
-                images=img["lungi"][1:], badges=["Gift"]),
-    ]
-
-    # Blankets — pure woolen, thick (no chaddar / cotton blankets)
-    items += [
-        Product(slug="pure-wool-blanket-classic",
-                name="Pure Wool Blanket — Classic Weight",
-                category="blankets", subtitle="The Marda Heritage Wool",
-                description="A thick, soft pure-wool blanket woven for Indian winters. Heirloom warmth, breathable, naturally insulating.",
-                price_retail=1899, price_wholesale=1150, moq_wholesale=12,
-                images=img["blankets"][:2], dimensions="220 × 240 cm",
-                colors=["Maroon", "Indigo", "Forest", "Charcoal"],
-                materials=["100% Pure Wool"],
-                badges=["Bestseller", "Pure Wool"], featured=True),
-        Product(slug="royal-double-wool-blanket",
-                name="Royal Double-Ply Wool Blanket",
-                category="blankets", subtitle="Heavyweight Winter Edition",
-                description="A heavier, plush double-ply pure-wool blanket for harsh Indian winters — feels like an heirloom from the first night.",
-                price_retail=2899, price_wholesale=1750, moq_wholesale=8,
-                images=img["blankets"][1:], colors=["Maroon", "Indigo"],
-                materials=["100% Pure Wool · Double-Ply"],
-                badges=["Premium", "Heavyweight"]),
-        Product(slug="ghongdi-traditional-wool-blanket",
-                name="Ghongdi — Traditional Marathi Wool Blanket",
-                category="blankets", subtitle="Handwoven Pure Wool",
-                description="The legendary ghongdi — handwoven of pure wool, used in Maharashtrian homes for centuries.",
-                price_retail=3299, price_wholesale=2000, moq_wholesale=6,
-                images=img["blankets"][2:], materials=["100% Hand-spun Wool"],
-                badges=["Heritage", "Handwoven"], featured=True),
-        Product(slug="wedding-wool-blanket-set",
-                name="Wedding Wool Blanket — Gift Set",
-                category="blankets", subtitle="The Bridal Bundle",
-                description="A pair of premium wool blankets in maroon and ivory — a quiet, generous wedding gift.",
-                price_retail=4499, price_wholesale=2700, moq_wholesale=6,
-                images=img["blankets"][:1], materials=["100% Pure Wool"],
-                badges=["Wedding", "Gift Ready"]),
-    ]
-
-    # Chatais
-    items += [
-        Product(slug="handwoven-bamboo-chatai",
-                name="Handwoven Bamboo Chatai",
-                category="chatais",
-                description="A cool, handwoven bamboo chatai — perfect for verandahs, prayer rooms, and Indian summer afternoons.",
-                price_retail=799, price_wholesale=470, moq_wholesale=12,
-                images=img["chatais"][:1], dimensions="180 × 120 cm", badges=["Handwoven"]),
-        Product(slug="festive-chatai-set",
-                name="Festive Chatai Set (Pair)",
-                category="chatais",
-                description="A pair of festival-ready chatais for pujas, weddings, and large gatherings.",
-                price_retail=1299, price_wholesale=780, moq_wholesale=10,
-                images=img["chatais"][1:], badges=["Festival"]),
-    ]
-
-    return items
+    return {"updated": True}
