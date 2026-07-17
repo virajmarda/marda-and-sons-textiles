@@ -4,7 +4,7 @@ export const WHATSAPP_NUMBER = '919422460420';
 export const WHATSAPP_DISPLAY = '+91 94224 60420';
 export const STORE_ADDRESS =
   'Marda & Sons, 430, Chattigalli, Mangalwar Peth, Solapur, Maharashtra';
-export const STORE_HOURS = 'Mon – Sat · 10:00 AM – 8:30 PM';
+export const STORE_HOURS = 'Mon - Sat · 10:00 AM – 8:30 PM';
 export const ESTABLISHED = '1970';
 export const STORE_CITY = 'Solapur';
 
@@ -27,7 +27,7 @@ export type Product = {
   story?: string;
   price_retail: number;
   price_wholesale: number | null;  // null when no wholesale pricing exists
-  moq_wholesale: number | null;    // null when no wholesale pricing exists
+  moq_wholesale: number | null;   // null when no wholesale pricing exists
   images: string[];
   materials?: string[];
   dimensions?: string;
@@ -39,210 +39,148 @@ export type Product = {
 };
 
 export type Category = {
+  id?: number;           // optional — not present in Odoo response
   slug: string;
   name: string;
-  marathi: string;
-  tagline: string;
-  image: string;
+  marathi?: string;      // optional — may be absent in fallback/Odoo data
+  tagline?: string;      // optional — may be absent in fallback/Odoo data
+  image: string | null;  // null when no image is available
 };
 
+export type CartEnquiryItem = {
+  slug: string;
+  name: string;
+  qty: number;
+  price?: number;
+};
+
+export type AdminLead = {
+  _id: string;
+  type: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  message?: string;
+  company?: string;
+  city?: string;
+  cart?: CartEnquiryItem[];
+  contacted: boolean;
+  created_at: string;
+};
+
+export type AdminCounts = {
+  total: number;
+  uncontacted: number;
+};
+
+// ---------- URL builder ----------
 function buildUrl(path: string) {
   if (/^https?:\/\//i.test(path)) return path;
   return `${BACKEND_URL}${path}`;
 }
 
-export async function fetchJSON<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(buildUrl(path), {
-    ...opts,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(opts?.headers || {}),
-    },
-    cache: 'no-store',
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`API ${res.status}: ${text}`);
+// ---------- Generic fetch helper ----------
+export async function fetchJSON<T = unknown>(
+  path: string,
+  opts?: RequestInit,
+): Promise<T | null> {
+  try {
+    const res = await fetch(buildUrl(path), opts);
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
   }
-
-  return res.json() as Promise<T>;
 }
 
+// ---------- Public API ----------
 export async function getProducts(params: {
   category?: string;
   featured?: boolean;
   q?: string;
+  limit?: number;
 } = {}) {
   const sp = new URLSearchParams();
-
   if (params.category) sp.set('category', params.category);
-  if (params.featured) sp.set('featured', 'true');
+  if (params.featured !== undefined) sp.set('featured', String(params.featured));
   if (params.q) sp.set('q', params.q);
-
+  if (params.limit) sp.set('limit', String(params.limit));
+  const query = sp.toString() ? `?${sp.toString()}` : '';
   const data = await fetchJSON<{ products: Product[]; count: number }>(
-    `/api/products${sp.toString() ? `?${sp.toString()}` : ''}`
+    `/api/products${query}`,
+    { next: { revalidate: 60 } },
   );
-
-  return data.products;
+  return data?.products ?? [];
 }
 
 export async function getProduct(slug: string) {
-  return fetchJSON<Product>(`/api/products/${slug}`);
+  return fetchJSON<Product>(`/api/products/${slug}`, { next: { revalidate: 60 } });
 }
 
 export async function getCategories() {
-  const data = await fetchJSON<{ categories: Category[] }>('/api/categories');
-  return data.categories;
+  const data = await fetchJSON<{ categories: string[] }>(
+    '/api/categories',
+    { next: { revalidate: 300 } },
+  );
+  return data?.categories ?? [];
 }
-
-export type CartEnquiryItem = {
-  slug: string;
-  name: string;
-  mode: 'retail' | 'wholesale';
-  qty: number;
-  price: number;
-};
 
 export async function submitCartEnquiry(payload: {
   name: string;
+  email: string;
   phone: string;
-  order_ref: string;
-  subtotal: number;
-  items: CartEnquiryItem[];
+  cart: CartEnquiryItem[];
 }) {
-  return fetchJSON<{ ok: boolean; id: string; order_ref: string }>(
-    '/api/cart-enquiry',
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }
-  );
-}
-
-export function generateOrderRef() {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let chunk = '';
-
-  for (let i = 0; i < 4; i += 1) {
-    chunk += alphabet[Math.floor(Math.random() * alphabet.length)];
-  }
-
-  const d = new Date();
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-
-  return `MS-${chunk}-${dd}${mm}`;
-}
-
-export function siteOrigin(): string {
-  if (typeof window !== 'undefined' && window.location?.origin) {
-    return window.location.origin;
-  }
-
-  return BACKEND_URL || '';
-}
-
-export type AdminLead = {
-  id: string;
-  type: 'contact' | 'wholesale' | 'newsletter' | 'cart_enquiry';
-  name?: string;
-  email?: string;
-  phone?: string;
-  company?: string;
-  city?: string;
-  message?: string;
-  interested_in?: string[];
-  quantity_estimate?: string;
-  order_ref?: string;
-  subtotal?: number;
-  items?: Array<{
-    slug: string;
-    name: string;
-    mode: string;
-    qty: number;
-    price: number;
-  }>;
-  contacted_at?: string | null;
-  created_at: string;
-};
-
-export type AdminCounts = {
-  all: number;
-  contact: number;
-  wholesale: number;
-  newsletter: number;
-  cart_enquiry: number;
-  uncontacted: number;
-};
-
-async function adminFetch<T>(
-  path: string,
-  token: string,
-  init: RequestInit = {}
-): Promise<T> {
-  const res = await fetch(buildUrl(path), {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Admin-Token': token,
-      ...(init.headers || {}),
-    },
-    cache: 'no-store',
+  return fetchJSON('/api/cart-enquiry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
-
-  if (res.status === 401) {
-    throw new Error('Invalid admin token');
-  }
-
-  if (!res.ok) {
-    throw new Error(`Admin request failed (${res.status})`);
-  }
-
-  return res.json() as Promise<T>;
 }
 
+// ---------- Admin API ----------
 export async function getAdminLeads(
   token: string,
-  params: { type?: string; contacted?: boolean } = {}
+  params: { type?: string; contacted?: boolean } = {},
 ) {
-  const search = new URLSearchParams();
-
-  if (params.type) search.set('type', params.type);
-  if (typeof params.contacted === 'boolean') {
-    search.set('contacted', String(params.contacted));
-  }
-
-  const qs = search.toString() ? `?${search.toString()}` : '';
-
-  return adminFetch<{ ok: boolean; leads: AdminLead[]; counts: AdminCounts }>(
-    `/api/admin/leads${qs}`,
-    token
+  const sp = new URLSearchParams();
+  if (params.type) sp.set('lead_type', params.type);
+  if (params.contacted !== undefined) sp.set('contacted', String(params.contacted));
+  const query = sp.toString() ? `?${sp.toString()}` : '';
+  return fetchJSON<{ leads: AdminLead[]; stats: AdminCounts }>(
+    `/api/admin/leads${query}`,
+    { headers: { 'x-admin-token': token }, cache: 'no-store' },
   );
 }
 
 export async function markLeadContacted(
   token: string,
   leadId: string,
-  contacted: boolean
+  contacted: boolean,
 ) {
-  return adminFetch<{ ok: boolean; contacted_at: string | null }>(
-    `/api/admin/leads/${leadId}`,
-    token,
-    {
-      method: 'PATCH',
-      body: JSON.stringify({ contacted }),
-    }
+  return fetchJSON(
+    `/api/admin/leads/${leadId}?contacted=${contacted}`,
+    { method: 'PATCH', headers: { 'x-admin-token': token } },
   );
 }
 
-// lib/api.ts (or wherever this lives)
-
+// ---------- Formatting helpers ----------
 export function inr(value: number | null | undefined): string {
-  const n = value ?? 0; // default to 0 if null/undefined
-  return n.toLocaleString('en-IN', {
+  if (value == null) return '—';
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
     maximumFractionDigits: 0,
-  });
+  }).format(value);
+}
+
+export function generateOrderRef(): string {
+  const ts = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `MS-${ts}-${rand}`;
+}
+
+export function siteOrigin(): string {
+  if (typeof window !== 'undefined') return window.location.origin;
+  return process.env.NEXT_PUBLIC_SITE_URL ?? 'https://marda-and-sons-textiles.vercel.app';
 }
