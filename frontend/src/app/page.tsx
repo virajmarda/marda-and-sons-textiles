@@ -448,9 +448,9 @@ export default async function HomePage() {
                   className="font-heading italic font-normal text-white"
                   style={{ fontSize: 'clamp(2.2rem, 6.5vw, 7rem)', lineHeight: '1.08', letterSpacing: '-0.01em' }}
                 >
-                  All in One Textile
+                  Fifty-five years of
                   <br />
-                  <em style={{ color: 'rgba(212,175,90,1)' }}>Destination.</em>
+                  <em style={{ color: 'rgba(212,175,90,1)' }}>heritage.</em>
                 </h1>
               </Reveal>
 
