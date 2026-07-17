@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import {
   Bodoni_Moda,
-  Marcellus,
   Jost,
-  Yatra_One,
   Tiro_Devanagari_Marathi,
 } from 'next/font/google';
 import '@/app/globals.css';
@@ -13,18 +11,12 @@ import { Footer } from '@/components/footer';
 import { WhatsAppFab } from '@/components/whatsapp-fab';
 import { ToastProvider } from '@/components/toast-provider';
 
+// ---------- Fonts (3 requests, down from 5) ----------
 const bodoni = Bodoni_Moda({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
   variable: '--font-bodoni',
-  display: 'swap',
-});
-
-const marcellus = Marcellus({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-marcellus',
   display: 'swap',
 });
 
@@ -35,13 +27,7 @@ const jost = Jost({
   display: 'swap',
 });
 
-const yatra = Yatra_One({
-  subsets: ['latin', 'devanagari'],
-  weight: ['400'],
-  variable: '--font-yatra',
-  display: 'swap',
-});
-
+// Marathi script — essential for bilingual brand identity
 const tiro = Tiro_Devanagari_Marathi({
   subsets: ['latin', 'devanagari'],
   weight: ['400'],
@@ -56,42 +42,34 @@ export const metadata: Metadata = {
     template: '%s · Marda & Sons',
   },
   description:
-    'विश्वास की परंपरा, वर्षों का साथ. Heritage Solapuri textiles since 1970 — towels, bedsheets, shawls, phetas, woolen blankets and more. Retail & wholesale from the heart of Solapur.',
+    'विश्वास की परंपरा, वर्षों का साथ. Heritage Solapuri textiles since 1970 — handwoven bedsheets, towels, and home linen crafted in Maharashtra.',
   keywords: [
-    'Marda and Sons',
-    'मर्दा ॲन्ड सन्स',
-    'Solapur',
-    'Solapuri textiles',
-    'handloom bedsheets',
+    'Solapuri chaddar',
+    'Marda textiles',
+    'handwoven bedsheets',
+    'Solapur textiles',
+    'cotton towels',
+    'Maharashtra textiles',
     'wholesale textiles',
-    'premium towels India',
-    'ghongdi',
-    'pheta',
-    'woolen blankets',
   ],
-  applicationName: 'Marda & Sons',
-  authors: [{ name: 'Marda & Sons' }],
-  creator: 'Marda & Sons',
-  publisher: 'Marda & Sons',
-  alternates: {
-    canonical: '/',
-  },
   openGraph: {
-    title: 'मर्दा ॲन्ड सन्स — Solapuri Textiles Since 1970',
-    description:
-      'A heritage textile house from Solapur. Handloom bedsheets, shawls, woolen blankets, phetas & ceremonial textiles.',
-    url: 'https://marda-and-sons-textiles.vercel.app',
-    siteName: 'Marda & Sons',
     type: 'website',
     locale: 'en_IN',
+    url: 'https://marda-and-sons-textiles.vercel.app',
+    siteName: 'Marda & Sons',
+    title: 'Marda & Sons — Premium Solapuri Textiles',
+    description: 'Heritage Solapuri textiles since 1970.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'मर्दा ॲन्ड सन्स — Solapuri Textiles Since 1970',
-    description:
-      'A heritage textile house from Solapur. Handloom bedsheets, shawls, woolen blankets, phetas & ceremonial textiles.',
+    title: 'Marda & Sons — Premium Solapuri Textiles',
+    description: 'Heritage Solapuri textiles since 1970.',
   },
-  category: 'shopping',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 };
 
 export const viewport: Viewport = {
@@ -109,18 +87,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className={`${bodoni.variable} ${marcellus.variable} ${jost.variable} ${yatra.variable} ${tiro.variable}`}
+      className={`${bodoni.variable} ${jost.variable} ${tiro.variable}`}
     >
-      <body className="min-h-screen bg-paper text-ink antialiased">
-        <ToastProvider />
+      <body className="bg-stone-50 text-stone-900 antialiased">
         <CartProvider>
-          <div className="relative flex min-h-screen flex-col overflow-x-clip">
+          <ToastProvider>
             <Header />
-            <main className="relative z-[2] flex-1">{children}</main>
+            <main>{children}</main>
             <Footer />
             <WhatsAppFab />
-          </div>
+          </ToastProvider>
         </CartProvider>
       </body>
     </html>
