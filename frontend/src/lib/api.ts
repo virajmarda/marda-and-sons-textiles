@@ -26,8 +26,8 @@ export type Product = {
   description: string;
   story?: string;
   price_retail: number;
-  price_wholesale: number | null;  // null when no wholesale pricing exists
-  moq_wholesale: number | null;   // null when no wholesale pricing exists
+  price_wholesale: number | null;
+  moq_wholesale: number | null;
   images: string[];
   materials?: string[];
   dimensions?: string;
@@ -39,12 +39,12 @@ export type Product = {
 };
 
 export type Category = {
-  id?: number;           // optional — not present in Odoo response
+  id?: number;
   slug: string;
   name: string;
-  marathi?: string;      // optional — may be absent in fallback/Odoo data
-  tagline?: string;      // optional — may be absent in fallback/Odoo data
-  image: string | null;  // null when no image is available
+  marathi?: string;
+  tagline?: string;
+  image: string | null;
 };
 
 export type CartEnquiryItem = {
@@ -54,8 +54,10 @@ export type CartEnquiryItem = {
   price?: number;
 };
 
+// AdminLead uses 'id' (frontend-friendly) and 'contacted_at' for timestamp
 export type AdminLead = {
-  _id: string;
+  id: string;
+  _id?: string;         // alias — backend may return _id
   type: string;
   name?: string;
   email?: string;
@@ -65,6 +67,7 @@ export type AdminLead = {
   city?: string;
   cart?: CartEnquiryItem[];
   contacted: boolean;
+  contacted_at?: string | null;  // ISO timestamp set when marked contacted
   created_at: string;
 };
 
@@ -147,10 +150,17 @@ export async function getAdminLeads(
   if (params.type) sp.set('lead_type', params.type);
   if (params.contacted !== undefined) sp.set('contacted', String(params.contacted));
   const query = sp.toString() ? `?${sp.toString()}` : '';
-  return fetchJSON<{ leads: AdminLead[]; stats: AdminCounts }>(
+  const raw = await fetchJSON<{ leads: Record<string, unknown>[]; stats: AdminCounts }>(
     `/api/admin/leads${query}`,
     { headers: { 'x-admin-token': token }, cache: 'no-store' },
   );
+  if (!raw) return null;
+  // Normalise _id → id for frontend
+  const leads: AdminLead[] = raw.leads.map((l) => ({
+    ...l,
+    id: String(l._id ?? l.id ?? ''),
+  } as AdminLead));
+  return { leads, stats: raw.stats };
 }
 
 export async function markLeadContacted(
