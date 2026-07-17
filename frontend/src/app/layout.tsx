@@ -11,13 +11,16 @@ import { Footer } from '@/components/footer';
 import { WhatsAppFab } from '@/components/whatsapp-fab';
 import { ToastProvider } from '@/components/toast-provider';
 
-// ---------- Fonts (3 requests, down from 5) ----------
+// ---------- Fonts ----------
+// adjustFontFallback: false suppresses the 'no override values' warning
+// that Next.js throws for variable-weight serif fonts like Bodoni Moda.
 const bodoni = Bodoni_Moda({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
   variable: '--font-bodoni',
   display: 'swap',
+  adjustFontFallback: false,
 });
 
 const jost = Jost({
@@ -33,6 +36,7 @@ const tiro = Tiro_Devanagari_Marathi({
   weight: ['400'],
   variable: '--font-tiro',
   display: 'swap',
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
@@ -91,12 +95,12 @@ export default function RootLayout({
     >
       <body className="bg-stone-50 text-stone-900 antialiased">
         <CartProvider>
-          <ToastProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <WhatsAppFab />
-          </ToastProvider>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          <WhatsAppFab />
+          {/* ToastProvider renders <Toaster /> only — no children prop */}
+          <ToastProvider />
         </CartProvider>
       </body>
     </html>
