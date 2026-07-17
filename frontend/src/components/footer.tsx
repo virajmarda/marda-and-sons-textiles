@@ -250,6 +250,24 @@ export function Footer() {
             >
               Contact
             </Link>
+                        <Link
+              href="/privacy"
+              className="flex min-h-[44px] items-center transition-colors hover:text-gold"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/shipping"
+              className="flex min-h-[44px] items-center transition-colors hover:text-gold"
+            >
+              Shipping
+            </Link>
+            <Link
+              href="/returns"
+              className="flex min-h-[44px] items-center transition-colors hover:text-gold"
+            >
+              Returns
+            </Link>
           </div>
         </div>
       </div>
