@@ -54,10 +54,9 @@ export type CartEnquiryItem = {
   price?: number;
 };
 
-// AdminLead uses 'id' (frontend-friendly) and 'contacted_at' for timestamp
 export type AdminLead = {
   id: string;
-  _id?: string;         // alias — backend may return _id
+  _id?: string;
   type: string;
   name?: string;
   email?: string;
@@ -65,16 +64,17 @@ export type AdminLead = {
   message?: string;
   company?: string;
   city?: string;
+  order_ref?: string;
+  subtotal?: number | null;
+  items?: CartEnquiryItem[];
   cart?: CartEnquiryItem[];
   contacted: boolean;
-  contacted_at?: string | null;  // ISO timestamp set when marked contacted
+  contacted_at?: string | null;
   created_at: string;
 };
 
-export type AdminCounts = {
-  total: number;
-  uncontacted: number;
-};
+// Permissive — backend returns { total, uncontacted }; admin UI may read any key
+export type AdminCounts = Record<string, number>;
 
 // ---------- URL builder ----------
 function buildUrl(path: string) {
@@ -97,12 +97,14 @@ export async function fetchJSON<T = unknown>(
 }
 
 // ---------- Public API ----------
-export async function getProducts(params: {
-  category?: string;
-  featured?: boolean;
-  q?: string;
-  limit?: number;
-} = {}) {
+export async function getProducts(
+  params: {
+    category?: string;
+    featured?: boolean;
+    q?: string;
+    limit?: number;
+  } = {},
+) {
   const sp = new URLSearchParams();
   if (params.category) sp.set('category', params.category);
   if (params.featured !== undefined) sp.set('featured', String(params.featured));
@@ -117,14 +119,15 @@ export async function getProducts(params: {
 }
 
 export async function getProduct(slug: string) {
-  return fetchJSON<Product>(`/api/products/${slug}`, { next: { revalidate: 60 } });
+  return fetchJSON<Product>(`/api/products/${slug}`, {
+    next: { revalidate: 60 },
+  });
 }
 
 export async function getCategories() {
-  const data = await fetchJSON<{ categories: string[] }>(
-    '/api/categories',
-    { next: { revalidate: 300 } },
-  );
+  const data = await fetchJSON<{ categories: string[] }>('/api/categories', {
+    next: { revalidate: 300 },
+  });
   return data?.categories ?? [];
 }
 
@@ -148,18 +151,21 @@ export async function getAdminLeads(
 ) {
   const sp = new URLSearchParams();
   if (params.type) sp.set('lead_type', params.type);
-  if (params.contacted !== undefined) sp.set('contacted', String(params.contacted));
+  if (params.contacted !== undefined)
+    sp.set('contacted', String(params.contacted));
   const query = sp.toString() ? `?${sp.toString()}` : '';
-  const raw = await fetchJSON<{ leads: Record<string, unknown>[]; stats: AdminCounts }>(
-    `/api/admin/leads${query}`,
-    { headers: { 'x-admin-token': token }, cache: 'no-store' },
-  );
+  const raw = await fetchJSON<{
+    leads: Record<string, unknown>[];
+    stats: AdminCounts;
+  }>(`/api/admin/leads${query}`, {
+    headers: { 'x-admin-token': token },
+    cache: 'no-store',
+  });
   if (!raw) return null;
-  // Normalise _id → id for frontend
-  const leads: AdminLead[] = raw.leads.map((l) => ({
-    ...l,
-    id: String(l._id ?? l.id ?? ''),
-  } as AdminLead));
+  // Normalise _id → id so the frontend can use lead.id everywhere
+  const leads: AdminLead[] = raw.leads.map(
+    (l) => ({ ...l, id: String(l._id ?? l.id ?? '') } as AdminLead),
+  );
   return { leads, stats: raw.stats };
 }
 
@@ -168,10 +174,10 @@ export async function markLeadContacted(
   leadId: string,
   contacted: boolean,
 ) {
-  return fetchJSON(
-    `/api/admin/leads/${leadId}?contacted=${contacted}`,
-    { method: 'PATCH', headers: { 'x-admin-token': token } },
-  );
+  return fetchJSON(`/api/admin/leads/${leadId}?contacted=${contacted}`, {
+    method: 'PATCH',
+    headers: { 'x-admin-token': token },
+  });
 }
 
 // ---------- Formatting helpers ----------
@@ -192,5 +198,8 @@ export function generateOrderRef(): string {
 
 export function siteOrigin(): string {
   if (typeof window !== 'undefined') return window.location.origin;
-  return process.env.NEXT_PUBLIC_SITE_URL ?? 'https://marda-and-sons-textiles.vercel.app';
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    'https://marda-and-sons-textiles.vercel.app'
+  );
 }
