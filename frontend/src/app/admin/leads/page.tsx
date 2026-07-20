@@ -33,7 +33,7 @@ export default function AdminLeadsPage() {
   const [tokenInput, setTokenInput] = useState<string>('');
   const [authError, setAuthError] = useState<string>('');
   const [leads, setLeads] = useState<AdminLead[]>([]);
-  const [counts, setCounts] = useState<AdminCounts | null>(null);
+  const [stats, setStats] = useState<AdminCounts | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeType, setActiveType] = useState<TypeKey>('all');
   const [showOnlyUncontacted, setShowOnlyUncontacted] = useState<boolean>(false);
@@ -59,8 +59,14 @@ export default function AdminLeadsPage() {
         type: activeType === 'all' ? undefined : activeType,
         contacted: showOnlyUncontacted ? false : undefined,
       });
+      if (!data) {
+        setAuthError('Fetch failed or invalid token');
+        try { localStorage.removeItem(TOKEN_KEY); } catch (e) { console.error(e); }
+        setToken('');
+        return;
+      }
       setLeads(data.leads);
-      setCounts(data.counts);
+      setStats(data.stats);
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Fetch failed';
       setAuthError(msg);
@@ -88,7 +94,7 @@ export default function AdminLeadsPage() {
     try { localStorage.removeItem(TOKEN_KEY); } catch (error) { console.error(error); }
     setToken('');
     setLeads([]);
-    setCounts(null);
+    setstats(null);
   }
 
   async function toggleContacted(lead: AdminLead) {
@@ -173,7 +179,7 @@ export default function AdminLeadsPage() {
       <PageHero
         chapter="09"
         eyebrow="Atelier desk · प्रशासन"
-        marathi={counts ? `एकूण ${counts.all} नोंदी · ${counts.uncontacted} बाकी` : 'ग्राहकांच्या नोंदी'}
+        marathi={stats ? `एकूण ${stats.all} नोंदी · ${stats.uncontacted} बाकी` : 'ग्राहकांच्या नोंदी'}
         headline={<>The <span className="italic text-brand">ledger.</span></>}
         height="md"
       />
@@ -184,7 +190,7 @@ export default function AdminLeadsPage() {
           <div className="flex flex-wrap gap-1 md:gap-2">
             {TYPE_TABS.map((tab) => {
               const isActive = activeType === tab.key;
-              const count = counts ? (tab.key === 'all' ? counts.all : counts[tab.key as keyof AdminCounts]) : null;
+              const count = stats ? (tab.key === 'all' ? stats.all : stats[tab.key as keyof Adminstats]) : null;
               return (
                 <button
                   key={tab.key}
