@@ -1,12 +1,12 @@
 export const BACKEND_URL = (process.env.NEXT_PUBLIC_BACKEND_URL || '').replace(/\/$/, '');
 
-export const WHATSAPP_NUMBER = '919422460420';
+export const WHATSAPP_NUMBER  = '919422460420';
 export const WHATSAPP_DISPLAY = '+91 94224 60420';
-export const STORE_ADDRESS =
+export const STORE_ADDRESS    =
   'Marda & Sons, 430, Chattigalli, Mangalwar Peth, Solapur, Maharashtra';
-export const STORE_HOURS = 'Mon - Sat · 10:00 AM – 8:30 PM';
-export const ESTABLISHED = '1970';
-export const STORE_CITY = 'Solapur';
+export const STORE_HOURS  = 'Mon - Sat · 10:00 AM – 8:30 PM';
+export const ESTABLISHED  = '1970';
+export const STORE_CITY   = 'Solapur';
 
 export const MAPS_EMBED_SRC =
   'https://www.google.com/maps?q=Marda+%26+Sons+Chattigalli+Mangalwar+Peth+Solapur&output=embed';
@@ -16,6 +16,8 @@ export const MAPS_DIRECTIONS =
 export function whatsappLink(message: string) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
+
+// ---------- Domain types ----------
 
 export type Product = {
   _id?: string;
@@ -52,6 +54,16 @@ export type CartEnquiryItem = {
   name: string;
   qty: number;
   price?: number;
+  mode?: 'retail' | 'wholesale';
+};
+
+/** Full cart-enquiry payload sent to /api/cart-enquiry. */
+export type CartEnquiryPayload = {
+  name: string;
+  phone: string;
+  order_ref?: string;
+  subtotal?: number;
+  items: CartEnquiryItem[];
 };
 
 export type AdminLead = {
@@ -67,23 +79,33 @@ export type AdminLead = {
   order_ref?: string;
   subtotal?: number | null;
   items?: CartEnquiryItem[];
-  cart?: CartEnquiryItem[];
   contacted: boolean;
   contacted_at?: string | null;
   created_at: string;
 };
 
-// Permissive — backend returns { total, uncontacted }; admin UI may read any key
-export type AdminCounts = Record<string, number>;
+/** Backend returns { total, uncontacted } plus optional per-type counts. */
+export type AdminCounts = {
+  total?: number;
+  uncontacted?: number;
+  all?: number;
+  cart_enquiry?: number;
+  contact?: number;
+  wholesale?: number;
+  newsletter?: number;
+  [key: string]: number | undefined;
+};
 
 // ---------- URL builder ----------
+
 function buildUrl(path: string) {
   if (/^https?:\/\//i.test(path)) return path;
   return `${BACKEND_URL}${path}`;
 }
 
 // ---------- Generic fetch helper ----------
-export async function fetchJSON<T = unknown>(
+
+export async function fetchJSON<T>(
   path: string,
   opts?: RequestInit,
 ): Promise<T | null> {
@@ -97,6 +119,7 @@ export async function fetchJSON<T = unknown>(
 }
 
 // ---------- Public API ----------
+
 export async function getProducts(
   params: {
     category?: string;
@@ -131,13 +154,44 @@ export async function getCategories() {
   return data?.categories ?? [];
 }
 
-export async function submitCartEnquiry(payload: {
+/**
+ * Submit a cart enquiry to the backend.
+ * Sends name + phone + items (and optional order_ref / subtotal).
+ */
+export async function submitCartEnquiry(payload: CartEnquiryPayload) {
+  return fetchJSON<{ ok: boolean }>('/api/cart-enquiry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+/** Save a contact-form lead to the backend. Never throws. */
+export async function submitContact(payload: {
   name: string;
   email: string;
-  phone: string;
-  cart: CartEnquiryItem[];
+  phone?: string;
+  message: string;
 }) {
-  return fetchJSON('/api/cart-enquiry', {
+  return fetchJSON<{ ok: boolean }>('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+/** Save a wholesale enquiry lead to the backend. Never throws. */
+export async function submitWholesale(payload: {
+  name: string;
+  company?: string;
+  email: string;
+  phone: string;
+  city?: string;
+  quantity_estimate?: string;
+  interests?: string[];
+  message?: string;
+}) {
+  return fetchJSON<{ ok: boolean }>('/api/wholesale', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -145,15 +199,16 @@ export async function submitCartEnquiry(payload: {
 }
 
 // ---------- Admin API ----------
+
 export async function getAdminLeads(
   token: string,
   params: { type?: string; contacted?: boolean } = {},
 ) {
   const sp = new URLSearchParams();
   if (params.type) sp.set('lead_type', params.type);
-  if (params.contacted !== undefined)
-    sp.set('contacted', String(params.contacted));
+  if (params.contacted !== undefined) sp.set('contacted', String(params.contacted));
   const query = sp.toString() ? `?${sp.toString()}` : '';
+
   const raw = await fetchJSON<{
     leads: Record<string, unknown>[];
     stats: AdminCounts;
@@ -161,12 +216,21 @@ export async function getAdminLeads(
     headers: { 'x-admin-token': token },
     cache: 'no-store',
   });
+
   if (!raw) return null;
-  // Normalise _id → id so the frontend can use lead.id everywhere
-  const leads: AdminLead[] = raw.leads.map(
-    (l) => ({ ...l, id: String(l._id ?? l.id ?? '') } as AdminLead),
-  );
-  return { leads, stats: raw.stats };
+
+  // Normalise _id -> id and items/cart so the frontend uses lead.id + lead.items everywhere.
+  const leads: AdminLead[] = raw.leads.map((l) => {
+    const items =
+      Array.isArray(l['items'])
+        ? (l['items'] as CartEnquiryItem[])
+        : Array.isArray(l['cart'])
+        ? (l['cart'] as CartEnquiryItem[])
+        : undefined;
+    return { ...l, id: String(l['_id'] ?? l['id'] ?? ''), items } as AdminLead;
+  });
+
+  return { leads, stats: raw.stats ?? {} as AdminCounts };
 }
 
 export async function markLeadContacted(
@@ -181,6 +245,7 @@ export async function markLeadContacted(
 }
 
 // ---------- Formatting helpers ----------
+
 export function inr(value: number | null | undefined): string {
   if (value == null) return '—';
   return new Intl.NumberFormat('en-IN', {
@@ -191,7 +256,7 @@ export function inr(value: number | null | undefined): string {
 }
 
 export function generateOrderRef(): string {
-  const ts = Date.now().toString(36).toUpperCase();
+  const ts   = Date.now().toString(36).toUpperCase();
   const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
   return `MS-${ts}-${rand}`;
 }
