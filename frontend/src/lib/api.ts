@@ -79,6 +79,8 @@ export type AdminLead = {
   order_ref?: string;
   subtotal?: number | null;
   items?: CartEnquiryItem[];
+    interested_in?: string[];
+    quantity_estimate?: string;
   contacted: boolean;
   contacted_at?: string | null;
   created_at: string;
