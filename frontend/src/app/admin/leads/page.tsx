@@ -362,7 +362,7 @@ export default function AdminLeadsPage() {
                                     {it.qty} × <Link href={`/product/${it.slug}`} className="hover:text-brand">{it.name}</Link>
                                     <span className="text-ink-soft ml-2 text-xs uppercase tracking-wider">{it.mode}</span>
                                   </span>
-                                  <span className="text-ink">{inr(it.price * it.qty)}</span>
+                                                    <span className="text-ink">{inr((it.price ?? 0) * it.qty)}</span>
                                 </div>
                               ))}
                               <div className="flex justify-between text-brand font-heading italic text-lg pt-3">
