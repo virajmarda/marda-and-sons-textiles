@@ -190,7 +190,7 @@ export default function AdminLeadsPage() {
           <div className="flex flex-wrap gap-1 md:gap-2">
             {TYPE_TABS.map((tab) => {
               const isActive = activeType === tab.key;
-              const count = stats ? (tab.key === 'all' ? stats.all : stats[tab.key as keyof Adminstats]) : null;
+              const count = stats ? (tab.key === 'all' ? stats.all : stats[tab.key as keyof AdminCounts]) : null;
               return (
                 <button
                   key={tab.key}
