@@ -94,7 +94,7 @@ export default function AdminLeadsPage() {
     try { localStorage.removeItem(TOKEN_KEY); } catch (error) { console.error(error); }
     setToken('');
     setLeads([]);
-    setstats(null);
+    setStats(null);
   }
 
   async function toggleContacted(lead: AdminLead) {
