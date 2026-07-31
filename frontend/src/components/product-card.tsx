@@ -40,6 +40,9 @@ export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
     toast.success(`${p.name} · added to bag`);
   }, [isLoggedIn, add, p, img1]);
 
+  const quickFacts = [p.materials?.length ? p.materials.join(', ') : null, p.dimensions || null]
+    .filter(Boolean) as string[];
+
   return (
     <>
       <article
@@ -109,6 +112,16 @@ export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
             {p.subtitle && (
               <p className="mt-1 truncate text-[11px] uppercase tracking-[0.22em] text-ink-soft">
                 {p.subtitle}
+              </p>
+            )}
+            {quickFacts.length > 0 && (
+              <p className="mt-1 truncate text-[11px] text-ink-soft">
+                {quickFacts.join(' · ')}
+              </p>
+            )}
+            {p.care && (
+              <p className="mt-0.5 truncate text-[10.5px] text-ink-soft/80">
+                Care: {p.care}
               </p>
             )}
           </Link>
