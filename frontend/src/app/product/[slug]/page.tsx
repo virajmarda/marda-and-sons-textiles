@@ -8,12 +8,12 @@ import { ProductCard } from '@/components/product-card';
 export const revalidate = 0;
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
-  let product;
-  try {
-    product = await getProduct(params.slug);
-  } catch {
+  const product = await getProduct(params.slug).catch(() => null);
+
+  if (!product) {
     notFound();
   }
+
   const related = (await getProducts({ category: product.category }).catch(() => []))
     .filter((p) => p.slug !== product.slug)
     .slice(0, 4);
