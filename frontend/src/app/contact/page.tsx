@@ -49,6 +49,7 @@ export default function ContactPage() {
       ].join('\n');
 
       const url = whatsappLink(whatsappMessage);
+
       window.open(url, '_blank', 'noopener,noreferrer');
 
       toast.success('Opening WhatsApp...');
@@ -72,72 +73,67 @@ export default function ContactPage() {
             <span className="italic text-brand">Or write to us.</span>
           </>
         }
+        lede={
+          <p className="max-w-xl leading-relaxed">
+            The{' '}
+            <span className="font-brand text-brand">
+              मर्दा ॲन्ड सन्स
+            </span>{' '}
+            atelier is a slow, generous shop. Come for chai, stay for the
+            weaves, leave with a story.
+          </p>
+        }
         layout="split"
         height="md"
         sidebar={
           <div className="w-full max-w-lg lg:ml-auto">
-            {/* Introductory text */}
-            <div className="border-t border-gold/40 pt-5 sm:pt-6">
-              <p className="eyebrow mb-4 text-[10px] tracking-[0.28em] text-ink-soft">
-                The atelier
-              </p>
+            <div className="border-t border-line pt-6">
+              <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
+                <div>
+                  <p className="eyebrow mb-3 text-[10px] tracking-[0.24em] text-ink-soft">
+                    Find us
+                  </p>
 
-              <p className="max-w-md font-sub text-base leading-[1.8] text-ink sm:text-lg">
-                The{' '}
-                <span className="font-brand text-brand">
-                  मर्दा ॲन्ड सन्स
-                </span>{' '}
-                atelier is a slow, generous shop.
-              </p>
+                  <p className="font-sub text-sm leading-6 text-ink sm:text-base">
+                    {STORE_ADDRESS}
+                  </p>
+                </div>
 
-              <p className="mt-2 max-w-md font-sub text-base leading-[1.8] text-ink-soft sm:text-lg">
-                Come for chai, stay for the weaves, leave with a story.
-              </p>
-            </div>
+                <div>
+                  <p className="eyebrow mb-3 text-[10px] tracking-[0.24em] text-ink-soft">
+                    Speak with us
+                  </p>
 
-            {/* Contact details */}
-            <div className="mt-8 grid gap-5 border-t border-line pt-6 sm:mt-10 sm:grid-cols-2 sm:gap-6">
-              <div>
-                <p className="eyebrow mb-2 text-[10px] tracking-[0.24em] text-ink-soft">
-                  Find us
-                </p>
+                  <a
+                    href={whatsappLink(
+                      'Hello मर्दा ॲन्ड सन्स, I would like to know more.',
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-sub text-sm leading-6 text-ink transition-colors hover:text-brand sm:text-base"
+                  >
+                    {WHATSAPP_DISPLAY}
+                  </a>
 
-                <p className="font-sub text-sm leading-6 text-ink sm:text-base">
-                  {STORE_ADDRESS}
-                </p>
-              </div>
-
-              <div>
-                <p className="eyebrow mb-2 text-[10px] tracking-[0.24em] text-ink-soft">
-                  Speak with us
-                </p>
-
-                <a
-                  href={whatsappLink(
-                    'Hello मर्दा ॲन्ड सन्स, I would like to know more.',
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-sub text-sm leading-6 text-ink transition-colors hover:text-brand sm:text-base"
-                >
-                  {WHATSAPP_DISPLAY}
-                </a>
-
-                <p className="mt-1 font-sub text-sm text-ink-soft">
-                  WhatsApp preferred
-                </p>
+                  <p className="mt-1 font-sub text-sm text-ink-soft">
+                    WhatsApp preferred
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Opening hours */}
-            <div className="mt-6 flex items-start justify-between gap-6 border-t border-gold/25 pt-5 sm:mt-8 sm:pt-6">
+            <div className="mt-7 flex items-start justify-between gap-6 border-t border-gold/25 pt-6">
               <div>
-                <p className="eyebrow mb-2 text-[10px] tracking-[0.24em] text-ink-soft">
+                <p className="eyebrow mb-3 text-[10px] tracking-[0.24em] text-ink-soft">
                   Opening hours
                 </p>
 
                 <p className="font-sub text-sm leading-6 text-ink sm:text-base">
                   {STORE_HOURS}
+                </p>
+
+                <p className="mt-1 font-sub text-sm italic text-ink-soft">
+                  Sundays · by appointment
                 </p>
               </div>
 
@@ -149,12 +145,11 @@ export default function ContactPage() {
               />
             </div>
 
-            {/* Directions link */}
             <a
               href={MAPS_DIRECTIONS}
               target="_blank"
               rel="noopener noreferrer"
-              className="eyebrow link-underline mt-6 inline-flex items-center gap-2 text-brand sm:mt-8"
+              className="eyebrow link-underline mt-7 inline-flex items-center gap-2 text-brand"
             >
               Plan your visit
               <ArrowRight size={13} strokeWidth={1.5} />
@@ -167,7 +162,12 @@ export default function ContactPage() {
         <div className="mx-auto grid max-w-[1600px] gap-8 px-4 sm:px-6 md:grid-cols-2 md:gap-10 md:px-12 lg:grid-cols-3 lg:gap-12 lg:px-24">
           <Reveal>
             <div className="border-t border-line pt-6 md:pt-8">
-              <MapPin size={22} strokeWidth={1.2} className="text-brand" />
+              <MapPin
+                size={22}
+                strokeWidth={1.2}
+                className="text-brand"
+                aria-hidden
+              />
 
               <p className="mt-5 eyebrow md:mt-6">The Atelier</p>
 
@@ -189,7 +189,12 @@ export default function ContactPage() {
 
           <Reveal delay={0.1}>
             <div className="border-t border-line pt-6 md:pt-8">
-              <Phone size={22} strokeWidth={1.2} className="text-brand" />
+              <Phone
+                size={22}
+                strokeWidth={1.2}
+                className="text-brand"
+                aria-hidden
+              />
 
               <p className="mt-5 eyebrow md:mt-6">Call · WhatsApp</p>
 
@@ -213,7 +218,12 @@ export default function ContactPage() {
 
           <Reveal delay={0.2}>
             <div className="border-t border-line pt-6 md:pt-8">
-              <Clock size={22} strokeWidth={1.2} className="text-brand" />
+              <Clock
+                size={22}
+                strokeWidth={1.2}
+                className="text-brand"
+                aria-hidden
+              />
 
               <p className="mt-5 eyebrow md:mt-6">Atelier Hours</p>
 
@@ -251,7 +261,10 @@ export default function ContactPage() {
                 required
                 value={form.name}
                 onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
+                  setForm({
+                    ...form,
+                    name: e.target.value,
+                  })
                 }
                 data-testid="contact-name"
               />
@@ -264,7 +277,10 @@ export default function ContactPage() {
                   required
                   value={form.email}
                   onChange={(e) =>
-                    setForm({ ...form, email: e.target.value })
+                    setForm({
+                      ...form,
+                      email: e.target.value,
+                    })
                   }
                   data-testid="contact-email"
                 />
@@ -274,7 +290,10 @@ export default function ContactPage() {
                   placeholder="PHONE"
                   value={form.phone}
                   onChange={(e) =>
-                    setForm({ ...form, phone: e.target.value })
+                    setForm({
+                      ...form,
+                      phone: e.target.value,
+                    })
                   }
                   data-testid="contact-phone"
                 />
@@ -287,7 +306,10 @@ export default function ContactPage() {
                 required
                 value={form.message}
                 onChange={(e) =>
-                  setForm({ ...form, message: e.target.value })
+                  setForm({
+                    ...form,
+                    message: e.target.value,
+                  })
                 }
                 data-testid="contact-message"
               />
@@ -317,6 +339,7 @@ export default function ContactPage() {
                     className="mt-1 shrink-0 text-gold"
                     aria-hidden
                   />
+
                   <span className="break-all">
                     hello@mardaandsons.in
                   </span>
@@ -328,6 +351,7 @@ export default function ContactPage() {
                     className="mt-1 shrink-0 text-gold"
                     aria-hidden
                   />
+
                   <span className="break-words">
                     {WHATSAPP_DISPLAY}
                   </span>
