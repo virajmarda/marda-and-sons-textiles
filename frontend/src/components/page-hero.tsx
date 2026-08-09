@@ -84,6 +84,7 @@ export function PageHero({
                     'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.88) 30%, rgba(10,8,6,0.60) 55%, rgba(10,8,6,0.28) 80%, rgba(10,8,6,0.12) 100%)',
                 }}
               />
+
               <div
                 aria-hidden
                 className="absolute inset-x-0 top-0 h-40"
@@ -99,15 +100,21 @@ export function PageHero({
                 aria-hidden
                 className="absolute inset-0 bg-[linear-gradient(to_right,rgba(245,241,232,0.82)_0%,rgba(245,241,232,0.48)_30%,rgba(245,241,232,0.16)_58%,rgba(245,241,232,0.00)_100%)] md:bg-[linear-gradient(to_right,rgba(245,241,232,0.68)_0%,rgba(245,241,232,0.34)_28%,rgba(245,241,232,0.10)_54%,rgba(245,241,232,0.00)_100%)]"
               />
+
               <div
                 aria-hidden
                 className="absolute inset-0 bg-[linear-gradient(to_top,rgba(245,241,232,0.34)_0%,rgba(245,241,232,0.14)_30%,rgba(245,241,232,0.00)_60%,rgba(245,241,232,0.00)_100%)] md:bg-[linear-gradient(to_top,rgba(245,241,232,0.28)_0%,rgba(245,241,232,0.10)_28%,rgba(245,241,232,0.00)_58%,rgba(245,241,232,0.00)_100%)]"
               />
+
               <div
                 aria-hidden
                 className="absolute inset-y-0 left-0 w-full bg-white/10 md:w-[54%] md:bg-white/8"
               />
-              <div aria-hidden className="absolute inset-0 bg-black/[0.04]" />
+
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-black/[0.04]"
+              />
             </>
           )}
         </>
@@ -120,6 +127,7 @@ export function PageHero({
             aria-hidden
             className="pointer-events-none absolute -right-24 -top-24 h-[360px] w-[360px] rounded-full bg-brand/[0.05] blur-3xl sm:h-[480px] sm:w-[480px] md:-right-32 md:-top-32 md:h-[640px] md:w-[640px]"
           />
+
           <div
             aria-hidden
             className="pointer-events-none absolute -bottom-24 -left-24 h-[320px] w-[320px] rounded-full bg-gold/[0.07] blur-3xl sm:h-[420px] sm:w-[420px] md:-bottom-32 md:-left-32 md:h-[560px] md:w-[560px]"
@@ -139,12 +147,20 @@ export function PageHero({
         className={`absolute right-4 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-4 lg:flex ${lightText}`}
         style={{ writingMode: 'vertical-rl' }}
       >
-        <span className="eyebrow text-[10px]">Est. {ESTABLISHED}</span>
+        <span className="eyebrow text-[10px]">
+          Est. {ESTABLISHED}
+        </span>
+
         <span
-          className={`h-16 w-px ${isDark ? 'bg-gold/40' : 'bg-gold/50'}`}
+          className={`h-16 w-px ${
+            isDark ? 'bg-gold/40' : 'bg-gold/50'
+          }`}
           style={{ writingMode: 'horizontal-tb' }}
         />
-        <span className="eyebrow text-[10px]">Solapur · India</span>
+
+        <span className="eyebrow text-[10px]">
+          Solapur · India
+        </span>
       </div>
 
       {/* Content */}
@@ -152,11 +168,12 @@ export function PageHero({
         <div
           className={
             layout === 'split'
-              ? 'grid gap-10 md:gap-12 lg:grid-cols-12 lg:items-end'
+              ? 'grid gap-10 md:gap-12 lg:grid-cols-12 lg:items-start'
               : ''
           }
         >
-          <div className={layout === 'split' ? 'lg:col-span-8' : ''}>
+          {/* Main hero content */}
+          <div className={layout === 'split' ? 'lg:col-span-7' : ''}>
             {chapter && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
@@ -169,12 +186,18 @@ export function PageHero({
                 >
                   {chapter}
                 </span>
+
                 <span
                   className={`h-px w-10 sm:w-12 ${
                     isDark ? 'bg-gold/60' : 'bg-gold'
                   }`}
                 />
-                <span className={`eyebrow text-[10px] ${lightText}`}>Chapter</span>
+
+                <span
+                  className={`eyebrow text-[10px] ${lightText}`}
+                >
+                  Chapter
+                </span>
               </motion.div>
             )}
 
@@ -182,12 +205,13 @@ export function PageHero({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05 }}
-              className={`eyebrow ${isDark ? 'text-white/50' : 'text-ink'}`}
+              className={`eyebrow ${
+                isDark ? 'text-white/50' : 'text-ink'
+              }`}
             >
               {eyebrow}
             </motion.p>
 
-            {/* UPDATED HERO HEADLINE */}
             <motion.h1
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
@@ -196,7 +220,7 @@ export function PageHero({
                 delay: 0.12,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className={`display-1 mt-5 sm:mt-6 text-[clamp(2.3rem,5vw,4.2rem)] leading-[1.02] ${textColor} ${
+              className={`display-1 mt-5 text-[clamp(2.3rem,5vw,4.2rem)] leading-[1.02] sm:mt-6 ${textColor} ${
                 isDark
                   ? 'drop-shadow-[0_2px_24px_rgba(10,8,6,0.8)]'
                   : ''
@@ -228,20 +252,26 @@ export function PageHero({
             )}
           </div>
 
+          {/* Right-side sidebar */}
           {layout === 'split' && sidebar && (
             <motion.aside
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="lg:col-span-4 lg:pl-4"
+              className="lg:col-span-5 lg:pt-16 lg:pr-16 xl:pr-24"
             >
               {sidebar}
             </motion.aside>
           )}
         </div>
 
-        <div className="relative mt-12 sm:mt-14 md:mt-20" aria-hidden>
+        {/* Bottom divider */}
+        <div
+          className="relative mt-12 sm:mt-14 md:mt-20"
+          aria-hidden
+        >
           <div className={`h-px ${lineColor}`} />
+
           <span
             className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xs ${ornamentColor}`}
           >
