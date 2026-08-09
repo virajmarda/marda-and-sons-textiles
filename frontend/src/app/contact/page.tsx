@@ -87,20 +87,21 @@ export default function ContactPage() {
         height="md"
         sidebar={
           <div className="w-full max-w-lg lg:ml-auto">
-            <div className="border-t border-line pt-6">
-              <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
-                <div>
-                  <p className="eyebrow mb-3 text-[10px] tracking-[0.24em] text-ink-soft">
+            <div className="overflow-hidden border border-line/80 bg-paper/60">
+              {/* Contact information row */}
+              <div className="grid gap-0 sm:grid-cols-2">
+                <div className="border-b border-line/80 p-5 sm:border-b-0 sm:border-r sm:p-6">
+                  <p className="eyebrow mb-4 text-[10px] tracking-[0.26em] text-ink-soft">
                     Find us
                   </p>
 
-                  <p className="font-sub text-sm leading-6 text-ink sm:text-base">
+                  <p className="font-sub text-sm leading-7 text-ink sm:text-base">
                     {STORE_ADDRESS}
                   </p>
                 </div>
 
-                <div>
-                  <p className="eyebrow mb-3 text-[10px] tracking-[0.24em] text-ink-soft">
+                <div className="border-b border-line/80 p-5 sm:border-b-0 sm:p-6">
+                  <p className="eyebrow mb-4 text-[10px] tracking-[0.26em] text-ink-soft">
                     Speak with us
                   </p>
 
@@ -110,50 +111,56 @@ export default function ContactPage() {
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-sub text-sm leading-6 text-ink transition-colors hover:text-brand sm:text-base"
+                    className="font-sub text-sm leading-7 text-ink transition-colors hover:text-brand sm:text-base"
                   >
                     {WHATSAPP_DISPLAY}
                   </a>
 
-                  <p className="mt-1 font-sub text-sm text-ink-soft">
+                  <p className="mt-2 font-sub text-sm text-ink-soft">
                     WhatsApp preferred
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-7 flex items-start justify-between gap-6 border-t border-gold/25 pt-6">
-              <div>
-                <p className="eyebrow mb-3 text-[10px] tracking-[0.24em] text-ink-soft">
-                  Opening hours
-                </p>
+              {/* Opening hours row */}
+              <div className="grid gap-0 sm:grid-cols-[1fr_auto]">
+                <div className="border-t border-line/80 p-5 sm:p-6">
+                  <p className="eyebrow mb-4 text-[10px] tracking-[0.26em] text-ink-soft">
+                    Opening hours
+                  </p>
 
-                <p className="font-sub text-sm leading-6 text-ink sm:text-base">
-                  {STORE_HOURS}
-                </p>
+                  <p className="font-sub text-sm leading-7 text-ink sm:text-base">
+                    {STORE_HOURS}
+                  </p>
 
-                <p className="mt-1 font-sub text-sm italic text-ink-soft">
-                  Sundays · by appointment
-                </p>
+                  <p className="mt-2 font-sub text-sm italic text-ink-soft">
+                    Sundays · by appointment
+                  </p>
+                </div>
+
+                <div className="flex items-start justify-end border-t border-line/80 p-5 sm:border-l sm:p-6">
+                  <Clock
+                    size={18}
+                    strokeWidth={1.3}
+                    className="mt-1 text-brand"
+                    aria-hidden
+                  />
+                </div>
               </div>
 
-              <Clock
-                size={20}
-                strokeWidth={1.2}
-                className="mt-1 shrink-0 text-brand"
-                aria-hidden
-              />
+              {/* Visit link */}
+              <div className="border-t border-gold/30 bg-paper-2/50 px-5 py-4 sm:px-6">
+                <a
+                  href={MAPS_DIRECTIONS}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="eyebrow link-underline inline-flex items-center gap-2 text-brand"
+                >
+                  Plan your visit
+                  <ArrowRight size={13} strokeWidth={1.5} />
+                </a>
+              </div>
             </div>
-
-            <a
-              href={MAPS_DIRECTIONS}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="eyebrow link-underline mt-7 inline-flex items-center gap-2 text-brand"
-            >
-              Plan your visit
-              <ArrowRight size={13} strokeWidth={1.5} />
-            </a>
           </div>
         }
       />
