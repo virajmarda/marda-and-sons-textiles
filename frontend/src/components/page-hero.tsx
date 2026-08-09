@@ -46,7 +46,9 @@ export function PageHero({
   return (
     <section
       data-testid="page-hero"
-      className={`relative overflow-hidden ${heights[height]} ${isDark ? 'bg-ink' : 'bg-paper'}`}
+      className={`relative overflow-hidden ${heights[height]} ${
+        isDark ? 'bg-ink' : 'bg-paper'
+      }`}
     >
       {/* Background image */}
       {bgImage && (
@@ -62,7 +64,7 @@ export function PageHero({
             alt=""
             className={`h-full w-full object-cover object-center ${
               isDark
-                ? 'opacity-40'   /* raised from 0.18 → 0.40 so texture shows */
+                ? 'opacity-40'
                 : 'opacity-100 brightness-[0.98] contrast-[1.08] saturate-[1.04]'
             }`}
           />
@@ -74,7 +76,6 @@ export function PageHero({
         <>
           {isDark ? (
             <>
-              {/* Strong bottom-up gradient — keeps headline zone near-black */}
               <div
                 aria-hidden
                 className="absolute inset-0"
@@ -83,7 +84,6 @@ export function PageHero({
                     'linear-gradient(to top, rgba(10,8,6,0.97) 0%, rgba(10,8,6,0.88) 30%, rgba(10,8,6,0.60) 55%, rgba(10,8,6,0.28) 80%, rgba(10,8,6,0.12) 100%)',
                 }}
               />
-              {/* Top nav bleed */}
               <div
                 aria-hidden
                 className="absolute inset-x-0 top-0 h-40"
@@ -169,7 +169,11 @@ export function PageHero({
                 >
                   {chapter}
                 </span>
-                <span className={`h-px w-10 sm:w-12 ${isDark ? 'bg-gold/60' : 'bg-gold'}`} />
+                <span
+                  className={`h-px w-10 sm:w-12 ${
+                    isDark ? 'bg-gold/60' : 'bg-gold'
+                  }`}
+                />
                 <span className={`eyebrow text-[10px] ${lightText}`}>Chapter</span>
               </motion.div>
             )}
@@ -183,12 +187,19 @@ export function PageHero({
               {eyebrow}
             </motion.p>
 
+            {/* UPDATED HERO HEADLINE */}
             <motion.h1
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-              className={`display-1 mt-5 text-[2.9rem] leading-[0.92] sm:mt-6 sm:text-[4.1rem] md:text-8xl lg:text-[9.5rem] ${textColor} ${
-                isDark ? 'drop-shadow-[0_2px_24px_rgba(10,8,6,0.8)]' : ''
+              transition={{
+                duration: 0.9,
+                delay: 0.12,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className={`display-1 mt-5 sm:mt-6 text-[clamp(2.3rem,5vw,4.2rem)] leading-[1.02] ${textColor} ${
+                isDark
+                  ? 'drop-shadow-[0_2px_24px_rgba(10,8,6,0.8)]'
+                  : ''
               }`}
             >
               {headline}
