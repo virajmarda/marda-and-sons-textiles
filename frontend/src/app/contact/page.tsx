@@ -62,17 +62,18 @@ export default function ContactPage() {
   return (
     <div data-testid="contact-page" className="bg-paper">
       <PageHero
-        chapter="06"
-        eyebrow="Visit · संपर्क"
-        marathi="आपलं स्वागत आहे"
-        headline={
-          <>
-            Walk in.
-            <br />
-            <span className="italic text-brand">Or write to us.</span>
-          </>
-        }
-        layout="split"
+  chapter="06"
+  eyebrow="Visit · संपर्क"
+  marathi="आपलं स्वागत आहे"
+  headline={
+    <>
+      Walk in.
+      <br />
+      <span className="italic text-brand">Or write to us.</span>
+    </>
+  }
+  layout="split"
+  height="md"
         sidebar={
           <>
             <p className="font-sub text-base leading-relaxed text-ink-soft sm:text-lg">
