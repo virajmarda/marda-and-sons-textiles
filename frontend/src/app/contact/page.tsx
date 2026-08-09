@@ -62,26 +62,104 @@ export default function ContactPage() {
   return (
     <div data-testid="contact-page" className="bg-paper">
       <PageHero
-  chapter="06"
-  eyebrow="Visit · संपर्क"
-  marathi="आपलं स्वागत आहे"
-  headline={
-    <>
-      Walk in.
-      <br />
-      <span className="italic text-brand">Or write to us.</span>
-    </>
-  }
-  layout="split"
-  height="md"
-        sidebar={
+        chapter="06"
+        eyebrow="Visit · संपर्क"
+        marathi="आपलं स्वागत आहे"
+        headline={
           <>
-            <p className="font-sub text-base leading-relaxed text-ink-soft sm:text-lg">
-              The <span className="font-brand not-italic text-ink">मर्दा ॲन्ड सन्स</span> atelier is a slow,
-              generous shop. Come for chai, stay for the weaves, leave with a story.
-            </p>
-            <div className="mt-6 h-px bg-gradient-to-r from-gold via-gold/40 to-transparent sm:mt-8" />
+            Walk in.
+            <br />
+            <span className="italic text-brand">Or write to us.</span>
           </>
+        }
+        layout="split"
+        height="md"
+        sidebar={
+          <div className="w-full max-w-lg lg:ml-auto">
+            {/* Introductory text */}
+            <div className="border-t border-gold/40 pt-5 sm:pt-6">
+              <p className="eyebrow mb-4 text-[10px] tracking-[0.28em] text-ink-soft">
+                The atelier
+              </p>
+
+              <p className="max-w-md font-sub text-base leading-[1.8] text-ink sm:text-lg">
+                The{' '}
+                <span className="font-brand text-brand">
+                  मर्दा ॲन्ड सन्स
+                </span>{' '}
+                atelier is a slow, generous shop.
+              </p>
+
+              <p className="mt-2 max-w-md font-sub text-base leading-[1.8] text-ink-soft sm:text-lg">
+                Come for chai, stay for the weaves, leave with a story.
+              </p>
+            </div>
+
+            {/* Contact details */}
+            <div className="mt-8 grid gap-5 border-t border-line pt-6 sm:mt-10 sm:grid-cols-2 sm:gap-6">
+              <div>
+                <p className="eyebrow mb-2 text-[10px] tracking-[0.24em] text-ink-soft">
+                  Find us
+                </p>
+
+                <p className="font-sub text-sm leading-6 text-ink sm:text-base">
+                  {STORE_ADDRESS}
+                </p>
+              </div>
+
+              <div>
+                <p className="eyebrow mb-2 text-[10px] tracking-[0.24em] text-ink-soft">
+                  Speak with us
+                </p>
+
+                <a
+                  href={whatsappLink(
+                    'Hello मर्दा ॲन्ड सन्स, I would like to know more.',
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-sub text-sm leading-6 text-ink transition-colors hover:text-brand sm:text-base"
+                >
+                  {WHATSAPP_DISPLAY}
+                </a>
+
+                <p className="mt-1 font-sub text-sm text-ink-soft">
+                  WhatsApp preferred
+                </p>
+              </div>
+            </div>
+
+            {/* Opening hours */}
+            <div className="mt-6 flex items-start justify-between gap-6 border-t border-gold/25 pt-5 sm:mt-8 sm:pt-6">
+              <div>
+                <p className="eyebrow mb-2 text-[10px] tracking-[0.24em] text-ink-soft">
+                  Opening hours
+                </p>
+
+                <p className="font-sub text-sm leading-6 text-ink sm:text-base">
+                  {STORE_HOURS}
+                </p>
+              </div>
+
+              <Clock
+                size={20}
+                strokeWidth={1.2}
+                className="mt-1 shrink-0 text-brand"
+                aria-hidden
+              />
+            </div>
+
+            {/* Directions link */}
+            <a
+              href={MAPS_DIRECTIONS}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="eyebrow link-underline mt-6 inline-flex items-center gap-2 text-brand sm:mt-8"
+            >
+              Plan your visit
+              <ArrowRight size={13} strokeWidth={1.5} />
+            </a>
+          </div>
         }
       />
 
@@ -90,10 +168,13 @@ export default function ContactPage() {
           <Reveal>
             <div className="border-t border-line pt-6 md:pt-8">
               <MapPin size={22} strokeWidth={1.2} className="text-brand" />
+
               <p className="mt-5 eyebrow md:mt-6">The Atelier</p>
+
               <p className="mt-3 font-sub text-base leading-relaxed text-ink sm:text-lg">
                 {STORE_ADDRESS}
               </p>
+
               <a
                 href={MAPS_DIRECTIONS}
                 target="_blank"
@@ -109,12 +190,17 @@ export default function ContactPage() {
           <Reveal delay={0.1}>
             <div className="border-t border-line pt-6 md:pt-8">
               <Phone size={22} strokeWidth={1.2} className="text-brand" />
+
               <p className="mt-5 eyebrow md:mt-6">Call · WhatsApp</p>
+
               <p className="mt-3 break-words font-sub text-base text-ink sm:text-lg">
                 {WHATSAPP_DISPLAY}
               </p>
+
               <a
-                href={whatsappLink('Hello मर्दा ॲन्ड सन्स, I would like to know more.')}
+                href={whatsappLink(
+                  'Hello मर्दा ॲन्ड सन्स, I would like to know more.',
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="contact-whatsapp"
@@ -128,8 +214,13 @@ export default function ContactPage() {
           <Reveal delay={0.2}>
             <div className="border-t border-line pt-6 md:pt-8">
               <Clock size={22} strokeWidth={1.2} className="text-brand" />
+
               <p className="mt-5 eyebrow md:mt-6">Atelier Hours</p>
-              <p className="mt-3 font-sub text-base text-ink sm:text-lg">{STORE_HOURS}</p>
+
+              <p className="mt-3 font-sub text-base text-ink sm:text-lg">
+                {STORE_HOURS}
+              </p>
+
               <p className="mt-2 font-sub text-sm italic text-ink-soft">
                 Sundays · by appointment
               </p>
@@ -142,6 +233,7 @@ export default function ContactPage() {
         <div className="mx-auto grid max-w-[1600px] gap-12 px-4 sm:px-6 md:px-12 lg:grid-cols-2 lg:gap-16 lg:px-24">
           <div>
             <SectionLabel number="01" label="Write to us" />
+
             <h2 className="display-2 mt-5 text-3xl text-ink sm:text-4xl md:mt-6 md:text-5xl">
               A note from your
               <br />
@@ -158,7 +250,9 @@ export default function ContactPage() {
                 placeholder="YOUR NAME *"
                 required
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
                 data-testid="contact-name"
               />
 
@@ -169,14 +263,19 @@ export default function ContactPage() {
                   placeholder="EMAIL *"
                   required
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, email: e.target.value })
+                  }
                   data-testid="contact-email"
                 />
+
                 <input
                   className="input-line"
                   placeholder="PHONE"
                   value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, phone: e.target.value })
+                  }
                   data-testid="contact-phone"
                 />
               </div>
@@ -187,7 +286,9 @@ export default function ContactPage() {
                 rows={6}
                 required
                 value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, message: e.target.value })
+                }
                 data-testid="contact-message"
               />
 
@@ -197,7 +298,8 @@ export default function ContactPage() {
                 data-testid="contact-submit"
                 className="btn-primary w-full justify-center disabled:opacity-50"
               >
-                {loading ? 'Opening…' : 'Send on WhatsApp'} <ArrowRight size={14} />
+                {loading ? 'Opening…' : 'Send on WhatsApp'}
+                <ArrowRight size={14} />
               </button>
 
               <p className="text-[10px] uppercase tracking-[0.2em] text-ink-soft sm:text-[11px] sm:tracking-[0.22em]">
@@ -207,14 +309,28 @@ export default function ContactPage() {
 
             <div className="mt-12 border-t border-line pt-6 sm:mt-14 md:mt-16 md:pt-8">
               <p className="mb-3 eyebrow">Other ways</p>
+
               <ul className="space-y-3 font-sub text-ink">
                 <li className="flex items-start gap-3">
-                  <Mail size={14} className="mt-1 shrink-0 text-gold" />
-                  <span className="break-all">hello@mardaandsons.in</span>
+                  <Mail
+                    size={14}
+                    className="mt-1 shrink-0 text-gold"
+                    aria-hidden
+                  />
+                  <span className="break-all">
+                    hello@mardaandsons.in
+                  </span>
                 </li>
+
                 <li className="flex items-start gap-3">
-                  <Phone size={14} className="mt-1 shrink-0 text-gold" />
-                  <span className="break-words">{WHATSAPP_DISPLAY}</span>
+                  <Phone
+                    size={14}
+                    className="mt-1 shrink-0 text-gold"
+                    aria-hidden
+                  />
+                  <span className="break-words">
+                    {WHATSAPP_DISPLAY}
+                  </span>
                 </li>
               </ul>
             </div>
@@ -222,8 +338,10 @@ export default function ContactPage() {
 
           <div>
             <SectionLabel number="02" label="Find us" />
+
             <h3 className="display-2 mt-5 text-3xl text-ink sm:text-4xl md:mt-6 md:text-5xl">
-              Chattigalli, <span className="italic text-brand">Solapur.</span>
+              Chattigalli,{' '}
+              <span className="italic text-brand">Solapur.</span>
             </h3>
 
             <div className="mt-6 aspect-[4/5] overflow-hidden border border-line sm:mt-8 sm:aspect-[4/4] lg:aspect-[4/5]">
