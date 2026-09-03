@@ -1,75 +1,39 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Returns & Refunds',
-  description: 'Return and refund policy for Marda & Sons Textiles. Hassle-free returns within 7 days.',
+  title: 'Returns & Refunds | Marda & Sons',
+  description: 'Returns and Refunds Policy for Marda & Sons Textiles, Solapur.',
 };
 
-export default function ReturnsPage() {
+const LAST_UPDATED = 'September 3, 2026';
+const CONTACT_EMAIL = 'mardaandsons@gmail.com';
+const CONTACT_PHONE = '+91 94224 60420';
+const BUSINESS_ADDRESS = '430, Chattigalli, Mangalwar Peth, Solapur, Maharashtra 413 001, India';
+
+export default function ReturnsRefundsPage() {
   return (
     <main className="min-h-screen bg-paper">
-      <section className="pt-32 pb-16 px-6 md:px-12 lg:px-24 max-w-[1600px] mx-auto">
-        <p className="eyebrow text-ink-soft text-xs tracking-widest mb-6">LEGAL &middot; परतावा</p>
-        <h1 className="font-heading text-[clamp(3rem,8vw,7rem)] leading-none tracking-tighter text-ink mb-4">
-          Returns &amp;
-        </h1>
-        <h2 className="font-heading italic text-[clamp(2rem,5vw,5rem)] leading-none tracking-tighter text-brand mb-8">
-          Refunds.
-        </h2>
-        <div className="gold-rule w-24 h-px mt-8" />
+      <section className="mx-auto max-w-[1600px] px-6 pb-16 pt-32 md:px-12 lg:px-24">
+        <p className="eyebrow mb-6 text-xs tracking-widest text-ink-soft">LEGAL · RETURNS</p>
+        <h1 className="mb-4 font-heading text-[clamp(3rem,8vw,7rem)] leading-none tracking-tighter text-ink">Returns</h1>
+        <h2 className="mb-8 font-heading text-[clamp(2rem,5vw,5rem)] italic leading-none tracking-tighter text-brand">&amp; Refunds.</h2>
+        <p className="font-body text-sm text-ink-soft">Last updated: {LAST_UPDATED}</p>
+        <div className="gold-rule mt-8 h-px w-24" />
       </section>
 
-      <section className="px-6 md:px-12 lg:px-24 max-w-[860px] mx-auto pb-32 space-y-10 font-body text-ink leading-relaxed">
-
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">1. Our Promise</h3>
-          <p className="text-ink-soft">At Marda &amp; Sons, every textile leaves our store with pride. If for any reason your order does not meet your expectations, we are here to make it right. Your trust is worth more than any single sale.</p>
-        </div>
-
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">2. Return Window</h3>
-          <p className="text-ink-soft">You may request a return within <strong>7 days of delivery</strong> for retail orders. For wholesale orders, returns must be raised within <strong>48 hours of receipt</strong> and are limited to manufacturing defects or incorrect items dispatched.</p>
-        </div>
-
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">3. Eligible Return Conditions</h3>
-          <ul className="list-disc pl-6 space-y-2 text-ink-soft">
-            <li>Item received is damaged, defective, or has a manufacturing fault (weave defect, torn seam, incorrect GSM).</li>
-            <li>Wrong item or size was dispatched compared to your confirmed order.</li>
-            <li>Item is significantly different from the product described on the website.</li>
-          </ul>
-          <p className="text-ink-soft mt-4"><strong>Not eligible for return:</strong> Items that have been washed, used, or altered; custom-woven or personalised orders; bulk wholesale orders beyond the 48-hour window.</p>
-        </div>
-
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">4. How to Initiate a Return</h3>
-          <ol className="list-decimal pl-6 space-y-2 text-ink-soft">
-            <li>WhatsApp us at <strong>+91 94224 60420</strong> with your order reference number and photos of the item clearly showing the issue.</li>
-            <li>Our team will review and respond within <strong>24 hours</strong>.</li>
-            <li>If approved, we will arrange a reverse pickup at no cost to you (for manufacturing defects).</li>
-            <li>Replacement or refund will be processed within <strong>5–7 business days</strong> of receiving the returned item.</li>
-          </ol>
-        </div>
-
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">5. Refund Method</h3>
-          <ul className="list-disc pl-6 space-y-2 text-ink-soft">
-            <li><strong>UPI / Bank Transfer:</strong> Refunds processed within 3–5 business days to your provided UPI ID or bank account.</li>
-            <li><strong>Store Credit:</strong> If preferred, we can issue store credit for your next order, valid for 12 months.</li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">6. Colour &amp; Texture Variations</h3>
-          <p className="text-ink-soft">Solapuri handloom textiles are crafted on traditional looms with natural cotton and wool. Slight variations in colour (due to screen calibration), texture, and weave density are inherent to handcrafted fabrics and are <strong>not considered defects</strong>. We encourage you to reach out before purchase if you have specific requirements.</p>
-        </div>
-
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">7. Contact</h3>
-          <p className="text-ink-soft">WhatsApp: <strong>+91 94224 60420</strong> (Mon–Sat, 10 AM–8:30 PM IST)<br />Email: mardaandsons@gmail.com<br />Address: 430, Chattigalli, Mangalwar Peth, Solapur, Maharashtra 413 001</p>
-        </div>
-
+      <section className="mx-auto max-w-[860px] space-y-10 px-6 pb-32 font-body leading-relaxed text-ink md:px-12 lg:px-24">
+        <PolicySection title="1. Our Commitment"><p>We aim to supply carefully checked textile products. If an item is damaged, defective, incorrect, or materially different from its description, contact us promptly so we can investigate and offer the appropriate remedy.</p></PolicySection>
+        <PolicySection title="2. Reporting a Problem"><p>Contact <a href={`mailto:${CONTACT_EMAIL}`} className="link-underline text-brand">{CONTACT_EMAIL}</a> or {CONTACT_PHONE} within <strong>48 hours of delivery</strong>. Include your order or enquiry reference, a description of the issue, and clear photographs or an unboxing video where available. Do not discard the packaging until the matter is resolved.</p></PolicySection>
+        <PolicySection title="3. Eligibility"><p>Approved returns should be unused, unwashed, unaltered, and in the condition received, with packaging, labels, and accessories where applicable. Custom-cut, customised, clearance, sale, hygiene-sensitive, or specially sourced products may be non-returnable when clearly disclosed before purchase, except where applicable law requires otherwise.</p></PolicySection>
+        <PolicySection title="4. Resolution"><p>After review, Marda &amp; Sons may arrange replacement, exchange, repair, store credit, or refund depending on the product, stock availability, and reason for return. Approval is not automatic merely because a return request is submitted.</p></PolicySection>
+        <PolicySection title="5. Refunds"><p>For an approved refund, the amount will generally be returned to the original payment method after the product is received and inspected, where inspection is necessary. Bank, payment-gateway, and logistics processing times may vary. Any legally required refund will not be excluded by this policy.</p></PolicySection>
+        <PolicySection title="6. Return Shipping"><p>Where the issue is our error, transit damage, or a verified defect, we will bear reasonable return shipping costs or arrange pickup where feasible. For discretionary returns, any applicable return shipping or restocking charge will be disclosed before approval.</p></PolicySection>
+        <PolicySection title="7. Contact"><p>Marda &amp; Sons<br />{BUSINESS_ADDRESS}<br />Phone: {CONTACT_PHONE}<br />Email: <a href={`mailto:${CONTACT_EMAIL}`} className="link-underline text-brand">{CONTACT_EMAIL}</a></p></PolicySection>
       </section>
     </main>
   );
+}
+
+function PolicySection({ title, children }: { title: string; children: React.ReactNode }) {
+  return <div><h3 className="mb-3 font-sub text-xl text-ink">{title}</h3>{children}</div>;
 }

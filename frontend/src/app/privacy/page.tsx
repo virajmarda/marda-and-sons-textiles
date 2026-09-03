@@ -1,82 +1,79 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy',
+  title: 'Privacy Policy | Marda & Sons',
   description: 'Privacy Policy for Marda & Sons Textiles, Solapur.',
 };
 
-const LAST_UPDATED = 'July 17, 2026';
+const LAST_UPDATED = 'September 3, 2026';
+const CONTACT_EMAIL = 'mardaandsons@gmail.com';
+const CONTACT_PHONE = '+91 94224 60420';
+const BUSINESS_ADDRESS = '430, Chattigalli, Mangalwar Peth, Solapur, Maharashtra 413 001, India';
+const WEBSITE = 'mardaandsons.vercel.app';
 
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-paper">
-      {/* Hero */}
-      <section className="pt-32 pb-16 px-6 md:px-12 lg:px-24 max-w-[1600px] mx-auto">
-        <p className="eyebrow text-ink-soft text-xs tracking-widest mb-6">LEGAL &middot; গोपनीयता</p>
-        <h1 className="font-heading text-[clamp(3rem,8vw,7rem)] leading-none tracking-tighter text-ink mb-4">
-          Privacy
-        </h1>
-        <h2 className="font-heading italic text-[clamp(2rem,5vw,5rem)] leading-none tracking-tighter text-brand mb-8">
-          Policy.
-        </h2>
-        <p className="font-body text-ink-soft text-sm">Last updated: {LAST_UPDATED}</p>
-        <div className="gold-rule w-24 h-px mt-8" />
+      <section className="mx-auto max-w-[1600px] px-6 pb-16 pt-32 md:px-12 lg:px-24">
+        <p className="eyebrow mb-6 text-xs tracking-widest text-ink-soft">LEGAL · गोपनीयता</p>
+        <h1 className="mb-4 font-heading text-[clamp(3rem,8vw,7rem)] leading-none tracking-tighter text-ink">Privacy</h1>
+        <h2 className="mb-8 font-heading text-[clamp(2rem,5vw,5rem)] italic leading-none tracking-tighter text-brand">Policy.</h2>
+        <p className="font-body text-sm text-ink-soft">Last updated: {LAST_UPDATED}</p>
+        <div className="gold-rule mt-8 h-px w-24" />
       </section>
 
-      {/* Content */}
-      <section className="px-6 md:px-12 lg:px-24 max-w-[860px] mx-auto pb-32 space-y-10 font-body text-ink leading-relaxed">
+      <section className="mx-auto max-w-[860px] space-y-10 px-6 pb-32 font-body leading-relaxed text-ink md:px-12 lg:px-24">
+        <PolicySection title="1. Who We Are">
+          <p>Marda &amp; Sons ("we", "us", "our") is a family-owned textile business established in 1970, headquartered at {BUSINESS_ADDRESS}. We operate <strong>{WEBSITE}</strong> (the "Site").</p>
+        </PolicySection>
 
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">1. Who We Are</h3>
-          <p>Marda &amp; Sons (“we”, “us”, “our”) is a family-owned textile business established in 1970, headquartered at 430, Chattigalli, Mangalwar Peth, Solapur, Maharashtra 413 001, India. We operate the website <strong>marda-and-sons-textiles.vercel.app</strong> (the “Site”).</p>
-        </div>
-
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">2. Information We Collect</h3>
-          <ul className="list-disc pl-6 space-y-2 text-ink-soft">
-            <li><strong>Contact information</strong> — name, phone number, email address, and city when you fill our contact or wholesale enquiry forms.</li>
-            <li><strong>Order enquiry data</strong> — product names, quantities, and preferred mode (retail / wholesale) when you submit a cart enquiry.</li>
-            <li><strong>Newsletter subscription</strong> — email address when you subscribe to our newsletter.</li>
-            <li><strong>Usage data</strong> — pages visited, time spent, and referral source via standard server logs. We do not use third-party analytics trackers.</li>
+        <PolicySection title="2. Information We Collect">
+          <ul className="list-disc space-y-2 pl-6 text-ink-soft">
+            <li><strong>Contact information:</strong> name, phone number, email address, and city.</li>
+            <li><strong>Enquiry information:</strong> products, quantities, and retail or wholesale preferences.</li>
+            <li><strong>Newsletter information:</strong> email address when you subscribe.</li>
+            <li><strong>Technical information:</strong> pages visited, referral source, browser, and server-log information.</li>
           </ul>
-        </div>
+        </PolicySection>
 
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">3. How We Use Your Information</h3>
-          <ul className="list-disc pl-6 space-y-2 text-ink-soft">
-            <li>To respond to your enquiries via WhatsApp or email within 24 hours.</li>
-            <li>To send product price lists, fabric swatches, or order confirmations.</li>
-            <li>To send our monthly heritage newsletter (only if you subscribed).</li>
-            <li>To improve our website and product offerings.</li>
+        <PolicySection title="3. How We Use Information">
+          <ul className="list-disc space-y-2 pl-6 text-ink-soft">
+            <li>To respond to enquiries and provide quotations, swatches, or product information.</li>
+            <li>To process and support orders, including confirmations, delivery, returns, and refunds.</li>
+            <li>To send newsletters only where you have subscribed, with an unsubscribe option.</li>
+            <li>To secure, maintain, and improve the Site and comply with applicable law.</li>
           </ul>
-        </div>
+        </PolicySection>
 
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">4. Data Sharing</h3>
-          <p className="text-ink-soft">We do not sell, rent, or share your personal data with third parties for marketing purposes. We may share data only with service providers strictly necessary to operate our business (e.g., hosting, email delivery), all bound by confidentiality agreements.</p>
-        </div>
+        <PolicySection title="4. Data Sharing">
+          <p className="text-ink-soft">We do not sell personal data. We may disclose limited information to providers needed to operate the business, including hosting, email, payment, logistics, customer-support, accounting, and professional-service providers, or to authorities where legally required.</p>
+        </PolicySection>
 
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">5. Data Retention</h3>
-          <p className="text-ink-soft">Enquiry and lead data is retained for up to 2 years to support follow-up and order history. Newsletter subscriptions are retained until you unsubscribe. You may request deletion at any time by contacting us.</p>
-        </div>
+        <PolicySection title="5. Retention and Security">
+          <p className="text-ink-soft">We retain information only for as long as reasonably necessary for enquiries, order history, customer support, fraud prevention, dispute resolution, tax, accounting, and legal obligations. Reasonable technical and organisational safeguards are used, although no internet transmission or storage system is completely secure.</p>
+        </PolicySection>
 
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">6. Cookies</h3>
-          <p className="text-ink-soft">We use only functional cookies essential for cart and wishlist persistence (stored in your browser's localStorage). We do not use advertising or tracking cookies.</p>
-        </div>
+        <PolicySection title="6. Cookies and Local Storage">
+          <p className="text-ink-soft">The Site may use functional browser storage, including localStorage, for features such as cart or wishlist persistence. These are distinct from cookies. If analytics, advertising, payment, or other third-party technologies are added, this policy should be updated before they are activated.</p>
+        </PolicySection>
 
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">7. Your Rights</h3>
-          <p className="text-ink-soft">Under the Information Technology Act 2000 and the Digital Personal Data Protection Act 2023 (India), you have the right to access, correct, or request deletion of your personal data. Contact us at <a href="mailto:mardaandsons@gmail.com" className="link-underline text-brand">mardaandsons@gmail.com</a>.</p>
-        </div>
+        <PolicySection title="7. Your Requests">
+          <p className="text-ink-soft">You may contact us to request access to, correction of, or deletion of personal information, or to withdraw a consent-based subscription. Requests are subject to applicable law, identity verification, and records that must be retained for legal or business purposes.</p>
+        </PolicySection>
 
-        <div>
-          <h3 className="font-sub text-xl text-ink mb-3">8. Contact</h3>
-          <p className="text-ink-soft">Marda &amp; Sons &mdash; 430, Chattigalli, Mangalwar Peth, Solapur, Maharashtra 413 001<br />Phone: +91 94224 60420<br />Email: mardaandsons@gmail.com</p>
-        </div>
-
+        <PolicySection title="8. Contact">
+          <p className="text-ink-soft">Marda &amp; Sons<br />{BUSINESS_ADDRESS}<br />Phone: {CONTACT_PHONE}<br />Email: <a href={`mailto:${CONTACT_EMAIL}`} className="link-underline text-brand">{CONTACT_EMAIL}</a></p>
+        </PolicySection>
       </section>
     </main>
+  );
+}
+
+function PolicySection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 className="mb-3 font-sub text-xl text-ink">{title}</h3>
+      {children}
+    </div>
   );
 }
