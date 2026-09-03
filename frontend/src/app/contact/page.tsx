@@ -74,7 +74,7 @@ export default function ContactPage() {
           </>
         }
         lede={
-          <p className="max-w-xl leading-relaxed">
+          <p className="max-w-2xl leading-relaxed">
             The{' '}
             <span className="font-brand text-brand">
               मर्दा ॲन्ड सन्स
@@ -84,13 +84,12 @@ export default function ContactPage() {
           </p>
         }
         layout="split"
-        height="md"
+        height="lg"
         sidebar={
-          <div className="w-full max-w-lg lg:ml-auto">
+          <div className="w-full max-w-xl lg:ml-auto">
             <div className="overflow-hidden border border-line/80 bg-paper/60">
-              {/* Contact information row */}
               <div className="grid gap-0 sm:grid-cols-2">
-                <div className="border-b border-line/80 p-5 sm:border-b-0 sm:border-r sm:p-6">
+                <div className="border-b border-line/80 p-6 sm:border-b-0 sm:border-r sm:p-7">
                   <p className="eyebrow mb-4 text-[10px] tracking-[0.26em] text-ink-soft">
                     Find us
                   </p>
@@ -100,7 +99,7 @@ export default function ContactPage() {
                   </p>
                 </div>
 
-                <div className="border-b border-line/80 p-5 sm:border-b-0 sm:p-6">
+                <div className="border-b border-line/80 p-6 sm:border-b-0 sm:p-7">
                   <p className="eyebrow mb-4 text-[10px] tracking-[0.26em] text-ink-soft">
                     Speak with us
                   </p>
@@ -122,9 +121,8 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Opening hours row */}
-              <div className="grid gap-0 sm:grid-cols-[1fr_auto]">
-                <div className="border-t border-line/80 p-5 sm:p-6">
+              <div className="grid gap-0 sm:grid-cols-[minmax(0,1fr)_auto]">
+                <div className="border-t border-line/80 p-6 sm:p-7">
                   <p className="eyebrow mb-4 text-[10px] tracking-[0.26em] text-ink-soft">
                     Opening hours
                   </p>
@@ -138,7 +136,7 @@ export default function ContactPage() {
                   </p>
                 </div>
 
-                <div className="flex items-start justify-end border-t border-line/80 p-5 sm:border-l sm:p-6">
+                <div className="flex items-start justify-end border-t border-line/80 p-6 sm:border-l sm:p-7">
                   <Clock
                     size={18}
                     strokeWidth={1.3}
@@ -148,8 +146,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Visit link */}
-              <div className="border-t border-gold/30 bg-paper-2/50 px-5 py-4 sm:px-6">
+              <div className="border-t border-gold/30 bg-paper-2/50 px-6 py-5 sm:px-7">
                 <a
                   href={MAPS_DIRECTIONS}
                   target="_blank"
@@ -165,10 +162,10 @@ export default function ContactPage() {
         }
       />
 
-      <section className="bg-paper-2 py-14 sm:py-16">
-        <div className="mx-auto grid max-w-[1600px] gap-8 px-4 sm:px-6 md:grid-cols-2 md:gap-10 md:px-12 lg:grid-cols-3 lg:gap-12 lg:px-24">
+      <section className="bg-paper-2 py-16 sm:py-20 md:py-24">
+        <div className="mx-auto grid max-w-[1600px] gap-10 px-5 sm:px-6 md:grid-cols-2 md:gap-12 md:px-12 lg:grid-cols-3 lg:gap-14 lg:px-24">
           <Reveal>
-            <div className="border-t border-line pt-6 md:pt-8">
+            <div className="border-t border-line pt-8 md:pt-10">
               <MapPin
                 size={22}
                 strokeWidth={1.2}
@@ -176,7 +173,7 @@ export default function ContactPage() {
                 aria-hidden
               />
 
-              <p className="mt-5 eyebrow md:mt-6">The Atelier</p>
+              <p className="mt-6 eyebrow md:mt-7">The Atelier</p>
 
               <p className="mt-3 font-sub text-base leading-relaxed text-ink sm:text-lg">
                 {STORE_ADDRESS}
@@ -187,7 +184,7 @@ export default function ContactPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="contact-directions"
-                className="eyebrow link-underline mt-5 inline-block text-brand"
+                className="eyebrow link-underline mt-6 inline-block text-brand"
               >
                 Get Directions →
               </a>
@@ -195,7 +192,7 @@ export default function ContactPage() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="border-t border-line pt-6 md:pt-8">
+            <div className="border-t border-line pt-8 md:pt-10">
               <Phone
                 size={22}
                 strokeWidth={1.2}
@@ -203,7 +200,7 @@ export default function ContactPage() {
                 aria-hidden
               />
 
-              <p className="mt-5 eyebrow md:mt-6">Call · WhatsApp</p>
+              <p className="mt-6 eyebrow md:mt-7">Call · WhatsApp</p>
 
               <p className="mt-3 break-words font-sub text-base text-ink sm:text-lg">
                 {WHATSAPP_DISPLAY}
@@ -216,7 +213,7 @@ export default function ContactPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="contact-whatsapp"
-                className="eyebrow link-underline mt-5 inline-block text-brand"
+                className="eyebrow link-underline mt-6 inline-block text-brand"
               >
                 Open WhatsApp →
               </a>
@@ -224,7 +221,7 @@ export default function ContactPage() {
           </Reveal>
 
           <Reveal delay={0.2}>
-            <div className="border-t border-line pt-6 md:pt-8">
+            <div className="border-t border-line pt-8 md:pt-10">
               <Clock
                 size={22}
                 strokeWidth={1.2}
@@ -232,7 +229,7 @@ export default function ContactPage() {
                 aria-hidden
               />
 
-              <p className="mt-5 eyebrow md:mt-6">Atelier Hours</p>
+              <p className="mt-6 eyebrow md:mt-7">Atelier Hours</p>
 
               <p className="mt-3 font-sub text-base text-ink sm:text-lg">
                 {STORE_HOURS}
@@ -246,12 +243,12 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-20 md:py-24">
-        <div className="mx-auto grid max-w-[1600px] gap-12 px-4 sm:px-6 md:px-12 lg:grid-cols-2 lg:gap-16 lg:px-24">
+      <section className="py-20 sm:py-24 md:py-28">
+        <div className="mx-auto grid max-w-[1600px] gap-14 px-5 sm:px-6 md:px-12 lg:grid-cols-2 lg:gap-20 lg:px-24">
           <div>
             <SectionLabel number="01" label="Write to us" />
 
-            <h2 className="display-2 mt-5 text-3xl text-ink sm:text-4xl md:mt-6 md:text-5xl">
+            <h2 className="display-2 mt-6 text-3xl text-ink sm:text-4xl md:mt-7 md:text-5xl">
               A note from your
               <br />
               <span className="italic text-brand">side of the table.</span>
@@ -260,7 +257,7 @@ export default function ContactPage() {
             <form
               onSubmit={submit}
               data-testid="contact-form"
-              className="mt-10 space-y-7 md:mt-12 md:space-y-8"
+              className="mt-12 space-y-8 md:mt-14 md:space-y-10"
             >
               <input
                 className="input-line"
@@ -276,7 +273,7 @@ export default function ContactPage() {
                 data-testid="contact-name"
               />
 
-              <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
+              <div className="grid gap-6 sm:grid-cols-2 sm:gap-7">
                 <input
                   type="email"
                   className="input-line"
@@ -325,67 +322,47 @@ export default function ContactPage() {
                 type="submit"
                 disabled={loading}
                 data-testid="contact-submit"
-                className="btn-primary w-full justify-center disabled:opacity-50"
+                className="btn-primary inline-flex items-center gap-3"
               >
-                {loading ? 'Opening…' : 'Send on WhatsApp'}
-                <ArrowRight size={14} />
+                {loading ? 'Opening…' : 'Open WhatsApp'}
+                <ArrowRight size={16} strokeWidth={1.5} />
               </button>
-
-              <p className="text-[10px] uppercase tracking-[0.2em] text-ink-soft sm:text-[11px] sm:tracking-[0.22em]">
-                We promise — no automated replies, only humans from Solapur.
-              </p>
             </form>
-
-            <div className="mt-12 border-t border-line pt-6 sm:mt-14 md:mt-16 md:pt-8">
-              <p className="mb-3 eyebrow">Other ways</p>
-
-              <ul className="space-y-3 font-sub text-ink">
-                <li className="flex items-start gap-3">
-                  <Mail
-                    size={14}
-                    className="mt-1 shrink-0 text-gold"
-                    aria-hidden
-                  />
-
-                  <span className="break-all">
-                    hello@mardaandsons.in
-                  </span>
-                </li>
-
-                <li className="flex items-start gap-3">
-                  <Phone
-                    size={14}
-                    className="mt-1 shrink-0 text-gold"
-                    aria-hidden
-                  />
-
-                  <span className="break-words">
-                    {WHATSAPP_DISPLAY}
-                  </span>
-                </li>
-              </ul>
-            </div>
           </div>
 
           <div>
-            <SectionLabel number="02" label="Find us" />
+            <SectionLabel number="02" label="Visit the atelier" />
 
-            <h3 className="display-2 mt-5 text-3xl text-ink sm:text-4xl md:mt-6 md:text-5xl">
-              Chattigalli,{' '}
-              <span className="italic text-brand">Solapur.</span>
-            </h3>
-
-            <div className="mt-6 aspect-[4/5] overflow-hidden border border-line sm:mt-8 sm:aspect-[4/4] lg:aspect-[4/5]">
+            <div className="mt-8 aspect-[4/5] overflow-hidden border border-line sm:mt-10 sm:aspect-[4/4] lg:aspect-[4/5]">
               <iframe
-                title="Marda & Sons Map"
+                title="Marda & Sons map"
                 src={MAPS_EMBED_SRC}
-                width="100%"
-                height="100%"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                style={{ border: 0 }}
-                data-testid="contact-map"
+                className="h-full w-full"
               />
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-start gap-6 border-t border-line pt-6 sm:mt-8 sm:gap-8 sm:pt-8">
+              <div className="flex items-start gap-3">
+                <Mail size={18} strokeWidth={1.4} className="mt-1 text-brand" />
+                <div>
+                  <p className="eyebrow text-ink-soft">Message us</p>
+                  <p className="mt-2 font-sub text-base text-ink">
+                    WhatsApp preferred for quick responses
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <MapPin size={18} strokeWidth={1.4} className="mt-1 text-brand" />
+                <div>
+                  <p className="eyebrow text-ink-soft">Address</p>
+                  <p className="mt-2 font-sub text-base text-ink">
+                    {STORE_ADDRESS}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
