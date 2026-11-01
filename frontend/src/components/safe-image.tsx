@@ -1,62 +1,123 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  useState,
+  type CSSProperties,
+  type ImgHTMLAttributes,
+} from 'react';
 
-interface SafeImageProps {
+type SafeImageProps = Omit<
+  ImgHTMLAttributes<HTMLImageElement>,
+  'src' | 'srcSet' | 'alt'
+> & {
   src: string;
   alt: string;
   fallbacks?: string[];
-  className?: string;
-  /** Applied as a placeholder div when all image sources have failed */
   fallbackClassName?: string;
-  width?: number;
-  height?: number;
   fill?: boolean;
-  style?: React.CSSProperties;
+};
+
+export function SafeImage(props: SafeImageProps) {
+  const sourceKey = JSON.stringify([
+    props.src,
+    ...(props.fallbacks ?? []),
+  ]);
+
+  return (
+    <ImageAttempt
+      key={sourceKey}
+      {...props}
+    />
+  );
 }
 
-export function SafeImage({
+function ImageAttempt({
   src,
   alt,
   fallbacks = [],
   className,
   fallbackClassName,
+  fill = false,
+  style,
   width,
   height,
-  fill,
-  style,
+  loading,
+  decoding = 'async',
+  onError,
+  ...imageProps
 }: SafeImageProps) {
-  const [idx, setIdx] = useState(0);
-  const [errored, setErrored] = useState(false);
-  const srcs = [src, ...fallbacks];
-  const current = srcs[idx] ?? src;
+  const [sourceIndex, setSourceIndex] = useState(0);
 
-  function handleError() {
-    if (idx < srcs.length - 1) {
-      setIdx((i) => i + 1);
-    } else {
-      setErrored(true);
-    }
-  }
+  const sources = Array.from(
+    new Set(
+      [src, ...fallbacks].filter(
+        (source) => source.trim().length > 0,
+      ),
+    ),
+  );
 
-  const fillStyle: React.CSSProperties = fill
-    ? { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }
+  const currentSource = sources[sourceIndex];
+
+  const fillStyle: CSSProperties = fill
+    ? {
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+      }
     : {};
 
-  if (errored && fallbackClassName) {
-    return <div className={fallbackClassName} style={fillStyle} aria-label={alt} />;
+  const imageStyle: CSSProperties = {
+    ...fillStyle,
+    ...style,
+  };
+
+  if (!currentSource) {
+    const placeholderStyle: CSSProperties = {
+      ...(!fill && width != null ? { width } : {}),
+      ...(!fill && height != null ? { height } : {}),
+      ...imageStyle,
+    };
+
+    return (
+      <div
+        role={alt ? 'img' : undefined}
+        aria-label={
+          alt
+            ? `${alt} — image unavailable`
+            : undefined
+        }
+        aria-hidden={alt ? undefined : true}
+        className={
+          fallbackClassName ??
+          className ??
+          'bg-bg-secondary'
+        }
+        style={placeholderStyle}
+      />
+    );
   }
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={current}
+      {...imageProps}
+      src={currentSource}
       alt={alt}
       className={className}
       width={width}
       height={height}
-      style={{ ...fillStyle, ...style }}
-      onError={handleError}
+      loading={loading}
+      decoding={decoding}
+      style={imageStyle}
+      onError={(event) => {
+        try {
+          onError?.(event);
+        } finally {
+          setSourceIndex((current) => current + 1);
+        }
+      }}
     />
   );
 }
