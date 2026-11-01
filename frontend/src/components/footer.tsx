@@ -237,7 +237,7 @@ export function Footer() {
 
           <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6 md:justify-end">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/mardaandsons"
               target="_blank"
               rel="noopener noreferrer"
               className="flex min-h-[44px] items-center gap-2 transition-colors hover:text-gold"
