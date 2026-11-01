@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import toast from 'react-hot-toast';
 import { Instagram, Mail, MapPin, Phone } from 'lucide-react';
+
 import {
   ESTABLISHED,
   STORE_ADDRESS,
@@ -13,24 +14,70 @@ import {
   whatsappLink,
 } from '@/lib/api';
 
+type NewsletterResponse = {
+  ok?: boolean;
+  message?: string;
+};
+
 export function Footer() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email.trim()) return;
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const value = email.trim();
+
+    if (!value || loading) {
+      return;
+    }
 
     setLoading(true);
+    setFeedback(null);
+
     try {
-      await fetchJSON('/api/newsletter', {
-        method: 'POST',
-        body: JSON.stringify({ email: email.trim() }),
+      const result = await fetchJSON<NewsletterResponse>(
+        '/api/newsletter',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            email: value,
+          }),
+        },
+      );
+
+      const confirmed =
+        result?.ok === true ||
+        (
+          result?.ok !== false &&
+          typeof result?.message === 'string' &&
+          result.message.trim().length > 0
+        );
+
+      if (!confirmed) {
+        throw new Error(
+          'Your subscription could not be confirmed.',
+        );
+      }
+
+      setFeedback({
+        type: 'success',
+        message: 'Your subscription has been confirmed.',
       });
-        toast.success("Subscribed! आपका स्वागत है");
+
       setEmail('');
-    } catch {
-      toast.error('Could not subscribe. Please try again.');
+    } catch (error) {
+      setFeedback({
+        type: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Could not subscribe. Please try again.',
+      });
     } finally {
       setLoading(false);
     }
@@ -50,14 +97,19 @@ export function Footer() {
         {/* Newsletter */}
         <div className="grid gap-10 border-b border-bg-primary/15 pb-12 sm:pb-14 md:gap-12 md:pb-16 lg:grid-cols-2 lg:items-end lg:pb-20">
           <div>
-            <p className="eyebrow text-gold-muted">Our Newsletter</p>
+            <p className="eyebrow text-gold-muted">
+              Our Newsletter
+            </p>
+
             <h3 className="mt-4 font-heading text-3xl italic leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
               Heritage notes, new weaves
-              <br className="hidden sm:block" /> and quiet invitations.
+              <br className="hidden sm:block" /> and quiet
+              invitations.
             </h3>
+
             <p className="mt-4 max-w-md text-sm leading-relaxed text-bg-primary/70 sm:mt-5 sm:text-base font-sub">
-              A monthly letter from Solapur — featuring new collections, loom stories, and members-only retail
-              previews. No noise.
+              For collection updates, availability enquiries and
+              store information, join our mailing list.
             </p>
           </div>
 
@@ -65,31 +117,74 @@ export function Footer() {
             onSubmit={submit}
             data-testid="newsletter-form"
             className="flex flex-col gap-4 md:gap-6"
+            aria-busy={loading}
           >
             <div className="border-b border-bg-primary/30 pb-3 transition-colors focus-within:border-gold">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+                <label
+                  htmlFor="newsletter-email"
+                  className="sr-only"
+                >
+                  Email address
+                </label>
+
                 <input
+                  id="newsletter-email"
+                  name="email"
                   type="email"
                   required
+                  autoComplete="email"
+                  maxLength={254}
+                  disabled={loading}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(event) =>
+                    setEmail(event.target.value)
+                  }
                   placeholder="YOUR EMAIL"
                   data-testid="newsletter-email-input"
-                  className="min-w-0 flex-1 bg-transparent py-3 text-base text-bg-primary outline-none placeholder:text-[11px] placeholder:uppercase placeholder:tracking-[0.22em] placeholder:text-bg-primary/40 sm:text-lg"
+                  aria-describedby="newsletter-privacy newsletter-feedback"
+                  className="min-h-[44px] min-w-0 flex-1 bg-transparent py-3 text-base text-bg-primary outline-none placeholder:text-[11px] placeholder:uppercase placeholder:tracking-[0.22em] placeholder:text-bg-primary/40 sm:text-lg"
                 />
+
                 <button
                   type="submit"
                   disabled={loading}
                   data-testid="newsletter-submit"
-                  className="eyebrow inline-flex min-h-[44px] items-center justify-start text-gold transition-colors hover:text-bg-primary disabled:opacity-50 sm:justify-end"
+                  className="eyebrow inline-flex min-h-[44px] items-center justify-start text-gold transition-colors hover:text-bg-primary disabled:cursor-not-allowed disabled:opacity-50 sm:justify-end"
                 >
-                  {loading ? 'Submitting…' : 'Subscribe →'}
+                  {loading
+                    ? 'Submitting…'
+                    : 'Subscribe →'}
                 </button>
               </div>
             </div>
 
-            <p className="text-[10px] uppercase tracking-[0.22em] text-bg-primary/40 sm:text-[11px]">
-              By subscribing, you join 12,000+ patrons of Solapuri textile.
+            <p
+              id="newsletter-privacy"
+              className="text-[10px] uppercase tracking-[0.22em] text-bg-primary/50 sm:text-[11px]"
+            >
+              By subscribing, you agree to receive collection
+              updates. Read our{' '}
+              <Link
+                href="/privacy"
+                className="underline underline-offset-4"
+              >
+                privacy policy
+              </Link>
+              .
+            </p>
+
+            <p
+              id="newsletter-feedback"
+              role={
+                feedback?.type === 'error'
+                  ? 'alert'
+                  : 'status'
+              }
+              aria-live="polite"
+              className="min-h-5 text-sm text-bg-primary"
+            >
+              {feedback?.message ?? ''}
             </p>
           </form>
         </div>
@@ -97,30 +192,52 @@ export function Footer() {
         {/* Columns */}
         <div className="mt-12 grid grid-cols-1 gap-10 sm:mt-14 sm:grid-cols-2 sm:gap-12 lg:mt-20 lg:grid-cols-4">
           <div>
-            <p className="mb-5 eyebrow text-gold-muted sm:mb-6">Retail</p>
+            <p className="mb-5 eyebrow text-gold-muted sm:mb-6">
+              Retail
+            </p>
+
             <ul className="space-y-3 text-bg-primary/85 font-sub">
               <li>
-                <Link href="/shop" className="link-underline">
+                <Link
+                  href="/shop"
+                  className="link-underline"
+                >
                   All Products
                 </Link>
               </li>
+
               <li>
-                <Link href="/categories" className="link-underline">
+                <Link
+                  href="/categories"
+                  className="link-underline"
+                >
                   Collections
                 </Link>
               </li>
+
               <li>
-                <Link href="/shop?category=blankets" className="link-underline">
+                <Link
+                  href="/shop?category=blankets"
+                  className="link-underline"
+                >
                   Woolen Blankets
                 </Link>
               </li>
+
               <li>
-                <Link href="/shop?category=phetas" className="link-underline">
+                <Link
+                  href="/shop?category=phetas"
+                  className="link-underline"
+                >
                   Wedding Phetas
                 </Link>
               </li>
+
               <li>
-                <Link href="/wishlist" className="link-underline">
+                <Link
+                  href="/wishlist"
+                  className="link-underline"
+                >
                   Wishlist
                 </Link>
               </li>
@@ -128,25 +245,43 @@ export function Footer() {
           </div>
 
           <div>
-            <p className="mb-5 eyebrow text-gold-muted sm:mb-6">Wholesale</p>
+            <p className="mb-5 eyebrow text-gold-muted sm:mb-6">
+              Wholesale
+            </p>
+
             <ul className="space-y-3 text-bg-primary/85 font-sub">
               <li>
-                <Link href="/wholesale" className="link-underline">
+                <Link
+                  href="/wholesale"
+                  className="link-underline"
+                >
                   Become a Partner
                 </Link>
               </li>
+
               <li>
-                <Link href="/wholesale#gifting" className="link-underline">
+                <Link
+                  href="/wholesale#gifting"
+                  className="link-underline"
+                >
                   Corporate Gifting
                 </Link>
               </li>
+
               <li>
-                <Link href="/wholesale#retailers" className="link-underline">
+                <Link
+                  href="/wholesale#retailers"
+                  className="link-underline"
+                >
                   Retailers & Resellers
                 </Link>
               </li>
+
               <li>
-                <Link href="/wholesale#export" className="link-underline">
+                <Link
+                  href="/wholesale#export"
+                  className="link-underline"
+                >
                   Export Enquiries
                 </Link>
               </li>
@@ -154,26 +289,43 @@ export function Footer() {
           </div>
 
           <div>
-            <p className="mb-5 eyebrow text-gold-muted sm:mb-6">House</p>
+            <p className="mb-5 eyebrow text-gold-muted sm:mb-6">
+              House
+            </p>
+
             <ul className="space-y-3 text-bg-primary/85 font-sub">
               <li>
-                <Link href="/heritage" className="link-underline">
+                <Link
+                  href="/heritage"
+                  className="link-underline"
+                >
                   Our Heritage
                 </Link>
               </li>
+
               <li>
-                <Link href="/heritage#looms" className="link-underline">
+                <Link
+                  href="/heritage#looms"
+                  className="link-underline"
+                >
                   The Solapur Looms
                 </Link>
               </li>
+
               <li>
-                <Link href="/contact" className="link-underline">
+                <Link
+                  href="/contact"
+                  className="link-underline"
+                >
                   Visit the Store
                 </Link>
               </li>
+
               <li>
                 <a
-                  href={whatsappLink('Hello मर्दा ॲन्ड सन्स — I would like to enquire.')}
+                  href={whatsappLink(
+                    'Hello मर्दा ॲन्ड सन्स — I would like to enquire.',
+                  )}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link-underline"
@@ -185,33 +337,57 @@ export function Footer() {
           </div>
 
           <div>
-            <p className="mb-5 eyebrow text-gold-muted sm:mb-6">Visit</p>
+            <p className="mb-5 eyebrow text-gold-muted sm:mb-6">
+              Visit
+            </p>
+
             <ul className="space-y-4 text-sm text-bg-primary/85 font-sub">
               <li className="flex items-start gap-3">
-                <MapPin size={14} className="mt-1 shrink-0 text-gold" />
-                <span className="leading-relaxed">{STORE_ADDRESS}</span>
+                <MapPin
+                  size={14}
+                  className="mt-1 shrink-0 text-gold"
+                />
+
+                <span className="leading-relaxed">
+                  {STORE_ADDRESS}
+                </span>
               </li>
+
               <li className="flex items-start gap-3">
-                <Phone size={14} className="mt-1 shrink-0 text-gold" />
+                <Phone
+                  size={14}
+                  className="mt-1 shrink-0 text-gold"
+                />
+
                 <a
-                  href={whatsappLink('Hello मर्दा ॲन्ड सन्स')}
+                  href={whatsappLink(
+                    'Hello मर्दा ॲन्ड सन्स',
+                  )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="break-all hover:text-gold transition-colors"
+                  className="break-all transition-colors hover:text-gold"
                 >
                   {WHATSAPP_DISPLAY}
                 </a>
               </li>
+
               <li className="flex items-start gap-3">
-                <Mail size={14} className="mt-1 shrink-0 text-gold" />
+                <Mail
+                  size={14}
+                  className="mt-1 shrink-0 text-gold"
+                />
+
                 <a
                   href="mailto:mardaandsons@gmail.com"
-                  className="break-all hover:text-gold transition-colors"
+                  className="break-all transition-colors hover:text-gold"
                 >
                   mardaandsons@gmail.com
                 </a>
               </li>
-              <li className="pt-1 text-xs leading-relaxed text-bg-primary/60">{STORE_HOURS}</li>
+
+              <li className="pt-1 text-xs leading-relaxed text-bg-primary/60">
+                {STORE_HOURS}
+              </li>
             </ul>
           </div>
         </div>
@@ -224,6 +400,7 @@ export function Footer() {
           >
             मर्दा ॲन्ड सन्स
           </p>
+
           <p className="mt-4 text-xs tracking-wider text-gold-muted sm:mt-6 sm:text-sm font-accent">
             विश्वास की परंपरा, वर्षों का साथ
           </p>
@@ -232,7 +409,8 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col gap-4 border-t border-bg-primary/10 pt-6 text-[10px] uppercase tracking-[0.2em] text-bg-primary/50 sm:mt-12 sm:text-[11px] md:flex-row md:items-center md:justify-between">
           <p className="text-center md:text-left">
-            © {new Date().getFullYear()} मर्दा ॲन्ड सन्स · Solapur · Est. {ESTABLISHED}
+            © {new Date().getFullYear()} मर्दा ॲन्ड सन्स ·
+            Solapur · Est. {ESTABLISHED}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6 md:justify-end">
@@ -244,24 +422,28 @@ export function Footer() {
             >
               <Instagram size={13} /> Instagram
             </a>
+
             <Link
               href="/contact"
               className="flex min-h-[44px] items-center transition-colors hover:text-gold"
             >
               Contact
             </Link>
-                        <Link
+
+            <Link
               href="/privacy"
               className="flex min-h-[44px] items-center transition-colors hover:text-gold"
             >
               Privacy
             </Link>
+
             <Link
               href="/shipping"
               className="flex min-h-[44px] items-center transition-colors hover:text-gold"
             >
               Shipping
             </Link>
+
             <Link
               href="/returns"
               className="flex min-h-[44px] items-center transition-colors hover:text-gold"
