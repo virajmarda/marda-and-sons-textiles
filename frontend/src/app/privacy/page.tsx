@@ -9,7 +9,7 @@ const LAST_UPDATED = 'September 3, 2026';
 const CONTACT_EMAIL = 'mardaandsons@gmail.com';
 const CONTACT_PHONE = '+91 94224 60420';
 const BUSINESS_ADDRESS = '430, Chattigalli, Mangalwar Peth, Solapur, Maharashtra 413 001, India';
-const WEBSITE = 'mardaandsons.vercel.app';
+const WEBSITE = 'marda-and-sons-textiles.vercel.app';
 
 export default function PrivacyPolicyPage() {
   return (
