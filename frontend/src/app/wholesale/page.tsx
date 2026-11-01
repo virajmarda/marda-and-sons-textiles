@@ -1,16 +1,8 @@
 'use client';
 
-import {
-  useState,
-  type FormEvent,
-} from 'react';
+import { useState, type FormEvent } from 'react';
 import toast from 'react-hot-toast';
-import {
-  ArrowRight,
-  Building2,
-  Globe2,
-  HeartHandshake,
-} from 'lucide-react';
+import { ArrowRight, Building2, Globe2, HeartHandshake } from 'lucide-react';
 
 import { whatsappLink } from '@/lib/api';
 
