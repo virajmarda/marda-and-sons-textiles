@@ -1,146 +1,285 @@
 'use client';
+
 import Link from 'next/link';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Heart, ShoppingBag } from 'lucide-react';
+
 import { useCart } from '@/lib/cart-context';
-import type { Product } from '@/lib/api';
-import { inr } from '@/lib/api';
-import { LoginPromptDialog, type LoginPromptTrigger } from '@/components/login-prompt-dialog';
+import { inr, type Product } from '@/lib/api';
 
-// Replace with real auth check once auth is wired up
-const useIsLoggedIn = () => false;
+type ProductCardProps = {
+  p: Product;
+  index?: number;
+};
 
-export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
-  const { add, toggleWishlist, isWished } = useCart();
-  const isLoggedIn = useIsLoggedIn();
-  const wished = isWished(p.slug);
-  const [hover, setHover] = useState(false);
-  const [dialog, setDialog] = useState<LoginPromptTrigger | null>(null);
+type ProductImageProps = {
+  primarySrc: string;
+  secondarySrc: string;
+  showSecondary: boolean;
+  alt: string;
+};
 
-  const img1 = p.images?.[0] || '/placeholder-product.jpg';
-  const img2 = p.images?.[1] || img1;
+function ProductImage({
+  primarySrc,
+  secondarySrc,
+  showSecondary,
+  alt,
+}: ProductImageProps) {
+  const [failedSources, setFailedSources] = useState<string[]>([]);
 
-  const handleWishlist = useCallback(() => {
-    if (!isLoggedIn) { setDialog('wishlist'); return; }
-    toggleWishlist(p.slug);
-    toast.success(wished ? 'Removed from wishlist' : 'Saved to wishlist');
-  }, [isLoggedIn, toggleWishlist, p.slug, wished]);
+  const requestedSrc = showSecondary
+    ? secondarySrc || primarySrc
+    : primarySrc;
 
-  const handleAdd = useCallback(() => {
-    if (!isLoggedIn) { setDialog('bag'); return; }
-    add({
-      slug: p.slug,
-      name: p.name,
-      image: img1,
-      price: p.price_retail,
-      qty: 1,
-      mode: 'retail',
-    });
-    toast.success(`${p.name} · added to bag`);
-  }, [isLoggedIn, add, p, img1]);
+  const requestedAvailable =
+    Boolean(requestedSrc) &&
+    !failedSources.includes(requestedSrc);
 
-  const quickFacts = [p.materials?.length ? p.materials.join(', ') : null, p.dimensions || null]
-    .filter(Boolean) as string[];
+  const primaryAvailable =
+    Boolean(primarySrc) &&
+    !failedSources.includes(primarySrc);
+
+  const source = requestedAvailable
+    ? requestedSrc
+    : primaryAvailable
+      ? primarySrc
+      : '';
+
+  function handleImageError() {
+    if (!source) return;
+
+    setFailedSources((current) =>
+      current.includes(source)
+        ? current
+        : [...current, source],
+    );
+  }
+
+  if (!source) {
+    return (
+      <div
+        role="img"
+        aria-label={`${alt} — photograph unavailable`}
+        className="flex h-full w-full items-center justify-center bg-bg-secondary px-6 text-center"
+      >
+        <span className="font-sub text-sm text-ink-soft">
+          Product photograph unavailable
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <article
-        data-testid={`product-card-${p.slug}`}
-        className="group relative animate-fade-up"
-        style={{ animationDelay: `${(index % 6) * 70}ms` }}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        <div className="relative">
-          <Link href={`/product/${p.slug}`} className="block img-zoom-host">
-            <div className="relative aspect-[4/5] overflow-hidden bg-bg-secondary">
-              <img
-                src={hover ? img2 : img1}
-                alt={p.name}
-                className="img-zoom h-full w-full object-cover transition-opacity duration-700"
-                loading="lazy"
-              />
-              {p.badges && p.badges.length > 0 && (
-                <div className="absolute left-3 top-3 flex flex-col gap-2 sm:left-4 sm:top-4">
-                  {p.badges.slice(0, 2).map((b) => (
-                    <span
-                      key={b}
-                      className="eyebrow bg-bg-primary/90 px-3 py-1 text-[9.5px] text-ink backdrop-blur"
-                    >
-                      {b}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Link>
-          <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-end p-3 sm:p-4">
-            <button
-              type="button"
-              data-testid={`wishlist-btn-${p.slug}`}
-              onClick={handleWishlist}
-              className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center bg-bg-primary/90 backdrop-blur transition hover:bg-bg-primary"
-              aria-label={wished ? 'Remove from wishlist' : 'Add to wishlist'}
-            >
-              <Heart
-                size={15}
-                strokeWidth={1.4}
-                className={wished ? 'fill-brand text-brand' : 'text-ink'}
-              />
-            </button>
-          </div>
-          <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-            <button
-              type="button"
-              data-testid={`quick-add-${p.slug}`}
-              onClick={handleAdd}
-              className={`flex min-h-[44px] w-full items-center justify-center gap-2 bg-ink px-4 py-3 text-[10.5px] uppercase tracking-[0.22em] text-bg-primary transition-all duration-500 ${
-                hover
-                  ? 'translate-y-0 opacity-100'
-                  : 'translate-y-2 opacity-100 sm:pointer-events-none sm:translate-y-full sm:opacity-0'
-              }`}
-            >
-              <ShoppingBag size={13} strokeWidth={1.4} />
-              Add to Bag
-            </button>
-          </div>
-        </div>
-        <div className="mt-5 flex items-start justify-between gap-4">
-          <Link href={`/product/${p.slug}`} className="min-w-0 flex-1">
-            <h3 className="truncate text-base text-ink font-sub md:text-lg">{p.name}</h3>
-            {p.subtitle && (
-              <p className="mt-1 truncate text-[11px] uppercase tracking-[0.22em] text-ink-soft">
-                {p.subtitle}
-              </p>
-            )}
-            {quickFacts.length > 0 && (
-              <p className="mt-1 truncate text-[11px] text-ink-soft">
-                {quickFacts.join(' · ')}
-              </p>
-            )}
-            {p.care && (
-              <p className="mt-0.5 truncate text-[10.5px] text-ink-soft/80">
-                Care: {p.care}
-              </p>
-            )}
-          </Link>
-          <div className="shrink-0 text-right">
-            <p className="text-base text-ink font-heading md:text-lg">{inr(p.price_retail)}</p>
-            <p className="mt-1 text-[9.5px] text-gold-dark eyebrow">
-              Wholesale {inr(p.price_wholesale)}
-            </p>
-          </div>
-        </div>
-      </article>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={source}
+      alt={alt}
+      width={640}
+      height={800}
+      loading="lazy"
+      decoding="async"
+      onError={handleImageError}
+      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+    />
+  );
+}
 
-      {dialog && (
-        <LoginPromptDialog
-          open={!!dialog}
-          trigger={dialog}
-          onClose={() => setDialog(null)}
-        />
-      )}
-    </>
+export function ProductCard({
+  p,
+  index = 0,
+}: ProductCardProps) {
+  const { toggleWishlist, isWished } = useCart();
+
+  const [hovered, setHovered] = useState(false);
+
+  const wished = isWished(p.slug);
+
+  const productHref =
+    `/product/${encodeURIComponent(p.slug)}`;
+
+  const primaryImage = p.images?.[0] ?? '';
+  const secondaryImage = p.images?.[1] ?? '';
+
+  const retailPrice = p.price_retail;
+  const wholesalePrice = p.price_wholesale;
+  const wholesaleMinimum = p.moq_wholesale;
+
+  const hasRetailPrice =
+    typeof retailPrice === 'number' &&
+    Number.isFinite(retailPrice) &&
+    retailPrice > 0;
+
+  const hasWholesalePrice =
+    typeof wholesalePrice === 'number' &&
+    Number.isFinite(wholesalePrice) &&
+    wholesalePrice > 0 &&
+    typeof wholesaleMinimum === 'number' &&
+    Number.isInteger(wholesaleMinimum) &&
+    wholesaleMinimum > 0;
+
+  const quickFacts = [
+    p.materials?.length
+      ? p.materials.join(', ')
+      : '',
+    p.dimensions ?? '',
+  ].filter(Boolean);
+
+  const badges = Array.from(
+    new Set(p.badges ?? []),
+  ).slice(0, 2);
+
+  function handleWishlist() {
+    toggleWishlist(p.slug);
+
+    toast.success(
+      wished
+        ? 'Removed from wishlist'
+        : 'Saved to wishlist',
+    );
+  }
+
+  return (
+    <article
+      data-testid={`product-card-${p.slug}`}
+      className="group relative animate-fade-up"
+      style={{
+        animationDelay: `${(index % 6) * 70}ms`,
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="relative overflow-hidden bg-bg-secondary">
+        <Link
+          href={productHref}
+          aria-label={`View ${p.name}`}
+          className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand"
+        >
+          <div className="relative aspect-[4/5] overflow-hidden">
+            <ProductImage
+              key={`${primaryImage}|${secondaryImage}`}
+              primarySrc={primaryImage}
+              secondarySrc={secondaryImage}
+              showSecondary={hovered}
+              alt={p.name}
+            />
+
+            {badges.length > 0 && (
+              <div className="absolute left-3 top-3 flex max-w-[65%] flex-col items-start gap-2 sm:left-4 sm:top-4">
+                {badges.map((badge) => (
+                  <span
+                    key={badge}
+                    className="bg-bg-primary/95 px-3 py-1 font-sub text-xs text-ink"
+                  >
+                    {badge}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </Link>
+
+        <button
+          type="button"
+          data-testid={`wishlist-btn-${p.slug}`}
+          onClick={handleWishlist}
+          aria-pressed={wished}
+          aria-label={
+            wished
+              ? `Remove ${p.name} from wishlist`
+              : `Save ${p.name} to wishlist`
+          }
+          className="absolute right-3 top-3 inline-flex h-11 w-11 items-center justify-center bg-bg-primary/95 text-ink transition-colors hover:bg-bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:right-4 sm:top-4"
+        >
+          <Heart
+            size={17}
+            strokeWidth={1.5}
+            aria-hidden="true"
+            className={
+              wished
+                ? 'fill-brand text-brand'
+                : 'text-ink'
+            }
+          />
+        </button>
+
+        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
+          <Link
+            href={productHref}
+            data-testid={`quick-add-${p.slug}`}
+            aria-label={`View details and enquiry options for ${p.name}`}
+            className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 bg-ink px-4 py-3 font-sub text-sm text-bg-primary transition-colors hover:bg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          >
+            <ShoppingBag
+              size={15}
+              aria-hidden="true"
+            />
+            View details &amp; enquire
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <Link
+          href={productHref}
+          className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+        >
+          <h3 className="font-sub text-base text-ink md:text-lg">
+            {p.name}
+          </h3>
+
+          {p.subtitle && (
+            <p className="mt-1 font-sub text-sm text-ink-soft">
+              {p.subtitle}
+            </p>
+          )}
+
+          {quickFacts.length > 0 && (
+            <p className="mt-2 font-sub text-sm text-ink-soft">
+              {quickFacts.join(' · ')}
+            </p>
+          )}
+
+          {p.care && (
+            <p className="mt-1 font-sub text-xs leading-relaxed text-ink-soft">
+              Care: {p.care}
+            </p>
+          )}
+        </Link>
+
+        <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="font-heading text-lg text-ink">
+              {hasRetailPrice
+                ? inr(retailPrice)
+                : 'Price on enquiry'}
+            </p>
+
+            {p.in_stock === false && (
+              <p className="mt-1 font-sub text-xs text-ink-soft">
+                Currently unavailable
+              </p>
+            )}
+          </div>
+
+          <div className="text-right">
+            {hasWholesalePrice ? (
+              <p className="font-sub text-xs leading-relaxed text-ink-soft">
+                Wholesale {inr(wholesalePrice)}
+                <br />
+                Minimum {wholesaleMinimum} units
+              </p>
+            ) : (
+              <Link
+                href="/wholesale"
+                className="inline-flex min-h-[44px] items-center font-sub text-xs text-ink-soft underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              >
+                Request bulk pricing
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }
