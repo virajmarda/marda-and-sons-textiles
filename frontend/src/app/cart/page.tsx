@@ -1,36 +1,52 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from 'react';
 import Link from 'next/link';
 import {
+  ArrowRight,
+  Hash,
+  MessageCircle,
   Minus,
   Plus,
-  Trash2,
   ShoppingBag,
-  ArrowRight,
-  MessageCircle,
-  Hash,
+  Trash2,
 } from 'lucide-react';
-import { useCart } from '@/lib/cart-context';
+import toast from 'react-hot-toast';
+
 import {
-  inr,
-  whatsappLink,
-  submitCartEnquiry,
   generateOrderRef,
+  inr,
   siteOrigin,
+  submitCartEnquiry,
+  whatsappLink,
 } from '@/lib/api';
-import { Reveal, SectionLabel } from '@/components/reveal';
+
+import { useCart } from '@/lib/cart-context';
 import { PageHero } from '@/components/page-hero';
+import { Reveal, SectionLabel } from '@/components/reveal';
 
 export default function CartPage() {
-  const { items, subtotal, setQty, remove, clear } = useCart();
+  const {
+    items,
+    subtotal,
+    setQty,
+    remove,
+    clear,
+  } = useCart();
+
   const empty = items.length === 0;
 
   const [orderRef, setOrderRef] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!empty && !orderRef) {
@@ -39,89 +55,157 @@ export default function CartPage() {
 
     if (empty && orderRef) {
       setOrderRef('');
-      setSent(false);
+      setSaved(false);
+      setError('');
     }
   }, [empty, orderRef]);
 
-  const waMsg = useMemo(() => {
+  const whatsappMessage = useMemo(() => {
     const origin = siteOrigin();
 
     const greeting = name.trim()
       ? `Hello मर्दा ॲन्ड सन्स, this is ${name.trim()}.`
-      : `Hello मर्दा ॲन्ड सन्स,`;
+      : 'Hello मर्दा ॲन्ड सन्स,';
 
-    const lines = items
+    const productLines = items
       .map(
-        (i, idx) =>
-          `${idx + 1}. ${i.name} (${i.mode}) × ${i.qty} — ${inr(i.price * i.qty)}\n   ${origin}/product/${i.slug}`
+        (item, index) =>
+          `${index + 1}. ${item.name} (${item.mode}) × ${
+            item.qty
+          } — ${inr(item.price * item.qty)}\n   ${origin}/product/${encodeURIComponent(
+            item.slug,
+          )}`,
       )
       .join('\n');
 
-    const ref = orderRef ? `\nRef: ${orderRef}` : '';
+    const reference = orderRef
+      ? `\nRef: ${orderRef}`
+      : '';
 
-    return (
-      `${greeting}\nI'd like to confirm this order:${ref}\n\n` +
-      `${lines}\n\nSubtotal: ${inr(subtotal)}\n\nPlease confirm availability & next steps.`
-    );
+    return [
+      greeting,
+      'I would like to confirm this order:',
+      reference,
+      '',
+      productLines,
+      '',
+      `Subtotal: ${inr(subtotal)}`,
+      '',
+      'Please confirm current availability, applicable taxes, delivery charges and next steps.',
+    ].join('\n');
   }, [items, subtotal, name, orderRef]);
 
-  const phoneValid = /^[+\d][\d\s\-]{8,15}$/.test(phone.trim());
+  const phoneValid =
+    /^[+\d][\d\s-]{8,15}$/.test(phone.trim());
+
   const nameValid = name.trim().length >= 2;
-  const canSend = !empty && nameValid && phoneValid && !sending;
 
-  async function handleSend(e?: React.FormEvent) {
-    e?.preventDefault();
-    if (!canSend) return;
+  const canSend =
+    !empty &&
+    nameValid &&
+    phoneValid &&
+    !sending;
 
-    const waTab = window.open('about:blank', '_blank', 'noopener,noreferrer');
+  async function handleSend(
+    event?: FormEvent<HTMLFormElement>,
+  ) {
+    event?.preventDefault();
+
+    if (!canSend) {
+      return;
+    }
+
+    setError('');
+    setSaved(false);
+
+    const whatsappTab = window.open(
+      'about:blank',
+      '_blank',
+      'noopener,noreferrer',
+    );
 
     setSending(true);
 
     try {
-      await submitCartEnquiry({
+      const result = await submitCartEnquiry({
         name: name.trim(),
         phone: phone.trim(),
         order_ref: orderRef,
         subtotal,
-        items: items.map((i) => ({
-          slug: i.slug,
-          name: i.name,
-          mode: i.mode,
-          qty: i.qty,
-          price: i.price,
+        items: items.map((item) => ({
+          slug: item.slug,
+          name: item.name,
+          mode: item.mode,
+          qty: item.qty,
+          price: item.price,
         })),
       });
 
-      setSent(true);
-    } catch (error) {
-      console.error('[cart] cart-enquiry save failed:', error);
+      if (result?.ok === false) {
+        throw new Error(
+          'Your enquiry could not be saved.',
+        );
+      }
+
+      setSaved(true);
+
+      toast.success(
+        'Your enquiry has been saved.',
+      );
+    } catch (submissionError) {
+      console.error(
+        '[cart] cart-enquiry save failed:',
+        submissionError,
+      );
+
+      const message =
+        submissionError instanceof Error
+          ? submissionError.message
+          : 'Could not save your enquiry. Please try again.';
+
+      setError(message);
+
+      toast.error(message);
     } finally {
       setSending(false);
     }
 
-    const url = whatsappLink(waMsg);
+    const url = whatsappLink(whatsappMessage);
 
-    if (waTab) {
-      waTab.location.href = url;
+    if (whatsappTab) {
+      whatsappTab.location.href = url;
     } else {
       window.location.href = url;
     }
   }
 
   return (
-    <div data-testid="cart-page" className="relative min-h-[80vh] bg-paper pb-24 md:pb-0">
+    <div
+      data-testid="cart-page"
+      className="relative min-h-[80vh] bg-paper pb-24 md:pb-0"
+    >
       <PageHero
         chapter="08"
         eyebrow="Your Bag · पिशवी"
-        marathi={empty ? 'अजून रिकामी' : `${items.length} वस्तू निवडल्या आहेत`}
+        marathi={
+          empty
+            ? 'अजून रिकामी'
+            : `${items.length} वस्तू निवडल्या आहेत`
+        }
         headline={
           empty ? (
             <>
-              Your bag is <span className="italic text-brand">unwoven.</span>
+              Your bag is{' '}
+              <span className="italic text-brand">
+                unwoven.
+              </span>
             </>
           ) : (
             <>
-              The bag, <span className="italic text-brand">curated.</span>
+              The bag,{' '}
+              <span className="italic text-brand">
+                curated.
+              </span>
             </>
           )
         }
@@ -131,7 +215,8 @@ export default function CartPage() {
               data-testid="order-ref"
               className="eyebrow inline-flex items-center gap-2 text-ink"
             >
-              <Hash size={12} /> Reference {orderRef}
+              <Hash size={12} /> Reference{' '}
+              {orderRef}
             </span>
           ) : undefined
         }
@@ -142,14 +227,17 @@ export default function CartPage() {
         <section className="mx-auto max-w-[800px] px-4 pb-24 text-center sm:px-6 md:pb-32">
           <Reveal>
             <p className="font-sub text-base text-ink-soft sm:text-lg">
-              Nothing here yet. Begin with our most-loved weaves.
+              Nothing here yet. Begin with our
+              most-loved weaves.
             </p>
+
             <Link
               href="/shop"
               data-testid="cart-empty-shop"
               className="btn-primary mt-8 sm:mt-10"
             >
-              <ShoppingBag size={14} /> Discover the collection
+              <ShoppingBag size={14} /> Discover
+              the collection
             </Link>
           </Reveal>
         </section>
@@ -157,10 +245,15 @@ export default function CartPage() {
 
       {!empty && (
         <section className="mx-auto grid max-w-[1600px] gap-10 px-4 pb-28 sm:px-6 md:gap-12 md:px-12 lg:grid-cols-[1.5fr_1fr] lg:gap-16 lg:px-24 lg:pb-32">
-          <div data-testid="cart-items" className="space-y-8">
+          <div
+            data-testid="cart-items"
+            className="space-y-8"
+          >
             <SectionLabel
               number="01"
-              label={`${items.length} item${items.length > 1 ? 's' : ''}`}
+              label={`${items.length} item${
+                items.length > 1 ? 's' : ''
+              }`}
             />
 
             {items.map((item) => (
@@ -169,29 +262,41 @@ export default function CartPage() {
                 className="grid grid-cols-[96px_1fr] gap-4 border-b border-line pb-6 sm:grid-cols-[120px_1fr] sm:gap-6 sm:pb-8 md:grid-cols-[160px_1fr_auto] md:items-start"
               >
                 <Link
-                  href={`/product/${item.slug}`}
+                  href={`/product/${encodeURIComponent(
+                    item.slug,
+                  )}`}
                   className="block aspect-[4/5] overflow-hidden bg-bg-secondary"
                 >
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="h-full w-full object-cover"
+                    width={160}
+                    height={200}
                     loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
                   />
                 </Link>
 
                 <div className="min-w-0">
-                  <p className="eyebrow text-gold-dark">{item.mode}</p>
+                  <p className="eyebrow text-gold-dark">
+                    {item.mode}
+                  </p>
 
                   <Link
-                    href={`/product/${item.slug}`}
-                    className="mt-1 inline-block font-heading text-xl italic text-ink hover:text-brand sm:text-2xl"
+                    href={`/product/${encodeURIComponent(
+                      item.slug,
+                    )}`}
+                    className="mt-1 inline-block font-heading text-xl italic text-ink transition-colors hover:text-brand sm:text-2xl"
                   >
                     {item.name}
                   </Link>
 
                   <p className="mt-2 font-sub text-ink-soft">
-                    {inr(item.price)} <span className="text-ink-soft/60">/ piece</span>
+                    {inr(item.price)}{' '}
+                    <span className="text-ink-soft/60">
+                      / piece
+                    </span>
                   </p>
 
                   <div className="mt-5 flex flex-wrap items-center gap-4">
@@ -199,34 +304,50 @@ export default function CartPage() {
                       <button
                         type="button"
                         data-testid={`cart-dec-${item.slug}`}
-                        onClick={() => setQty(item.slug, item.mode, item.qty - 1)}
-                        className="flex h-10 w-10 items-center justify-center hover:bg-bg-secondary"
+                        onClick={() =>
+                          setQty(
+                            item.slug,
+                            item.mode,
+                            item.qty - 1,
+                          )
+                        }
+                        className="flex h-11 w-11 items-center justify-center transition-colors hover:bg-bg-secondary"
                         aria-label={`Decrease quantity of ${item.name}`}
                       >
-                        <Minus size={13} />
+                        <Minus size={14} />
                       </button>
 
-                      <span className="w-10 text-center font-sub">{item.qty}</span>
+                      <span className="w-10 text-center font-sub">
+                        {item.qty}
+                      </span>
 
                       <button
                         type="button"
                         data-testid={`cart-inc-${item.slug}`}
-                        onClick={() => setQty(item.slug, item.mode, item.qty + 1)}
-                        className="flex h-10 w-10 items-center justify-center hover:bg-bg-secondary"
+                        onClick={() =>
+                          setQty(
+                            item.slug,
+                            item.mode,
+                            item.qty + 1,
+                          )
+                        }
+                        className="flex h-11 w-11 items-center justify-center transition-colors hover:bg-bg-secondary"
                         aria-label={`Increase quantity of ${item.name}`}
                       >
-                        <Plus size={13} />
+                        <Plus size={14} />
                       </button>
                     </div>
 
                     <button
                       type="button"
                       data-testid={`cart-remove-${item.slug}`}
-                      onClick={() => remove(item.slug, item.mode)}
-                      className="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-brand"
+                      onClick={() =>
+                        remove(item.slug, item.mode)
+                      }
+                      className="inline-flex min-h-[44px] items-center gap-2 font-sub text-sm text-ink-soft transition-colors hover:text-brand"
                       aria-label={`Remove ${item.name} from cart`}
                     >
-                      <Trash2 size={14} /> Remove
+                      <Trash2 size={15} /> Remove
                     </button>
                   </div>
 
@@ -245,7 +366,7 @@ export default function CartPage() {
               type="button"
               data-testid="cart-clear"
               onClick={clear}
-              className="eyebrow link-underline text-ink-soft hover:text-brand"
+              className="eyebrow link-underline text-ink-soft transition-colors hover:text-brand"
             >
               Clear bag
             </button>
@@ -255,24 +376,35 @@ export default function CartPage() {
             data-testid="cart-summary"
             className="self-start border border-line bg-paper-2 p-5 sm:p-6 lg:sticky lg:top-32 lg:p-8"
           >
-            <SectionLabel number="02" label="Order Summary" />
+            <SectionLabel
+              number="02"
+              label="Order Summary"
+            />
 
             <div className="mt-6 space-y-3 font-sub text-ink sm:mt-8">
               <div className="flex justify-between gap-4">
                 <span>Subtotal</span>
                 <span>{inr(subtotal)}</span>
               </div>
+
               <div className="flex justify-between gap-4 text-ink-soft">
                 <span>Shipping</span>
-                <span className="text-right">Calculated on enquiry</span>
+                <span className="text-right">
+                  Calculated on enquiry
+                </span>
               </div>
+
               <div className="flex justify-between gap-4 text-ink-soft">
                 <span>Taxes</span>
-                <span>Inclusive</span>
+                <span className="text-right">
+                  Confirmed on enquiry
+                </span>
               </div>
+
               <div className="my-4 border-t border-line" />
+
               <div className="flex justify-between font-heading text-2xl italic text-brand">
-                <span>Total</span>
+                <span>Estimated total</span>
                 <span>{inr(subtotal)}</span>
               </div>
             </div>
@@ -280,38 +412,101 @@ export default function CartPage() {
             <form
               data-testid="cart-enquiry-form"
               onSubmit={handleSend}
-              className="mt-8 space-y-3"
+              className="mt-8 space-y-4"
+              aria-busy={sending}
             >
-              <label className="block">
-                <span className="eyebrow text-ink-soft">Your name</span>
+              <div>
+                <label
+                  htmlFor="cart-enquiry-name"
+                  className="block"
+                >
+                  <span className="eyebrow text-ink-soft">
+                    Your name
+                  </span>
+                </label>
+
                 <input
-                  data-testid="cart-enquiry-name"
+                  id="cart-enquiry-name"
+                  name="name"
                   type="text"
+                  autoComplete="name"
+                  required
+                  minLength={2}
+                  maxLength={120}
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(event) =>
+                    setName(event.target.value)
+                  }
                   placeholder="e.g. Aparna Apte"
-                  className="mt-2 w-full border border-line bg-paper px-3 py-3 font-sub text-ink outline-none focus:border-brand"
+                  data-testid="cart-enquiry-name"
+                  aria-describedby="cart-name-help"
+                  className="mt-2 min-h-[44px] w-full border border-line bg-paper px-3 py-3 font-sub text-ink outline-none focus:border-brand"
                 />
-              </label>
+              </div>
 
-              <label className="block">
-                <span className="eyebrow text-ink-soft">WhatsApp number</span>
+              <div>
+                <label
+                  htmlFor="cart-enquiry-phone"
+                  className="block"
+                >
+                  <span className="eyebrow text-ink-soft">
+                    WhatsApp number
+                  </span>
+                </label>
+
                 <input
-                  data-testid="cart-enquiry-phone"
+                  id="cart-enquiry-phone"
+                  name="phone"
                   type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  required
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(event) =>
+                    setPhone(event.target.value)
+                  }
                   placeholder="+91 9XXXX XXXXX"
-                  className="mt-2 w-full border border-line bg-paper px-3 py-3 font-sub text-ink outline-none focus:border-brand"
+                  data-testid="cart-enquiry-phone"
+                  aria-describedby="cart-phone-help"
+                  className="mt-2 min-h-[44px] w-full border border-line bg-paper px-3 py-3 font-sub text-ink outline-none focus:border-brand"
                 />
-              </label>
+              </div>
 
-              {sent && (
+              <p
+                id="cart-name-help"
+                className="font-sub text-sm text-ink-soft"
+              >
+                {!nameValid && name
+                  ? 'Name needs at least 2 characters.'
+                  : ''}
+              </p>
+
+              <p
+                id="cart-phone-help"
+                className="font-sub text-sm text-ink-soft"
+              >
+                {!phoneValid && phone
+                  ? 'Enter a valid phone number, including country code where applicable.'
+                  : ''}
+              </p>
+
+              {saved && (
                 <p
                   data-testid="cart-enquiry-sent"
-                  className="text-[11px] uppercase tracking-[0.22em] text-brand"
+                  role="status"
+                  className="font-sub text-sm text-brand"
                 >
-                  ✓ Saved · ref {orderRef}
+                  ✓ Enquiry saved · reference{' '}
+                  {orderRef}
+                </p>
+              )}
+
+              {error && (
+                <p
+                  role="alert"
+                  className="font-sub text-sm text-ink"
+                >
+                  {error}
                 </p>
               )}
 
@@ -321,21 +516,20 @@ export default function CartPage() {
                 data-testid="cart-checkout-whatsapp"
                 className="btn-primary mt-2 w-full justify-center disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <MessageCircle size={14} />
-                {sending ? 'Saving…' : 'Continue on WhatsApp'} <ArrowRight size={14} />
+                <MessageCircle size={15} />
+
+                {sending
+                  ? 'Saving…'
+                  : 'Continue on WhatsApp'}
+
+                <ArrowRight size={15} />
               </button>
 
-              {!nameValid && name && (
-                <p className="text-[10px] uppercase tracking-[0.22em] text-ink-soft">
-                  Name needs 2+ characters
-                </p>
-              )}
-
-              {!phoneValid && phone && (
-                <p className="text-[10px] uppercase tracking-[0.22em] text-ink-soft">
-                  Enter a valid phone number
-                </p>
-              )}
+              <p className="font-sub text-sm leading-relaxed text-ink-soft">
+                This prepares a WhatsApp message.
+                Your enquiry is not sent until you
+                press Send in WhatsApp.
+              </p>
             </form>
 
             <Link
@@ -346,8 +540,9 @@ export default function CartPage() {
               Or send via Contact Form
             </Link>
 
-            <p className="mt-6 text-[11px] uppercase leading-relaxed tracking-[0.22em] text-ink-soft">
-              मर्दा ॲन्ड सन्स confirms every order personally — no automated checkout, no surprises.
+            <p className="mt-6 font-sub text-[11px] uppercase leading-relaxed tracking-[0.22em] text-ink-soft">
+              मर्दा ॲन्ड सन्स confirms every order
+              personally — no automated checkout.
             </p>
           </aside>
         </section>
@@ -359,7 +554,10 @@ export default function CartPage() {
           className="fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 border-t border-line bg-[#FDFBF7]/95 px-4 py-3 shadow-[0_-4px_24px_-12px_rgba(42,29,26,0.18)] backdrop-blur md:hidden"
         >
           <div className="min-w-0 flex-1">
-            <p className="eyebrow truncate text-ink-soft">Subtotal</p>
+            <p className="eyebrow truncate text-ink-soft">
+              Estimated total
+            </p>
+
             <p className="font-heading text-xl italic leading-none text-brand">
               {inr(subtotal)}
             </p>
@@ -372,7 +570,7 @@ export default function CartPage() {
             disabled={!canSend}
             className="btn-primary px-5 py-3 text-[10px] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <MessageCircle size={14} /> WhatsApp
+            <MessageCircle size={15} /> WhatsApp
           </button>
         </div>
       )}
