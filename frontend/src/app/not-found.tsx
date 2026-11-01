@@ -1,55 +1,89 @@
 import Link from 'next/link';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-paper flex flex-col items-center justify-center px-6 text-center">
-      {/* Chapter label */}
-      <p className="eyebrow text-ink-soft mb-6 tracking-widest text-xs">
-        04 &mdash; NOT FOUND
-      </p>
+    <section
+      data-testid="not-found-page"
+      aria-labelledby="not-found-heading"
+      className="relative isolate overflow-hidden bg-paper px-5 pb-16 pt-36 sm:px-8 sm:pb-20 sm:pt-40 md:pb-24 md:pt-44"
+    >
+      <div className="relative mx-auto flex min-h-[55svh] max-w-5xl items-center justify-center">
+        <div className="w-full max-w-2xl text-center">
+          <p className="font-sub text-xs uppercase tracking-[0.24em] text-ink-soft sm:text-sm">
+            404 · Page not found
+          </p>
 
-      {/* Large editorial heading */}
-      <h1 className="font-heading text-[clamp(4rem,14vw,12rem)] leading-none tracking-tighter text-ink mb-2">
-        Lost
-      </h1>
-      <h2 className="font-heading italic text-[clamp(3rem,10vw,9rem)] leading-none tracking-tighter text-brand mb-10">
-        thread.
-      </h2>
+          <h1
+            id="not-found-heading"
+            className="mt-7 font-heading text-6xl font-normal leading-[1.05] tracking-tight text-ink sm:text-7xl md:text-8xl"
+          >
+            Lost{' '}
+            <span className="italic text-brand">
+              thread.
+            </span>
+          </h1>
 
-      {/* Hindi subtitle */}
-      <p className="font-accent text-brand text-xl mb-8 opacity-80">
-        हा धागा सापडला नाही
-      </p>
+          <p
+            lang="mr"
+            className="mt-6 font-accent text-lg leading-relaxed text-brand sm:text-xl"
+          >
+            हा धागा सापडला नाही
+          </p>
 
-      {/* Description */}
-      <p className="font-body text-ink-soft text-base max-w-md mb-10 leading-relaxed">
-        The page you are looking for has been moved, renamed, or never woven into existence.
-        Let us guide you back to the atelier.
-      </p>
+          <div
+            aria-hidden="true"
+            className="mx-auto my-7 h-px w-16 bg-gold/60 sm:my-8"
+          />
 
-      {/* Gold divider */}
-      <div className="gold-rule w-24 h-px mb-10" />
+          <p className="mx-auto max-w-md font-sub text-base leading-relaxed text-ink-soft sm:text-lg">
+            We couldn’t find the page you’re looking for.
+            It may have moved, or the link may no longer
+            be available.
+          </p>
 
-      {/* CTAs */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Link
-          href="/"
-          className="btn-primary px-8 py-3 text-xs tracking-widest uppercase"
-        >
-          Return Home
-        </Link>
-        <Link
-          href="/shop"
-          className="btn-ghost px-8 py-3 text-xs tracking-widest uppercase"
-        >
-          Browse Shop
-        </Link>
+          <p className="mt-3 font-sub text-sm leading-relaxed text-ink-soft">
+            Let’s guide you back to the collection.
+          </p>
+
+          <div className="mx-auto mt-8 flex max-w-sm flex-col justify-center gap-3 sm:mt-10 sm:max-w-none sm:flex-row sm:gap-4">
+            <Link
+              href="/shop"
+              data-testid="not-found-shop"
+              className="btn-primary min-h-[48px] justify-center gap-3 px-6 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+            >
+              Browse the collection
+              <ArrowRight
+                size={16}
+                aria-hidden="true"
+              />
+            </Link>
+
+            <Link
+              href="/"
+              data-testid="not-found-home"
+              className="btn-ghost min-h-[48px] justify-center gap-3 px-6 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+            >
+              <ArrowLeft
+                size={16}
+                aria-hidden="true"
+              />
+              Return home
+            </Link>
+          </div>
+
+          <p className="mt-8 font-sub text-sm leading-relaxed text-ink-soft">
+            Looking for something specific?{' '}
+            <Link
+              href="/contact"
+              data-testid="not-found-contact"
+              className="inline-block py-2 text-ink underline underline-offset-4 transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+            >
+              Contact the store
+            </Link>
+          </p>
+        </div>
       </div>
-
-      {/* Watermark */}
-      <p className="watermark-hindi absolute bottom-12 right-8 select-none pointer-events-none text-6xl opacity-5 font-accent text-ink">
-        मर्दा
-      </p>
-    </main>
+    </section>
   );
 }
