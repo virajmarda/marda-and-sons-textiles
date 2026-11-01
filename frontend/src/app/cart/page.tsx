@@ -3,6 +3,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type FormEvent,
 } from 'react';
@@ -16,7 +17,6 @@ import {
   ShoppingBag,
   Trash2,
 } from 'lucide-react';
-import toast from 'react-hot-toast';
 
 import {
   generateOrderRef,
@@ -29,6 +29,14 @@ import {
 import { useCart } from '@/lib/cart-context';
 import { PageHero } from '@/components/page-hero';
 import { Reveal, SectionLabel } from '@/components/reveal';
+import { SafeImage } from '@/components/safe-image';
+
+type EnquiryFeedback = {
+  key: string;
+  saved: boolean;
+  error: string;
+  whatsappUrl: string;
+};
 
 export default function CartPage() {
   const {
@@ -37,6 +45,7 @@ export default function CartPage() {
     setQty,
     remove,
     clear,
+    mounted,
   } = useCart();
 
   const empty = items.length === 0;
@@ -45,65 +54,75 @@ export default function CartPage() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [sending, setSending] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState('');
+
+  const [feedback, setFeedback] =
+    useState<EnquiryFeedback | null>(null);
+
+  const requestInFlight = useRef(false);
 
   useEffect(() => {
+    if (!mounted) return;
+
     if (!empty && !orderRef) {
       setOrderRef(generateOrderRef());
     }
 
-    if (empty && orderRef) {
+    if (empty) {
       setOrderRef('');
-      setSaved(false);
-      setError('');
+      setFeedback(null);
     }
-  }, [empty, orderRef]);
+  }, [mounted, empty, orderRef]);
 
-  const whatsappMessage = useMemo(() => {
-    const origin = siteOrigin();
+  const enquiryKey = useMemo(
+    () =>
+      JSON.stringify({
+        name: name.trim(),
+        phone: phone.trim(),
+        orderRef,
+        subtotal,
+        items,
+      }),
+    [name, phone, orderRef, subtotal, items],
+  );
 
-    const greeting = name.trim()
-      ? `Hello मर्दा ॲन्ड सन्स, this is ${name.trim()}.`
-      : 'Hello मर्दा ॲन्ड सन्स,';
+  const currentFeedback =
+    feedback?.key === enquiryKey
+      ? feedback
+      : null;
 
-    const productLines = items
-      .map(
-        (item, index) =>
-          `${index + 1}. ${item.name} (${item.mode}) × ${
-            item.qty
-          } — ${inr(item.price * item.qty)}\n   ${origin}/product/${encodeURIComponent(
-            item.slug,
-          )}`,
-      )
-      .join('\n');
+  useEffect(() => {
+    setFeedback(null);
+  }, [enquiryKey]);
 
-    const reference = orderRef
-      ? `\nRef: ${orderRef}`
-      : '';
+  const nameValid =
+    name.trim().length >= 2 &&
+    name.trim().length <= 120;
 
-    return [
-      greeting,
-      'I would like to confirm this order:',
-      reference,
-      '',
-      productLines,
-      '',
-      `Subtotal: ${inr(subtotal)}`,
-      '',
-      'Please confirm current availability, applicable taxes, delivery charges and next steps.',
-    ].join('\n');
-  }, [items, subtotal, name, orderRef]);
+  const phoneDigits = phone.replace(/\D/g, '');
 
   const phoneValid =
-    /^[+\d][\d\s-]{8,15}$/.test(phone.trim());
+    /^\+?[\d\s().-]+$/.test(phone.trim()) &&
+    phoneDigits.length >= 7 &&
+    phoneDigits.length <= 15;
 
-  const nameValid = name.trim().length >= 2;
+  const itemsValid = items.every(
+    (item) =>
+      typeof item.slug === 'string' &&
+      item.slug.length > 0 &&
+      Number.isInteger(item.qty) &&
+      item.qty > 0 &&
+      Number.isFinite(item.price) &&
+      item.price >= 0,
+  );
 
   const canSend =
+    mounted &&
     !empty &&
+    Boolean(orderRef) &&
     nameValid &&
     phoneValid &&
+    itemsValid &&
+    Number.isFinite(subtotal) &&
     !sending;
 
   async function handleSend(
@@ -111,26 +130,52 @@ export default function CartPage() {
   ) {
     event?.preventDefault();
 
-    if (!canSend) {
+    if (!canSend || requestInFlight.current) {
       return;
     }
 
-    setError('');
-    setSaved(false);
+    const submittedKey = enquiryKey;
+    const submittedRef = orderRef;
 
-    const whatsappTab = window.open(
-      'about:blank',
-      '_blank',
-      'noopener,noreferrer',
-    );
+    const message = [
+      `Hello मर्दा ॲन्ड सन्स, this is ${name.trim()}.`,
+      '',
+      'I would like to enquire about these items:',
+      `Reference: ${submittedRef}`,
+      `Contact number: ${phone.trim()}`,
+      '',
+      ...items.map(
+        (item, index) =>
+          `${index + 1}. ${item.name} (${item.mode}) × ${
+            item.qty
+          } — ${inr(item.price * item.qty)}\n   ${
+            siteOrigin()
+          }/product/${encodeURIComponent(item.slug)}`,
+      ),
+      '',
+      `Listed subtotal: ${inr(subtotal)}`,
+      '',
+      'Please confirm current prices, availability, applicable taxes, delivery charges and next steps.',
+      'This is an enquiry, not a confirmed order.',
+    ].join('\n');
 
+    const url = whatsappLink(message);
+
+    requestInFlight.current = true;
     setSending(true);
+
+    setFeedback({
+      key: submittedKey,
+      saved: false,
+      error: '',
+      whatsappUrl: url,
+    });
 
     try {
       const result = await submitCartEnquiry({
         name: name.trim(),
         phone: phone.trim(),
-        order_ref: orderRef,
+        order_ref: submittedRef,
         subtotal,
         items: items.map((item) => ({
           slug: item.slug,
@@ -141,48 +186,55 @@ export default function CartPage() {
         })),
       });
 
-      if (result?.ok === false) {
+      if (result?.ok !== true) {
         throw new Error(
-          'Your enquiry could not be saved.',
+          'The website did not explicitly confirm saving.',
         );
       }
 
-      setSaved(true);
-
-      toast.success(
-        'Your enquiry has been saved.',
-      );
+      setFeedback({
+        key: submittedKey,
+        saved: true,
+        error: '',
+        whatsappUrl: url,
+      });
     } catch (submissionError) {
       console.error(
-        '[cart] cart-enquiry save failed:',
+        '[cart] Website save not confirmed:',
         submissionError,
       );
 
-      const message =
-        submissionError instanceof Error
-          ? submissionError.message
-          : 'Could not save your enquiry. Please try again.';
-
-      setError(message);
-
-      toast.error(message);
+      setFeedback({
+        key: submittedKey,
+        saved: false,
+        error:
+          'Website saving was not confirmed. You can still send the prepared enquiry through WhatsApp. Retrying the website save may create a duplicate record.',
+        whatsappUrl: url,
+      });
     } finally {
+      requestInFlight.current = false;
       setSending(false);
     }
+  }
 
-    const url = whatsappLink(whatsappMessage);
-
-    if (whatsappTab) {
-      whatsappTab.location.href = url;
-    } else {
-      window.location.href = url;
-    }
+  if (!mounted) {
+    return (
+      <div
+        data-testid="cart-loading"
+        role="status"
+        className="min-h-[60vh] bg-paper px-6 pb-24 pt-36"
+      >
+        <p className="mx-auto max-w-[1600px] font-sub text-base text-ink-soft">
+          Loading your bag…
+        </p>
+      </div>
+    );
   }
 
   return (
     <div
       data-testid="cart-page"
-      className="relative min-h-[80vh] bg-paper pb-24 md:pb-0"
+      className="relative min-h-[80vh] bg-paper pb-32 md:pb-0"
     >
       <PageHero
         chapter="08"
@@ -213,10 +265,10 @@ export default function CartPage() {
           !empty && orderRef ? (
             <span
               data-testid="order-ref"
-              className="eyebrow inline-flex items-center gap-2 text-ink"
+              className="inline-flex items-center gap-2 font-sub text-sm text-ink"
             >
-              <Hash size={12} /> Reference{' '}
-              {orderRef}
+              <Hash size={14} aria-hidden="true" />
+              Reference {orderRef}
             </span>
           ) : undefined
         }
@@ -227,17 +279,20 @@ export default function CartPage() {
         <section className="mx-auto max-w-[800px] px-4 pb-24 text-center sm:px-6 md:pb-32">
           <Reveal>
             <p className="font-sub text-base text-ink-soft sm:text-lg">
-              Nothing here yet. Begin with our
-              most-loved weaves.
+              Nothing here yet. Explore the collection
+              to find your next piece.
             </p>
 
             <Link
               href="/shop"
               data-testid="cart-empty-shop"
-              className="btn-primary mt-8 sm:mt-10"
+              className="btn-primary mt-8 justify-center gap-2 sm:mt-10"
             >
-              <ShoppingBag size={14} /> Discover
-              the collection
+              <ShoppingBag
+                size={15}
+                aria-hidden="true"
+              />
+              Discover the collection
             </Link>
           </Reveal>
         </section>
@@ -252,121 +307,140 @@ export default function CartPage() {
             <SectionLabel
               number="01"
               label={`${items.length} item${
-                items.length > 1 ? 's' : ''
+                items.length === 1 ? '' : 's'
               }`}
             />
 
-            {items.map((item) => (
-              <article
-                key={`${item.slug}-${item.mode}`}
-                className="grid grid-cols-[96px_1fr] gap-4 border-b border-line pb-6 sm:grid-cols-[120px_1fr] sm:gap-6 sm:pb-8 md:grid-cols-[160px_1fr_auto] md:items-start"
-              >
-                <Link
-                  href={`/product/${encodeURIComponent(
-                    item.slug,
-                  )}`}
-                  className="block aspect-[4/5] overflow-hidden bg-bg-secondary"
+            {items.map((item) => {
+              const productHref =
+                `/product/${encodeURIComponent(item.slug)}`;
+
+              return (
+                <article
+                  key={`${item.slug}-${item.mode}`}
+                  className="grid grid-cols-[96px_1fr] gap-4 border-b border-line pb-6 sm:grid-cols-[120px_1fr] sm:gap-6 sm:pb-8 md:grid-cols-[160px_1fr_auto] md:items-start"
                 >
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    width={160}
-                    height={200}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
-                </Link>
-
-                <div className="min-w-0">
-                  <p className="eyebrow text-gold-dark">
-                    {item.mode}
-                  </p>
-
                   <Link
-                    href={`/product/${encodeURIComponent(
-                      item.slug,
-                    )}`}
-                    className="mt-1 inline-block font-heading text-xl italic text-ink transition-colors hover:text-brand sm:text-2xl"
+                    href={productHref}
+                    className="block aspect-[4/5] overflow-hidden bg-bg-secondary"
                   >
-                    {item.name}
+                    <SafeImage
+                      src={item.image}
+                      alt={item.name}
+                      width={160}
+                      height={200}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                      fallbackClassName="h-full w-full bg-bg-secondary"
+                    />
                   </Link>
 
-                  <p className="mt-2 font-sub text-ink-soft">
-                    {inr(item.price)}{' '}
-                    <span className="text-ink-soft/60">
-                      / piece
-                    </span>
-                  </p>
+                  <div className="min-w-0">
+                    <p className="font-sub text-xs uppercase tracking-wider text-ink-soft">
+                      {item.mode}
+                    </p>
 
-                  <div className="mt-5 flex flex-wrap items-center gap-4">
-                    <div className="flex items-center border border-line">
-                      <button
-                        type="button"
-                        data-testid={`cart-dec-${item.slug}`}
-                        onClick={() =>
-                          setQty(
-                            item.slug,
-                            item.mode,
-                            item.qty - 1,
-                          )
-                        }
-                        className="flex h-11 w-11 items-center justify-center transition-colors hover:bg-bg-secondary"
-                        aria-label={`Decrease quantity of ${item.name}`}
-                      >
-                        <Minus size={14} />
-                      </button>
+                    <Link
+                      href={productHref}
+                      className="mt-1 inline-block font-heading text-xl italic text-ink transition-colors hover:text-brand sm:text-2xl"
+                    >
+                      {item.name}
+                    </Link>
 
-                      <span className="w-10 text-center font-sub">
-                        {item.qty}
+                    <p className="mt-2 font-sub text-ink-soft">
+                      {inr(item.price)}{' '}
+                      <span className="text-sm">
+                        / listed unit
                       </span>
+                    </p>
+
+                    <div className="mt-5 flex flex-wrap items-center gap-4">
+                      <div className="flex items-center border border-line">
+                        <button
+                          type="button"
+                          data-testid={`cart-dec-${item.slug}`}
+                          disabled={sending || item.qty <= 1}
+                          onClick={() =>
+                            setQty(
+                              item.slug,
+                              item.mode,
+                              Math.max(1, item.qty - 1),
+                            )
+                          }
+                          aria-label={`Decrease quantity of ${item.name}`}
+                          className="flex h-11 w-11 items-center justify-center transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Minus
+                            size={14}
+                            aria-hidden="true"
+                          />
+                        </button>
+
+                        <span
+                          aria-label={`Quantity: ${item.qty}`}
+                          className="min-w-[40px] px-2 text-center font-sub"
+                        >
+                          {item.qty}
+                        </span>
+
+                        <button
+                          type="button"
+                          data-testid={`cart-inc-${item.slug}`}
+                          disabled={sending}
+                          onClick={() =>
+                            setQty(
+                              item.slug,
+                              item.mode,
+                              item.qty + 1,
+                            )
+                          }
+                          aria-label={`Increase quantity of ${item.name}`}
+                          className="flex h-11 w-11 items-center justify-center transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Plus
+                            size={14}
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </div>
 
                       <button
                         type="button"
-                        data-testid={`cart-inc-${item.slug}`}
+                        data-testid={`cart-remove-${item.slug}`}
+                        disabled={sending}
                         onClick={() =>
-                          setQty(
-                            item.slug,
-                            item.mode,
-                            item.qty + 1,
-                          )
+                          remove(item.slug, item.mode)
                         }
-                        className="flex h-11 w-11 items-center justify-center transition-colors hover:bg-bg-secondary"
-                        aria-label={`Increase quantity of ${item.name}`}
+                        aria-label={`Remove ${item.name} from cart`}
+                        className="inline-flex min-h-[44px] items-center gap-2 font-sub text-sm text-ink-soft transition-colors hover:text-brand disabled:cursor-not-allowed disabled:opacity-40"
                       >
-                        <Plus size={14} />
+                        <Trash2
+                          size={15}
+                          aria-hidden="true"
+                        />
+                        Remove
                       </button>
                     </div>
 
-                    <button
-                      type="button"
-                      data-testid={`cart-remove-${item.slug}`}
-                      onClick={() =>
-                        remove(item.slug, item.mode)
-                      }
-                      className="inline-flex min-h-[44px] items-center gap-2 font-sub text-sm text-ink-soft transition-colors hover:text-brand"
-                      aria-label={`Remove ${item.name} from cart`}
-                    >
-                      <Trash2 size={15} /> Remove
-                    </button>
+                    <p className="mt-4 font-heading text-lg italic text-brand md:hidden">
+                      {inr(item.qty * item.price)}
+                    </p>
                   </div>
 
-                  <p className="mt-4 font-heading text-lg italic text-brand md:hidden">
+                  <p className="hidden whitespace-nowrap font-heading text-2xl text-brand md:block md:text-right">
                     {inr(item.qty * item.price)}
                   </p>
-                </div>
-
-                <p className="hidden whitespace-nowrap font-heading text-2xl text-brand md:block md:text-right">
-                  {inr(item.qty * item.price)}
-                </p>
-              </article>
-            ))}
+                </article>
+              );
+            })}
 
             <button
               type="button"
               data-testid="cart-clear"
+              disabled={sending}
               onClick={clear}
-              className="eyebrow link-underline text-ink-soft transition-colors hover:text-brand"
+              className="inline-flex min-h-[44px] items-center font-sub text-sm text-ink-soft underline underline-offset-4 transition-colors hover:text-brand disabled:cursor-not-allowed disabled:opacity-40"
             >
               Clear bag
             </button>
@@ -378,19 +452,19 @@ export default function CartPage() {
           >
             <SectionLabel
               number="02"
-              label="Order Summary"
+              label="Enquiry Summary"
             />
 
             <div className="mt-6 space-y-3 font-sub text-ink sm:mt-8">
               <div className="flex justify-between gap-4">
-                <span>Subtotal</span>
+                <span>Listed subtotal</span>
                 <span>{inr(subtotal)}</span>
               </div>
 
               <div className="flex justify-between gap-4 text-ink-soft">
                 <span>Shipping</span>
                 <span className="text-right">
-                  Calculated on enquiry
+                  Confirmed on enquiry
                 </span>
               </div>
 
@@ -400,29 +474,38 @@ export default function CartPage() {
                   Confirmed on enquiry
                 </span>
               </div>
-
-              <div className="my-4 border-t border-line" />
-
-              <div className="flex justify-between font-heading text-2xl italic text-brand">
-                <span>Estimated total</span>
-                <span>{inr(subtotal)}</span>
-              </div>
             </div>
+
+            <p className="mt-5 font-sub text-sm leading-relaxed text-ink-soft">
+              This is not a final payable total.
+              Current pricing, quantities, taxes and
+              delivery charges require confirmation.
+            </p>
+
+            {!itemsValid && (
+              <p
+                role="alert"
+                className="mt-4 font-sub text-sm text-ink"
+              >
+                Some bag details are invalid. Remove the
+                affected items or clear the bag before
+                preparing an enquiry.
+              </p>
+            )}
 
             <form
               data-testid="cart-enquiry-form"
               onSubmit={handleSend}
               className="mt-8 space-y-4"
               aria-busy={sending}
+              aria-describedby="cart-enquiry-help"
             >
               <div>
                 <label
                   htmlFor="cart-enquiry-name"
-                  className="block"
+                  className="block font-sub text-sm text-ink"
                 >
-                  <span className="eyebrow text-ink-soft">
-                    Your name
-                  </span>
+                  Your name *
                 </label>
 
                 <input
@@ -433,6 +516,7 @@ export default function CartPage() {
                   required
                   minLength={2}
                   maxLength={120}
+                  disabled={sending}
                   value={name}
                   onChange={(event) =>
                     setName(event.target.value)
@@ -440,18 +524,16 @@ export default function CartPage() {
                   placeholder="e.g. Aparna Apte"
                   data-testid="cart-enquiry-name"
                   aria-describedby="cart-name-help"
-                  className="mt-2 min-h-[44px] w-full border border-line bg-paper px-3 py-3 font-sub text-ink outline-none focus:border-brand"
+                  className="mt-2 min-h-[44px] w-full border border-line bg-paper px-3 py-3 font-sub text-base text-ink focus:border-brand disabled:opacity-60"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="cart-enquiry-phone"
-                  className="block"
+                  className="block font-sub text-sm text-ink"
                 >
-                  <span className="eyebrow text-ink-soft">
-                    WhatsApp number
-                  </span>
+                  WhatsApp number *
                 </label>
 
                 <input
@@ -461,6 +543,8 @@ export default function CartPage() {
                   inputMode="tel"
                   autoComplete="tel"
                   required
+                  maxLength={30}
+                  disabled={sending}
                   value={phone}
                   onChange={(event) =>
                     setPhone(event.target.value)
@@ -468,7 +552,7 @@ export default function CartPage() {
                   placeholder="+91 9XXXX XXXXX"
                   data-testid="cart-enquiry-phone"
                   aria-describedby="cart-phone-help"
-                  className="mt-2 min-h-[44px] w-full border border-line bg-paper px-3 py-3 font-sub text-ink outline-none focus:border-brand"
+                  className="mt-2 min-h-[44px] w-full border border-line bg-paper px-3 py-3 font-sub text-base text-ink focus:border-brand disabled:opacity-60"
                 />
               </div>
 
@@ -477,7 +561,7 @@ export default function CartPage() {
                 className="font-sub text-sm text-ink-soft"
               >
                 {!nameValid && name
-                  ? 'Name needs at least 2 characters.'
+                  ? 'Please enter a name between 2 and 120 characters.'
                   : ''}
               </p>
 
@@ -490,23 +574,24 @@ export default function CartPage() {
                   : ''}
               </p>
 
-              {saved && (
+              {currentFeedback?.saved && (
                 <p
                   data-testid="cart-enquiry-sent"
                   role="status"
-                  className="font-sub text-sm text-brand"
+                  className="font-sub text-sm leading-relaxed text-brand"
                 >
-                  ✓ Enquiry saved · reference{' '}
-                  {orderRef}
+                  Enquiry saved to the website ·
+                  reference {orderRef}. This is not
+                  an order confirmation.
                 </p>
               )}
 
-              {error && (
+              {currentFeedback?.error && (
                 <p
                   role="alert"
-                  className="font-sub text-sm text-ink"
+                  className="font-sub text-sm leading-relaxed text-ink"
                 >
-                  {error}
+                  {currentFeedback.error}
                 </p>
               )}
 
@@ -514,21 +599,58 @@ export default function CartPage() {
                 type="submit"
                 disabled={!canSend}
                 data-testid="cart-checkout-whatsapp"
-                className="btn-primary mt-2 w-full justify-center disabled:cursor-not-allowed disabled:opacity-40"
+                className="btn-primary mt-2 w-full justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <MessageCircle size={15} />
+                <MessageCircle
+                  size={15}
+                  aria-hidden="true"
+                />
 
                 {sending
-                  ? 'Saving…'
-                  : 'Continue on WhatsApp'}
+                  ? 'Checking website save…'
+                  : 'Prepare WhatsApp enquiry'}
 
-                <ArrowRight size={15} />
+                <ArrowRight
+                  size={15}
+                  aria-hidden="true"
+                />
               </button>
 
-              <p className="font-sub text-sm leading-relaxed text-ink-soft">
-                This prepares a WhatsApp message.
-                Your enquiry is not sent until you
-                press Send in WhatsApp.
+              {currentFeedback?.whatsappUrl && (
+                <div className="space-y-3 border-t border-line pt-4">
+                  <p
+                    role="status"
+                    className="font-sub text-sm leading-relaxed text-ink-soft"
+                  >
+                    Your WhatsApp message is ready.
+                    You can send it whether or not
+                    website saving was confirmed.
+                  </p>
+
+                  <a
+                    href={currentFeedback.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-testid="cart-open-whatsapp"
+                    className="btn-ghost w-full justify-center gap-2"
+                  >
+                    <MessageCircle
+                      size={15}
+                      aria-hidden="true"
+                    />
+                    Open WhatsApp
+                  </a>
+                </div>
+              )}
+
+              <p
+                id="cart-enquiry-help"
+                className="font-sub text-sm leading-relaxed text-ink-soft"
+              >
+                Press Send in WhatsApp to send your
+                message. Preparing a message does not
+                send it, and an enquiry does not
+                confirm an order.
               </p>
             </form>
 
@@ -537,12 +659,13 @@ export default function CartPage() {
               data-testid="cart-checkout-form"
               className="btn-ghost mt-3 w-full justify-center"
             >
-              Or send via Contact Form
+              Contact the store instead
             </Link>
 
-            <p className="mt-6 font-sub text-[11px] uppercase leading-relaxed tracking-[0.22em] text-ink-soft">
-              मर्दा ॲन्ड सन्स confirms every order
-              personally — no automated checkout.
+            <p className="mt-6 font-sub text-sm leading-relaxed text-ink-soft">
+              मर्दा ॲन्ड सन्स confirms orders
+              personally. No payment is collected
+              on this page.
             </p>
           </aside>
         </section>
@@ -551,27 +674,50 @@ export default function CartPage() {
       {!empty && (
         <div
           data-testid="cart-mobile-bar"
-          className="fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 border-t border-line bg-[#FDFBF7]/95 px-4 py-3 shadow-[0_-4px_24px_-12px_rgba(42,29,26,0.18)] backdrop-blur md:hidden"
+          className="fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 border-t border-line bg-paper/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_24px_-12px_rgba(42,29,26,0.18)] backdrop-blur md:hidden"
         >
           <div className="min-w-0 flex-1">
-            <p className="eyebrow truncate text-ink-soft">
-              Estimated total
+            <p className="font-sub text-xs text-ink-soft">
+              Listed subtotal
             </p>
 
-            <p className="font-heading text-xl italic leading-none text-brand">
+            <p className="font-heading text-xl italic leading-tight text-brand">
               {inr(subtotal)}
             </p>
           </div>
 
-          <button
-            type="button"
-            data-testid="cart-mobile-whatsapp"
-            onClick={() => handleSend()}
-            disabled={!canSend}
-            className="btn-primary px-5 py-3 text-[10px] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <MessageCircle size={15} /> WhatsApp
-          </button>
+          {currentFeedback?.whatsappUrl ? (
+            <a
+              href={currentFeedback.whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="cart-mobile-whatsapp"
+              className="btn-primary justify-center gap-2 px-4 py-3"
+            >
+              <MessageCircle
+                size={15}
+                aria-hidden="true"
+              />
+              Open WhatsApp
+            </a>
+          ) : (
+            <button
+              type="button"
+              data-testid="cart-mobile-whatsapp"
+              onClick={() => void handleSend()}
+              disabled={!canSend}
+              className="btn-primary justify-center gap-2 px-4 py-3 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <MessageCircle
+                size={15}
+                aria-hidden="true"
+              />
+
+              {sending
+                ? 'Checking…'
+                : 'Prepare enquiry'}
+            </button>
+          )}
         </div>
       )}
     </div>
