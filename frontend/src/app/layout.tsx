@@ -4,7 +4,9 @@ import {
   Jost,
   Tiro_Devanagari_Marathi,
 } from 'next/font/google';
+
 import '@/app/globals.css';
+
 import { CartProvider } from '@/lib/cart-context';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -12,8 +14,7 @@ import { WhatsAppFab } from '@/components/whatsapp-fab';
 import { ToastProvider } from '@/components/toast-provider';
 
 // ---------- Fonts ----------
-// adjustFontFallback: false suppresses the 'no override values' warning
-// that Next.js throws for variable-weight serif fonts like Bodoni Moda.
+
 const bodoni = Bodoni_Moda({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
@@ -28,9 +29,9 @@ const jost = Jost({
   weight: ['300', '400', '500', '600'],
   variable: '--font-jost',
   display: 'swap',
+  adjustFontFallback: false,
 });
 
-// Marathi script — essential for bilingual brand identity
 const tiro = Tiro_Devanagari_Marathi({
   subsets: ['latin', 'devanagari'],
   weight: ['400'],
@@ -39,14 +40,22 @@ const tiro = Tiro_Devanagari_Marathi({
   adjustFontFallback: false,
 });
 
+// ---------- Metadata ----------
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://marda-and-sons-textiles.vercel.app'),
+  metadataBase: new URL(
+    'https://marda-and-sons-textiles.vercel.app',
+  ),
+
   title: {
-    default: 'मर्दा ॲन्ड सन्स · Marda & Sons — Premium Solapuri Textiles · Est. 1970',
+    default:
+      'मर्दा ॲन्ड सन्स · Marda & Sons — Premium Solapuri Textiles · Est. 1970',
     template: '%s · Marda & Sons',
   },
+
   description:
     'विश्वास की परंपरा, वर्षों का साथ. Heritage Solapuri textiles since 1970 — handwoven bedsheets, towels, and home linen crafted in Maharashtra.',
+
   keywords: [
     'Solapuri chaddar',
     'Marda textiles',
@@ -56,6 +65,7 @@ export const metadata: Metadata = {
     'Maharashtra textiles',
     'wholesale textiles',
   ],
+
   openGraph: {
     type: 'website',
     locale: 'en_IN',
@@ -64,17 +74,24 @@ export const metadata: Metadata = {
     title: 'Marda & Sons — Premium Solapuri Textiles',
     description: 'Heritage Solapuri textiles since 1970.',
   },
+
   twitter: {
     card: 'summary_large_image',
     title: 'Marda & Sons — Premium Solapuri Textiles',
     description: 'Heritage Solapuri textiles since 1970.',
   },
+
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true },
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
 };
+
+// ---------- Viewport ----------
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -82,6 +99,8 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
   themeColor: '#f6f0e5',
 };
+
+// ---------- Root layout ----------
 
 export default function RootLayout({
   children,
@@ -96,10 +115,13 @@ export default function RootLayout({
       <body className="bg-stone-50 text-stone-900 antialiased">
         <CartProvider>
           <Header />
+
           <main>{children}</main>
+
           <Footer />
+
           <WhatsAppFab />
-          {/* ToastProvider renders <Toaster /> only — no children prop */}
+
           <ToastProvider />
         </CartProvider>
       </body>
