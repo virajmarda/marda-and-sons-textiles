@@ -2,10 +2,14 @@
 
 import { useState, type FormEvent } from 'react';
 import toast from 'react-hot-toast';
-import { ArrowRight, Building2, Globe2, HeartHandshake } from 'lucide-react';
+import {
+  ArrowRight,
+  Building2,
+  Globe2,
+  HeartHandshake,
+} from 'lucide-react';
 
 import { whatsappLink } from '@/lib/api';
-
 import { PageHero } from '@/components/page-hero';
 import { Reveal, SectionLabel } from '@/components/reveal';
 
@@ -27,6 +31,30 @@ const QTY_RANGES = [
   '5,000+ pieces / regular supply',
 ];
 
+const PARTNER_TYPES = [
+  {
+    icon: Building2,
+    title: 'Retailers & Resellers',
+    description:
+      'Stockists, family stores, and online retailers — share your product requirements and we will confirm availability and order options.',
+    id: 'retailers',
+  },
+  {
+    icon: HeartHandshake,
+    title: 'Corporate Gifting',
+    description:
+      'Wedding return-gift bundles, Diwali hampers, employee gifting — share your brief and we will confirm suitable options.',
+    id: 'gifting',
+  },
+  {
+    icon: Globe2,
+    title: 'Export Enquiries',
+    description:
+      'Share your destination and documentation requirements. We will confirm whether the order can be supported and which documents can be provided.',
+    id: 'export',
+  },
+];
+
 type WholesaleForm = {
   name: string;
   company: string;
@@ -38,24 +66,19 @@ type WholesaleForm = {
 };
 
 export default function WholesalePage() {
-  const [form, setForm] =
-    useState<WholesaleForm>({
-      name: '',
-      company: '',
-      email: '',
-      phone: '',
-      city: '',
-      quantity_estimate: '',
-      message: '',
-    });
+  const [form, setForm] = useState<WholesaleForm>({
+    name: '',
+    company: '',
+    email: '',
+    phone: '',
+    city: '',
+    quantity_estimate: '',
+    message: '',
+  });
 
-  const [interests, setInterests] =
-    useState<string[]>([]);
-
-  const [loading, setLoading] = useState(false);
+  const [interests, setInterests] = useState<string[]>([]);
   const [error, setError] = useState('');
-  const [preparedUrl, setPreparedUrl] =
-    useState('');
+  const [preparedUrl, setPreparedUrl] = useState('');
 
   function updateField(
     fieldName: keyof WholesaleForm,
@@ -73,41 +96,31 @@ export default function WholesalePage() {
   function toggleInterest(value: string) {
     setInterests((current) =>
       current.includes(value)
-        ? current.filter(
-            (item) => item !== value,
-          )
+        ? current.filter((item) => item !== value)
         : [...current, value],
     );
 
+    setError('');
     setPreparedUrl('');
   }
 
-  async function submit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError('');
     setPreparedUrl('');
 
     if (form.name.trim().length < 2) {
-      setError(
-        'Please enter your name.',
-      );
+      setError('Please enter your name.');
       return;
     }
 
     if (!form.email.trim()) {
-      setError(
-        'Please enter your email address.',
-      );
+      setError('Please enter your email address.');
       return;
     }
 
-    const phoneDigits = form.phone.replace(
-      /\D/g,
-      '',
-    );
+    const phoneDigits = form.phone.replace(/\D/g, '');
 
     if (
       phoneDigits.length < 7 ||
@@ -120,13 +133,9 @@ export default function WholesalePage() {
     }
 
     if (!form.quantity_estimate) {
-      setError(
-        'Please select your expected quantity.',
-      );
+      setError('Please select your expected quantity.');
       return;
     }
-
-    setLoading(true);
 
     try {
       const whatsappMessage = [
@@ -136,8 +145,7 @@ export default function WholesalePage() {
         '',
         `Name: ${form.name.trim()}`,
         `Company / Store: ${
-          form.company.trim() ||
-          'Not provided'
+          form.company.trim() || 'Not provided'
         }`,
         `Email: ${form.email.trim()}`,
         `Phone: ${form.phone.trim()}`,
@@ -158,31 +166,23 @@ export default function WholesalePage() {
         'Please confirm availability, pricing, taxes and delivery charges.',
       ].join('\n');
 
-      const url = whatsappLink(
-        whatsappMessage,
-      );
+      const url = whatsappLink(whatsappMessage);
 
       setPreparedUrl(url);
 
-      window.open(
-        url,
-        '_blank',
-        'noopener,noreferrer',
-      );
-
-      toast.success(
-        'WhatsApp message prepared. Press Send in WhatsApp to complete your enquiry.',
-      );
+      try {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } catch {
+        setError(
+          'Automatic opening failed. Use the WhatsApp link below to continue.',
+        );
+      }
     } catch {
       setError(
-        'Could not open WhatsApp. Please use the fallback link below.',
+        'Could not prepare your message. Please try again.',
       );
 
-      toast.error(
-        'Could not open WhatsApp.',
-      );
-    } finally {
-      setLoading(false);
+      toast.error('Could not prepare your message.');
     }
   }
 
@@ -194,7 +194,7 @@ export default function WholesalePage() {
       <PageHero
         chapter="05"
         eyebrow="For partners · घाऊक"
-        marathi="साथ पन्नास वर्षांचा"
+        marathi="विश्वासाची परंपरा"
         headline={
           <>
             Become a
@@ -206,17 +206,17 @@ export default function WholesalePage() {
         }
         lede={
           <>
-            Our wholesale roots run fifty-five
-            years deep. Today, we extend the same
-            honest standards to retailers, gifting
-            houses, exporters, and wedding planners
-            across India and abroad.
+            Established in 1970, Marda &amp; Sons welcomes
+            enquiries from retailers, gifting teams,
+            wedding planners and export buyers. Share your
+            requirements so we can confirm suitable
+            products, pricing and delivery options.
           </>
         }
       />
 
       <section
-        id="retailers"
+        id="partners"
         className="py-16 sm:py-20 md:py-24"
       >
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-12 lg:px-24">
@@ -226,99 +226,71 @@ export default function WholesalePage() {
           />
 
           <div className="mt-12 grid gap-8 sm:mt-14 md:mt-16 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-            {[
-              {
-                icon: Building2,
-                title:
-                  'Retailers & Resellers',
-                description:
-                  'Stockists, family stores, and online retailers — share your product requirements and we will confirm availability and order options.',
-                id: 'retailers',
-              },
-              {
-                icon: HeartHandshake,
-                title: 'Corporate Gifting',
-                description:
-                  'Wedding return-gift bundles, Diwali hampers, employee gifting — share your brief and we will confirm suitable options.',
-                id: 'gifting',
-              },
-              {
-                icon: Globe2,
-                title: 'Export Enquiries',
-                description:
-                  'Share your destination and documentation requirements. We will confirm whether the order can be supported and which documents can be provided.',
-                id: 'export',
-              },
-            ].map(
-              (item, index) => (
+            {PARTNER_TYPES.map((item, index) => {
+              const Icon = item.icon;
+
+              return (
                 <Reveal
-                  key={item.title}
+                  key={item.id}
                   delay={index * 0.1}
                 >
                   <div
                     id={item.id}
-                    className="border-t border-line pt-6 md:pt-8"
+                    className="scroll-mt-32 border-t border-line pt-6 md:pt-8"
                   >
-                    <item.icon
+                    <Icon
                       size={28}
                       strokeWidth={1.2}
                       className="text-brand"
-                      aria-hidden
+                      aria-hidden="true"
                     />
 
-                    <h3 className="mt-5 font-heading text-2xl italic text-ink sm:text-[1.8rem] md:mt-6 md:text-3xl">
+                    <h2 className="mt-5 font-heading text-2xl italic text-ink sm:text-[1.8rem] md:mt-6 md:text-3xl">
                       {item.title}
-                    </h3>
+                    </h2>
 
                     <p className="mt-4 font-sub leading-relaxed text-ink-soft">
                       {item.description}
                     </p>
                   </div>
                 </Reveal>
-              ),
-            )}
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section className="bg-paper-2 py-16 sm:py-20 md:py-24">
-        <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-8 px-4 text-center sm:px-6 md:grid-cols-4 md:px-12 lg:px-24">
-          {[
-            {
-              value: '55+',
-              label: 'Years sourcing',
-            },
-            {
-              value: '8',
-              label: 'Categories',
-            },
-            {
-              value: '12+',
-              label: 'Cities served',
-            },
-            {
-              value: '24h',
-              label:
-                'Typical quote turnaround',
-            },
-          ].map((stat) => (
-            <div key={stat.label}>
-              <p className="font-heading text-4xl italic text-brand sm:text-5xl md:text-6xl lg:text-7xl">
-                {stat.value}
-              </p>
+      <section className="bg-paper-2 py-12 sm:py-16">
+        <div className="mx-auto grid max-w-[1600px] gap-8 px-4 sm:px-6 md:grid-cols-[auto_1fr] md:items-center md:gap-12 md:px-12 lg:px-24">
+          <div>
+            <p className="font-sub text-xs uppercase tracking-[0.22em] text-ink-soft">
+              Established
+            </p>
 
-              <p className="eyebrow mt-2 sm:mt-3">
-                {stat.label}
-              </p>
-            </div>
-          ))}
+            <p className="mt-3 font-heading text-5xl italic text-brand sm:text-6xl">
+              1970
+            </p>
+          </div>
+
+          <div className="border-t border-line pt-6 md:border-l md:border-t-0 md:pl-12 md:pt-0">
+            <h2 className="font-heading text-2xl text-ink sm:text-3xl">
+              Tell us what your order needs.
+            </h2>
+
+            <p className="mt-3 max-w-2xl font-sub text-base leading-relaxed text-ink-soft">
+              Share your product interests, quantity,
+              delivery location and preferred timeline.
+              Pricing, sample options and fulfilment
+              terms are confirmed for your enquiry.
+            </p>
+          </div>
         </div>
       </section>
 
       <section className="grid lg:grid-cols-2">
         <div className="relative overflow-hidden bg-brand px-4 py-16 text-bg-primary sm:px-6 sm:py-20 md:px-12 lg:px-16 lg:py-32">
           <span
-            aria-hidden
+            aria-hidden="true"
             className="pointer-events-none absolute -bottom-6 -right-4 font-accent text-[22vw] leading-none opacity-10 md:-bottom-10 md:-right-10 md:text-[16vw]"
           >
             घाऊक
@@ -326,7 +298,7 @@ export default function WholesalePage() {
 
           <SectionLabel
             number="02"
-            label="What you'll receive"
+            label="The process"
           />
 
           <h2 className="display-2 mt-6 text-3xl sm:text-4xl md:mt-8 md:text-5xl">
@@ -336,28 +308,27 @@ export default function WholesalePage() {
           <ul className="mt-8 space-y-4 font-sub text-base text-bg-primary/85 sm:mt-10 sm:text-lg">
             <li className="diamond">
               Share your products, quantities and
-              destination.
+              delivery destination.
             </li>
 
             <li className="diamond">
-              We confirm availability and provide a
-              quotation.
+              We review availability and confirm
+              quotation options.
             </li>
 
             <li className="diamond">
-              Sample availability and any sample
+              Ask about samples. Availability and any
               charges are confirmed before dispatch.
             </li>
 
             <li className="diamond">
-              Custom weaves, sizes and packaging are
-              discussed on request.
+              Share any custom weave, size or packaging
+              requirements so we can assess feasibility.
             </li>
 
             <li className="diamond">
-              Delivery and export documentation
-              options are confirmed for your
-              requirements.
+              Delivery and export documentation options
+              are confirmed for your requirements.
             </li>
           </ul>
 
@@ -367,8 +338,7 @@ export default function WholesalePage() {
             </p>
 
             <p className="mt-3 font-sub text-bg-primary/80">
-              As much as you need — but only of the
-              finest.
+              As much as you need — but only of the finest.
             </p>
           </div>
         </div>
@@ -383,7 +353,7 @@ export default function WholesalePage() {
             onSubmit={submit}
             data-testid="wholesale-form"
             className="mt-10 space-y-8 md:mt-12"
-            aria-busy={loading}
+            aria-describedby="wholesale-form-help"
           >
             <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
               <div>
@@ -404,10 +374,7 @@ export default function WholesalePage() {
                   maxLength={120}
                   value={form.name}
                   onChange={(event) =>
-                    updateField(
-                      'name',
-                      event.target.value,
-                    )
+                    updateField('name', event.target.value)
                   }
                   placeholder="e.g. Aparna Apte"
                   data-testid="ws-name"
@@ -422,8 +389,7 @@ export default function WholesalePage() {
                 >
                   Company / store
                   <span className="text-ink-soft">
-                    {' '}
-                    (optional)
+                    {' '}(optional)
                   </span>
                 </label>
 
@@ -435,10 +401,7 @@ export default function WholesalePage() {
                   maxLength={160}
                   value={form.company}
                   onChange={(event) =>
-                    updateField(
-                      'company',
-                      event.target.value,
-                    )
+                    updateField('company', event.target.value)
                   }
                   placeholder="e.g. Apte Textiles"
                   data-testid="ws-company"
@@ -463,10 +426,7 @@ export default function WholesalePage() {
                   maxLength={254}
                   value={form.email}
                   onChange={(event) =>
-                    updateField(
-                      'email',
-                      event.target.value,
-                    )
+                    updateField('email', event.target.value)
                   }
                   placeholder="you@example.com"
                   data-testid="ws-email"
@@ -492,10 +452,7 @@ export default function WholesalePage() {
                   maxLength={30}
                   value={form.phone}
                   onChange={(event) =>
-                    updateField(
-                      'phone',
-                      event.target.value,
-                    )
+                    updateField('phone', event.target.value)
                   }
                   placeholder="+91 9XXXX XXXXX"
                   data-testid="ws-phone"
@@ -510,8 +467,7 @@ export default function WholesalePage() {
                 >
                   City / country
                   <span className="text-ink-soft">
-                    {' '}
-                    (optional)
+                    {' '}(optional)
                   </span>
                 </label>
 
@@ -523,10 +479,7 @@ export default function WholesalePage() {
                   maxLength={160}
                   value={form.city}
                   onChange={(event) =>
-                    updateField(
-                      'city',
-                      event.target.value,
-                    )
+                    updateField('city', event.target.value)
                   }
                   placeholder="e.g. Solapur, India"
                   data-testid="ws-city"
@@ -541,45 +494,36 @@ export default function WholesalePage() {
               </legend>
 
               <div className="flex flex-wrap gap-2.5">
-                {PRODUCT_OPTIONS.map(
-                  (option) => {
-                    const isActive =
-                      interests.includes(
-                        option,
-                      );
+                {PRODUCT_OPTIONS.map((option) => {
+                  const selected = interests.includes(option);
 
-                    return (
-                      <label
-                        key={option}
-                        className={`inline-flex min-h-[44px] cursor-pointer items-center gap-2 border px-4 py-2 font-sub text-sm transition-colors ${
-                          isActive
-                            ? 'border-ink bg-ink text-bg-primary'
-                            : 'border-line text-ink hover:border-ink'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          name="interests"
-                          value={option}
-                          checked={isActive}
-                          onChange={() =>
-                            toggleInterest(
-                              option,
-                            )
-                          }
-                          data-testid={`ws-interest-${option}`}
-                          className="h-4 w-4 accent-brand"
-                        />
+                  return (
+                    <label
+                      key={option}
+                      className={`inline-flex min-h-[44px] cursor-pointer items-center gap-2 border px-4 py-2 font-sub text-sm transition-colors ${
+                        selected
+                          ? 'border-ink bg-ink text-bg-primary'
+                          : 'border-line text-ink hover:border-ink'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        name="interests"
+                        value={option}
+                        checked={selected}
+                        onChange={() => toggleInterest(option)}
+                        data-testid={`ws-interest-${option}`}
+                        className="h-4 w-4 accent-brand"
+                      />
 
-                        {option}
-                      </label>
-                    );
-                  },
-                )}
+                      {option}
+                    </label>
+                  );
+                })}
               </div>
             </fieldset>
 
-            <fieldset>
+            <fieldset aria-describedby="ws-quantity-help">
               <legend className="mb-4 font-sub text-sm uppercase tracking-[0.22em] text-ink">
                 Expected quantity *
               </legend>
@@ -594,15 +538,10 @@ export default function WholesalePage() {
                       type="radio"
                       name="quantity_estimate"
                       value={range}
-                      checked={
-                        form.quantity_estimate ===
-                        range
-                      }
+                      required
+                      checked={form.quantity_estimate === range}
                       onChange={() =>
-                        updateField(
-                          'quantity_estimate',
-                          range,
-                        )
+                        updateField('quantity_estimate', range)
                       }
                       data-testid={`ws-qty-${range}`}
                       className="mt-0.5 h-4 w-4 accent-brand"
@@ -614,6 +553,16 @@ export default function WholesalePage() {
                   </label>
                 ))}
               </div>
+
+              <p
+                id="ws-quantity-help"
+                className="mt-3 font-sub text-sm leading-relaxed text-ink-soft"
+              >
+                These ranges help describe your enquiry.
+                They are not confirmed minimum order
+                quantities or supply commitments. Add
+                your exact quantity in the message.
+              </p>
             </fieldset>
 
             <div>
@@ -623,8 +572,7 @@ export default function WholesalePage() {
               >
                 Message
                 <span className="text-ink-soft">
-                  {' '}
-                  (optional)
+                  {' '}(optional)
                 </span>
               </label>
 
@@ -635,12 +583,9 @@ export default function WholesalePage() {
                 maxLength={2000}
                 value={form.message}
                 onChange={(event) =>
-                  updateField(
-                    'message',
-                    event.target.value,
-                  )
+                  updateField('message', event.target.value)
                 }
-                placeholder="Tell us about your needs, weave preferences, timeline…"
+                placeholder="Tell us about your needs, exact quantity, preferences and timeline…"
                 data-testid="ws-message"
                 className="input-line resize-y text-base"
               />
@@ -658,20 +603,22 @@ export default function WholesalePage() {
             <button
               type="submit"
               data-testid="ws-submit"
-              disabled={loading}
-              className="btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
+              className="btn-primary w-full justify-center"
             >
-              {loading
-                ? 'Preparing…'
-                : 'Continue on WhatsApp'}
-
-              <ArrowRight size={15} />
+              Continue on WhatsApp
+              <ArrowRight
+                size={15}
+                aria-hidden="true"
+              />
             </button>
 
-            <p className="font-sub text-sm leading-relaxed text-ink-soft">
+            <p
+              id="wholesale-form-help"
+              className="font-sub text-sm leading-relaxed text-ink-soft"
+            >
               This prepares a WhatsApp message. Your
-              enquiry is not sent until you press
-              Send in WhatsApp.
+              enquiry is not sent until you press Send
+              in WhatsApp.
             </p>
 
             {preparedUrl && (
@@ -690,15 +637,16 @@ export default function WholesalePage() {
                   rel="noopener noreferrer"
                   className="inline-flex min-h-[44px] items-center underline underline-offset-4"
                 >
-                  If WhatsApp did not open, open it
-                  here →
+                  If WhatsApp did not open, open it here →
                 </a>
               </div>
             )}
 
-            <p className="font-sub text-[10px] uppercase leading-relaxed tracking-[0.2em] text-ink-soft sm:text-[11px] sm:tracking-[0.22em]">
-              We aim to respond within 24 business
-              hours · No spam.
+            <p className="font-sub text-sm leading-relaxed text-ink-soft">
+              For time-sensitive requirements, include
+              your preferred delivery date in the
+              message. Our team will confirm whether
+              the requested timeline can be supported.
             </p>
           </form>
         </div>
