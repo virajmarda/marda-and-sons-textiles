@@ -1,8 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import toast from 'react-hot-toast';
-import { ArrowRight, Clock, Mail, MapPin, Phone } from 'lucide-react';
+import {
+  ArrowRight,
+  Clock,
+  Mail,
+  MapPin,
+  Phone,
+} from 'lucide-react';
+
 import {
   MAPS_DIRECTIONS,
   MAPS_EMBED_SRC,
@@ -11,11 +18,19 @@ import {
   WHATSAPP_DISPLAY,
   whatsappLink,
 } from '@/lib/api';
-import { Reveal, SectionLabel } from '@/components/reveal';
+
 import { PageHero } from '@/components/page-hero';
+import { Reveal, SectionLabel } from '@/components/reveal';
+
+type ContactForm = {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+};
 
 export default function ContactPage() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<ContactForm>({
     name: '',
     email: '',
     phone: '',
@@ -23,12 +38,38 @@ export default function ContactPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [preparedUrl, setPreparedUrl] = useState('');
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  function updateField(
+    fieldName: keyof ContactForm,
+    value: string,
+  ) {
+    setForm((current) => ({
+      ...current,
+      [fieldName]: value,
+    }));
 
-    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      toast.error('Please complete the required fields.');
+    setError('');
+    setPreparedUrl('');
+  }
+
+  async function submit(
+    event: FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    setError('');
+    setPreparedUrl('');
+
+    if (
+      form.name.trim().length < 2 ||
+      !form.email.trim() ||
+      !form.message.trim()
+    ) {
+      setError(
+        'Please complete your name, email address and message.',
+      );
       return;
     }
 
@@ -38,30 +79,51 @@ export default function ContactPage() {
       const whatsappMessage = [
         'Hello मर्दा ॲन्ड सन्स,',
         '',
-        'I would like to contact you.',
+        'I would like to contact the store.',
         '',
         `Name: ${form.name.trim()}`,
         `Email: ${form.email.trim()}`,
-        `Phone: ${form.phone.trim() || '—'}`,
+        `Phone: ${
+          form.phone.trim() || 'Not provided'
+        }`,
         '',
         'Message:',
         form.message.trim(),
+        '',
+        'Please confirm availability and next steps.',
       ].join('\n');
 
       const url = whatsappLink(whatsappMessage);
 
-      window.open(url, '_blank', 'noopener,noreferrer');
+      setPreparedUrl(url);
 
-      toast.success('Opening WhatsApp...');
+      window.open(
+        url,
+        '_blank',
+        'noopener,noreferrer',
+      );
+
+      toast.success(
+        'WhatsApp message prepared. Press Send in WhatsApp to complete your enquiry.',
+      );
     } catch {
-      toast.error('Could not open WhatsApp.');
+      setError(
+        'Could not open WhatsApp. Please use the fallback link below.',
+      );
+
+      toast.error(
+        'Could not open WhatsApp.',
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div data-testid="contact-page" className="bg-paper">
+    <div
+      data-testid="contact-page"
+      className="bg-paper"
+    >
       <PageHero
         chapter="06"
         eyebrow="Visit · संपर्क"
@@ -70,7 +132,9 @@ export default function ContactPage() {
           <>
             Walk in.
             <br />
-            <span className="italic text-brand">Or write to us.</span>
+            <span className="italic text-brand">
+              Or write to us.
+            </span>
           </>
         }
         lede={
@@ -79,8 +143,9 @@ export default function ContactPage() {
             <span className="font-brand text-brand">
               मर्दा ॲन्ड सन्स
             </span>{' '}
-            atelier is a slow, generous shop. Come for chai, stay for the
-            weaves, leave with a story.
+            atelier is a slow, generous shop. Come
+            for chai, stay for the weaves, leave
+            with a story.
           </p>
         }
         layout="split"
@@ -154,7 +219,10 @@ export default function ContactPage() {
                   className="eyebrow link-underline inline-flex items-center gap-2 text-brand"
                 >
                   Plan your visit
-                  <ArrowRight size={13} strokeWidth={1.5} />
+                  <ArrowRight
+                    size={13}
+                    strokeWidth={1.5}
+                  />
                 </a>
               </div>
             </div>
@@ -173,7 +241,9 @@ export default function ContactPage() {
                 aria-hidden
               />
 
-              <p className="mt-6 eyebrow md:mt-7">The Atelier</p>
+              <p className="mt-6 eyebrow md:mt-7">
+                The Atelier
+              </p>
 
               <p className="mt-3 font-sub text-base leading-relaxed text-ink sm:text-lg">
                 {STORE_ADDRESS}
@@ -200,7 +270,9 @@ export default function ContactPage() {
                 aria-hidden
               />
 
-              <p className="mt-6 eyebrow md:mt-7">Call · WhatsApp</p>
+              <p className="mt-6 eyebrow md:mt-7">
+                Call · WhatsApp
+              </p>
 
               <p className="mt-3 break-words font-sub text-base text-ink sm:text-lg">
                 {WHATSAPP_DISPLAY}
@@ -229,7 +301,9 @@ export default function ContactPage() {
                 aria-hidden
               />
 
-              <p className="mt-6 eyebrow md:mt-7">Atelier Hours</p>
+              <p className="mt-6 eyebrow md:mt-7">
+                Atelier Hours
+              </p>
 
               <p className="mt-3 font-sub text-base text-ink sm:text-lg">
                 {STORE_HOURS}
@@ -246,92 +320,204 @@ export default function ContactPage() {
       <section className="py-20 sm:py-24 md:py-28">
         <div className="mx-auto grid max-w-[1600px] gap-14 px-5 sm:px-6 md:px-12 lg:grid-cols-2 lg:gap-20 lg:px-24">
           <div>
-            <SectionLabel number="01" label="Write to us" />
+            <SectionLabel
+              number="01"
+              label="Write to us"
+            />
 
             <h2 className="display-2 mt-6 text-3xl text-ink sm:text-4xl md:mt-7 md:text-5xl">
               A note from your
               <br />
-              <span className="italic text-brand">side of the table.</span>
+              <span className="italic text-brand">
+                side of the table.
+              </span>
             </h2>
 
             <form
               onSubmit={submit}
               data-testid="contact-form"
               className="mt-12 space-y-8 md:mt-14 md:space-y-10"
+              aria-busy={loading}
             >
-              <input
-                className="input-line"
-                placeholder="YOUR NAME *"
-                required
-                value={form.name}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    name: e.target.value,
-                  })
-                }
-                data-testid="contact-name"
-              />
+              <div>
+                <label
+                  htmlFor="contact-name"
+                  className="mb-2 block font-sub text-sm text-ink"
+                >
+                  Your name *
+                </label>
 
-              <div className="grid gap-6 sm:grid-cols-2 sm:gap-7">
                 <input
-                  type="email"
-                  className="input-line"
-                  placeholder="EMAIL *"
+                  id="contact-name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
                   required
-                  value={form.email}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      email: e.target.value,
-                    })
+                  minLength={2}
+                  maxLength={120}
+                  value={form.name}
+                  onChange={(event) =>
+                    updateField(
+                      'name',
+                      event.target.value,
+                    )
                   }
-                  data-testid="contact-email"
-                />
-
-                <input
-                  className="input-line"
-                  placeholder="PHONE"
-                  value={form.phone}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      phone: e.target.value,
-                    })
-                  }
-                  data-testid="contact-phone"
+                  placeholder="e.g. Aparna Apte"
+                  data-testid="contact-name"
+                  className="input-line min-h-[44px] text-base"
                 />
               </div>
 
-              <textarea
-                className="input-line resize-none"
-                placeholder="YOUR MESSAGE *"
-                rows={6}
-                required
-                value={form.message}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    message: e.target.value,
-                  })
-                }
-                data-testid="contact-message"
-              />
+              <div className="grid gap-6 sm:grid-cols-2 sm:gap-7">
+                <div>
+                  <label
+                    htmlFor="contact-email"
+                    className="mb-2 block font-sub text-sm text-ink"
+                  >
+                    Email address *
+                  </label>
+
+                  <input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    maxLength={254}
+                    value={form.email}
+                    onChange={(event) =>
+                      updateField(
+                        'email',
+                        event.target.value,
+                      )
+                    }
+                    placeholder="you@example.com"
+                    data-testid="contact-email"
+                    className="input-line min-h-[44px] text-base"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="contact-phone"
+                    className="mb-2 block font-sub text-sm text-ink"
+                  >
+                    Phone / WhatsApp
+                    <span className="text-ink-soft">
+                      {' '}
+                      (optional)
+                    </span>
+                  </label>
+
+                  <input
+                    id="contact-phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    maxLength={30}
+                    value={form.phone}
+                    onChange={(event) =>
+                      updateField(
+                        'phone',
+                        event.target.value,
+                      )
+                    }
+                    placeholder="+91 9XXXX XXXXX"
+                    data-testid="contact-phone"
+                    className="input-line min-h-[44px] text-base"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="contact-message"
+                  className="mb-2 block font-sub text-sm text-ink"
+                >
+                  Your message *
+                </label>
+
+                <textarea
+                  id="contact-message"
+                  name="message"
+                  rows={6}
+                  required
+                  maxLength={2000}
+                  value={form.message}
+                  onChange={(event) =>
+                    updateField(
+                      'message',
+                      event.target.value,
+                    )
+                  }
+                  placeholder="Tell us what you would like to know."
+                  data-testid="contact-message"
+                  className="input-line resize-y text-base"
+                />
+              </div>
+
+              {error && (
+                <p
+                  role="alert"
+                  className="font-sub text-sm text-ink"
+                >
+                  {error}
+                </p>
+              )}
 
               <button
                 type="submit"
                 disabled={loading}
                 data-testid="contact-submit"
-                className="btn-primary inline-flex items-center gap-3"
+                className="btn-primary inline-flex items-center gap-3 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? 'Opening…' : 'Open WhatsApp'}
-                <ArrowRight size={16} strokeWidth={1.5} />
+                {loading
+                  ? 'Preparing…'
+                  : 'Continue on WhatsApp'}
+
+                <ArrowRight
+                  size={16}
+                  strokeWidth={1.5}
+                />
               </button>
+
+              <p className="font-sub text-sm leading-relaxed text-ink-soft">
+                This prepares a WhatsApp message.
+                Your enquiry is not sent until you
+                press Send in WhatsApp.
+              </p>
+
+              {preparedUrl && (
+                <div
+                  role="status"
+                  className="space-y-2 font-sub text-sm text-ink-soft"
+                >
+                  <p>
+                    Your message is ready. Send it
+                    from WhatsApp to complete your
+                    enquiry.
+                  </p>
+
+                  <a
+                    href={preparedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-[44px] items-center underline underline-offset-4"
+                  >
+                    If WhatsApp did not open, open
+                    it here →
+                  </a>
+                </div>
+              )}
             </form>
           </div>
 
           <div>
-            <SectionLabel number="02" label="Visit the atelier" />
+            <SectionLabel
+              number="02"
+              label="Visit the atelier"
+            />
 
             <div className="mt-8 aspect-[4/5] overflow-hidden border border-line sm:mt-10 sm:aspect-[4/4] lg:aspect-[4/5]">
               <iframe
@@ -345,19 +531,36 @@ export default function ContactPage() {
 
             <div className="mt-6 flex flex-wrap items-start gap-6 border-t border-line pt-6 sm:mt-8 sm:gap-8 sm:pt-8">
               <div className="flex items-start gap-3">
-                <Mail size={18} strokeWidth={1.4} className="mt-1 text-brand" />
+                <Mail
+                  size={18}
+                  strokeWidth={1.4}
+                  className="mt-1 text-brand"
+                />
+
                 <div>
-                  <p className="eyebrow text-ink-soft">Message us</p>
+                  <p className="eyebrow text-ink-soft">
+                    Message us
+                  </p>
+
                   <p className="mt-2 font-sub text-base text-ink">
-                    WhatsApp preferred for quick responses
+                    WhatsApp preferred for quick
+                    responses
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <MapPin size={18} strokeWidth={1.4} className="mt-1 text-brand" />
+                <MapPin
+                  size={18}
+                  strokeWidth={1.4}
+                  className="mt-1 text-brand"
+                />
+
                 <div>
-                  <p className="eyebrow text-ink-soft">Address</p>
+                  <p className="eyebrow text-ink-soft">
+                    Address
+                  </p>
+
                   <p className="mt-2 font-sub text-base text-ink">
                     {STORE_ADDRESS}
                   </p>
