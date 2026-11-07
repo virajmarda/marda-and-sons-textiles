@@ -2,11 +2,14 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 import { Heart, ShoppingBag } from 'lucide-react';
 
-import { useCart } from '@/lib/cart-context';
 import { inr, type Product } from '@/lib/api';
+
+import {
+  LoginPromptDialog,
+  type LoginPromptTrigger,
+} from '@/components/login-prompt-dialog';
 
 type ProductCardProps = {
   p: Product;
@@ -47,7 +50,9 @@ function ProductImage({
       : '';
 
   function handleImageError() {
-    if (!source) return;
+    if (!source) {
+      return;
+    }
 
     setFailedSources((current) =>
       current.includes(source)
@@ -80,7 +85,7 @@ function ProductImage({
       loading="lazy"
       decoding="async"
       onError={handleImageError}
-      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
     />
   );
 }
@@ -89,11 +94,10 @@ export function ProductCard({
   p,
   index = 0,
 }: ProductCardProps) {
-  const { toggleWishlist, isWished } = useCart();
-
   const [hovered, setHovered] = useState(false);
 
-  const wished = isWished(p.slug);
+  const [loginPrompt, setLoginPrompt] =
+    useState<LoginPromptTrigger | null>(null);
 
   const productHref =
     `/product/${encodeURIComponent(p.slug)}`;
@@ -104,6 +108,8 @@ export function ProductCard({
   const retailPrice = p.price_retail;
   const wholesalePrice = p.price_wholesale;
   const wholesaleMinimum = p.moq_wholesale;
+
+  const unavailable = p.in_stock === false;
 
   const hasRetailPrice =
     typeof retailPrice === 'number' &&
@@ -130,19 +136,25 @@ export function ProductCard({
   ).slice(0, 2);
 
   function handleWishlist() {
-    toggleWishlist(p.slug);
+    setLoginPrompt('wishlist');
+  }
 
-    toast.success(
-      wished
-        ? 'Removed from wishlist'
-        : 'Saved to wishlist',
-    );
+  function handleAddToBag() {
+    if (unavailable || !hasRetailPrice) {
+      return;
+    }
+
+    setLoginPrompt('bag');
+  }
+
+  function closeLoginPrompt() {
+    setLoginPrompt(null);
   }
 
   return (
     <article
       data-testid={`product-card-${p.slug}`}
-      className="group relative animate-fade-up"
+      className="group relative animate-fade-up motion-reduce:animate-none"
       style={{
         animationDelay: `${(index % 6) * 70}ms`,
       }}
@@ -183,39 +195,63 @@ export function ProductCard({
           type="button"
           data-testid={`wishlist-btn-${p.slug}`}
           onClick={handleWishlist}
-          aria-pressed={wished}
-          aria-label={
-            wished
-              ? `Remove ${p.name} from wishlist`
-              : `Save ${p.name} to wishlist`
-          }
+          aria-haspopup="dialog"
+          aria-label={`Sign in to save ${p.name} to your wishlist`}
           className="absolute right-3 top-3 inline-flex h-11 w-11 items-center justify-center bg-bg-primary/95 text-ink transition-colors hover:bg-bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:right-4 sm:top-4"
         >
           <Heart
             size={17}
             strokeWidth={1.5}
             aria-hidden="true"
-            className={
-              wished
-                ? 'fill-brand text-brand'
-                : 'text-ink'
-            }
           />
         </button>
 
         <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-          <Link
-            href={productHref}
-            data-testid={`quick-add-${p.slug}`}
-            aria-label={`View details and enquiry options for ${p.name}`}
-            className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 bg-ink px-4 py-3 font-sub text-sm text-bg-primary transition-colors hover:bg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-          >
-            <ShoppingBag
-              size={15}
-              aria-hidden="true"
-            />
-            View details &amp; enquire
-          </Link>
+          {unavailable ? (
+            <button
+              type="button"
+              disabled
+              data-testid={`quick-add-${p.slug}`}
+              className="inline-flex min-h-[44px] w-full cursor-not-allowed items-center justify-center gap-2 bg-ink px-4 py-3 font-sub text-sm text-bg-primary opacity-60"
+            >
+              <ShoppingBag
+                size={15}
+                aria-hidden="true"
+              />
+
+              Currently unavailable
+            </button>
+          ) : hasRetailPrice ? (
+            <button
+              type="button"
+              onClick={handleAddToBag}
+              data-testid={`quick-add-${p.slug}`}
+              aria-haspopup="dialog"
+              aria-label={`Sign in to add ${p.name} to your bag`}
+              className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 bg-ink px-4 py-3 font-sub text-sm text-bg-primary transition-colors hover:bg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            >
+              <ShoppingBag
+                size={15}
+                aria-hidden="true"
+              />
+
+              Add to Bag
+            </button>
+          ) : (
+            <Link
+              href={productHref}
+              data-testid={`quick-add-${p.slug}`}
+              aria-label={`View details and enquiry options for ${p.name}`}
+              className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 bg-ink px-4 py-3 font-sub text-sm text-bg-primary transition-colors hover:bg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            >
+              <ShoppingBag
+                size={15}
+                aria-hidden="true"
+              />
+
+              View details &amp; enquire
+            </Link>
+          )}
         </div>
       </div>
 
@@ -255,7 +291,7 @@ export function ProductCard({
                 : 'Price on enquiry'}
             </p>
 
-            {p.in_stock === false && (
+            {unavailable && (
               <p className="mt-1 font-sub text-xs text-ink-soft">
                 Currently unavailable
               </p>
@@ -280,6 +316,12 @@ export function ProductCard({
           </div>
         </div>
       </div>
+
+      <LoginPromptDialog
+        open={loginPrompt !== null}
+        trigger={loginPrompt ?? 'bag'}
+        onClose={closeLoginPrompt}
+      />
     </article>
   );
 }
